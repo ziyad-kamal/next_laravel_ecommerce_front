@@ -10,14 +10,12 @@ export default function ProtectedLayout({
 }) {
     const [isLoading, setIsLoading] = useState(true);
     useEffect(() => {
-        const isAuthenticated = localStorage.getItem("token");
-        if (!isAuthenticated) {
-            redirect("/users/public/login");
+        const isAuthenticated = localStorage.getItem("adminToken");
+        if (isAuthenticated) {
+            redirect("/users/protected/home");
         }
 
-        setTimeout(() => {
-            setIsLoading(false);
-        }, 1000);
+        setIsLoading(false);
     }, []);
 
     // Optionally, you can add a loading state here

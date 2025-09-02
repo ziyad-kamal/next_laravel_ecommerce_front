@@ -1,5 +1,5 @@
 import { useAppDispatch, useAppSelector } from "@/lib/hooks";
-import ToastState from "@/interfaces/ToastState";
+import ToastState from "@/interfaces/states/ToastState";
 import { hide } from "@/redux/DisplayToast";
 import {
     faCircleCheck,

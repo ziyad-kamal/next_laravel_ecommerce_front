@@ -22,8 +22,8 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import React, { useState, useEffect, useRef } from "react";
-import TokenState from "../interfaces/TokenState";
-import { remove, set } from "@/redux/SetToken";
+import TokenState from "../../interfaces/states/TokenState";
+import { userTokenRemove, userTokenSet } from "@/redux/SetToken";
 
 const Navbar = () => {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -130,7 +130,7 @@ const Navbar = () => {
 
         const storedToken = localStorage.getItem("token");
         if (storedToken) {
-            dispatch(set());
+            dispatch(userTokenSet());
         }
 
         document.addEventListener("mousedown", handleClickOutside);
@@ -215,7 +215,7 @@ const Navbar = () => {
                     display({ type: "success", message: response.msg.text })
                 );
                 localStorage.removeItem("token");
-                dispatch(remove());
+                dispatch(userTokenRemove());
 
                 router.push("/users/public/login");
             } else if (response) {
@@ -308,7 +308,7 @@ const Navbar = () => {
 
                     {/* Right side icons */}
 
-                    {tokenState.isToken ? (
+                    {tokenState.isUserToken ? (
                         <div className="hidden lg:flex items-center space-x-4">
                             {/* Notifications */}
                             <div
@@ -713,7 +713,7 @@ const Navbar = () => {
                         </a>
 
                         {/* Mobile User Menu */}
-                        {tokenState.isToken && (
+                        {tokenState.isUserToken && (
                             <div className="border-t border-gray-800 mt-2 pt-2">
                                 <button
                                     onClick={handleSettings}

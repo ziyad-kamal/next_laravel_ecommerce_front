@@ -1,6 +1,7 @@
 import { ChangeEvent, RefObject } from "react";
 
 interface InputProps {
+    label?: string;
     name: string;
     classes?: string;
     type?: string;
@@ -8,6 +9,7 @@ interface InputProps {
     isRequired?: boolean;
     handleChange: (e: ChangeEvent<HTMLInputElement>, name: string) => void;
     inputRef?: RefObject<HTMLInputElement>;
+    value?: string;
     error?: string;
 }
 

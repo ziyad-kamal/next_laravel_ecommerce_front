@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import ToastState from "@/interfaces/ToastState";
-import ToastPayload from "@/interfaces/ToastPayload";
+import ToastState from "@/interfaces/states/ToastState";
+import ToastPayload from "@/interfaces/payloads/ToastPayload";
 
 // Define the initial state using that type
 const initialState: ToastState = {

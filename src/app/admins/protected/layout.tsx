@@ -1,7 +1,7 @@
 // app/protected/layout.tsx
 "use client";
 
-import { redirect } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 export default function ProtectedLayout({
     children,
@@ -9,16 +9,18 @@ export default function ProtectedLayout({
     children: React.ReactNode;
 }) {
     const [isLoading, setIsLoading] = useState(true);
+    const router = useRouter();
+
     useEffect(() => {
-        const isAuthenticated = localStorage.getItem("token");
+        const isAuthenticated = localStorage.getItem("adminToken");
         if (!isAuthenticated) {
-            redirect("/users/public/login");
+            router.push("/users/public/login");
         }
 
         setTimeout(() => {
             setIsLoading(false);
         }, 1000);
-    }, []);
+    }, [router]);
 
     // Optionally, you can add a loading state here
     return (

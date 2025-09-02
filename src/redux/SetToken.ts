@@ -1,9 +1,11 @@
-import TokenState from "@/interfaces/TokenState";
+import TokenState from "@/interfaces/states/TokenState";
 import { createSlice } from "@reduxjs/toolkit";
 
 // Define the initial state using that type
 const initialState: TokenState = {
-    isToken: false,
+    isUserToken: false,
+    isAdminToken: false,
+    isVendorToken: false,
 };
 
 export const setTokenSlice = createSlice({
@@ -11,15 +13,34 @@ export const setTokenSlice = createSlice({
     // `createSlice` will infer the state type from the `initialState` argument
     initialState,
     reducers: {
-        set: (state) => {
-            state.isToken = true;
+        userTokenSet: (state) => {
+            state.isUserToken = true;
         },
-        remove: (state) => {
-            state.isToken = false;
+        userTokenRemove: (state) => {
+            state.isUserToken = false;
+        },
+        adminTokenSet: (state) => {
+            state.isAdminToken = true;
+        },
+        adminTokenRemove: (state) => {
+            state.isAdminToken = false;
+        },
+        VendorTokenSet: (state) => {
+            state.isVendorToken = true;
+        },
+        VendorTokenRemove: (state) => {
+            state.isVendorToken = false;
         },
     },
 });
 
-export const { set, remove } = setTokenSlice.actions;
+export const {
+    userTokenSet,
+    userTokenRemove,
+    adminTokenSet,
+    adminTokenRemove,
+    VendorTokenSet,
+    VendorTokenRemove,
+} = setTokenSlice.actions;
 
 export default setTokenSlice.reducer;

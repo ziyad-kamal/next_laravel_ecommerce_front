@@ -1,13 +1,15 @@
 import axios from "axios";
+import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
 
 export default function sendRequest(
     method: "post" | "get" | "put" | "delete",
     url: string,
     inputs: object | null,
-    abortController: AbortController | null
+    abortController: AbortController | null,
+    token: string | null,
+    router?: AppRouterInstance
 ) {
     const send = async () => {
-        const token = localStorage.getItem("token");
         axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
         axios.defaults.baseURL = "http://127.0.0.1:8000/api/";
         axios.defaults.headers.post["Content-Type"] = "application/json";
@@ -54,6 +56,11 @@ export default function sendRequest(
                 const status = error.response.status;
                 if (status === 401) {
                     localStorage.removeItem("token");
+                    localStorage.removeItem("adminToken");
+
+                    if (router) {
+                        router.push("users/public/login");
+                    }
                 } else if (status === 404) {
                     return {
                         success: false,

@@ -1,7 +1,10 @@
 import type { NextConfig } from "next";
 
+import nextIntlObj from "next-intl/plugin";
+const nextIntl = nextIntlObj();
+
 const nextConfig: NextConfig = {
-  /* config options here */
+    // Your other config options can go here
 };
 
-export default nextConfig;
+export default nextIntl(nextConfig);

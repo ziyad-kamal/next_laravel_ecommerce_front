@@ -1,0 +1,14 @@
+{
+    "tabTittles": {
+        "home": "en home"
+    },
+
+    "navbar": {
+        "home": "home",
+        "categories": "categories",
+        "brands": "brands",
+
+        "items": "items",
+        "users": "users"
+    }
+}

@@ -1,0 +1,12 @@
+{
+    "tabTittles": {
+        "home": "fr home"
+    },
+
+    "navbar": {
+        "categories": "catégories",
+        "brands": "marques",
+        "home": "page d'accueil",
+        "items": "produits"
+    }
+}
