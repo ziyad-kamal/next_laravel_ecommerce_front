@@ -6,27 +6,27 @@ import { useRouter } from "next/navigation";
 import sendRequest from "@/functions/sendRequest";
 import { useAppDispatch, useAppSelector } from "@/lib/hooks";
 import { display } from "@/redux/DisplayToast";
-import BrandState from "@/interfaces/states/BrandState";
 import { Button } from "@/components";
 import Table from "@/components/Table";
 import ReactPaginate from "react-paginate";
 import Modal from "@/components/Modal";
 import { displayModal } from "@/redux/DisplayModal";
 import LocaleState from "@/interfaces/states/LocaleState";
+import ItemState from "@/interfaces/states/ItemState";
 
 const DeleteConfirmationModal = memo(
     ({ onConfirm }: { onConfirm: () => void }) => (
         <Modal
-            title="delete user"
+            title="delete item"
             handleClick={onConfirm}
         >
-            <p>Are you want to delete this user</p>
+            <p>Are you want to delete this item</p>
         </Modal>
     )
 );
 DeleteConfirmationModal.displayName = "DeleteConfirmationModal";
 
-const GetBrands = () => {
+const GetItems = () => {
     const router = useRouter();
     const dispatch = useAppDispatch();
     const id = useRef<number>(0);
@@ -36,10 +36,13 @@ const GetBrands = () => {
     const abortController = useRef<AbortController | null>(null);
     const abortControllerForDelete = useRef<AbortController | null>(null);
 
-    const [brands, setBrands] = useState<BrandState[]>([
+    const [items, setItems] = useState<ItemState[]>([
         {
             id: 0,
             name: "",
+            condition: "",
+            price: "",
+            approval: "",
             trans_lang: "",
             created_at: "",
         },
@@ -48,7 +51,7 @@ const GetBrands = () => {
     const [sortConfig, setSortConfig] = useState<{
         keyToSort: string; // 'name', 'email', or 'created_at'
         direction: string;
-    }>({ keyToSort: "name", direction: "asc" });
+    }>({ keyToSort: "approval", direction: "desc" });
 
     //MARK:HeaderClick
     const handleHeaderClick = (header: string) => {
@@ -68,9 +71,9 @@ const GetBrands = () => {
         currentPage: number;
     }>({ totalPages: 0, currentPage: 1 });
 
-    //MARK:get brands
+    //MARK:get items
     useEffect(() => {
-        const url = `/admin-panel/brand?keyToSort=${sortConfig.keyToSort}&direction=${sortConfig.direction}`;
+        const url = `/admin-panel/item?keyToSort=${sortConfig.keyToSort}&direction=${sortConfig.direction}`;
         const abortController = new AbortController();
         const token = localStorage.getItem("adminToken");
 
@@ -85,7 +88,7 @@ const GetBrands = () => {
             );
 
             if (response && response.success) {
-                setBrands(response.data.data);
+                setItems(response.data.data);
                 setMetaData({
                     ...metaData,
                     totalPages: response.data.meta.total,
@@ -105,21 +108,21 @@ const GetBrands = () => {
 
     //MARK:actions
     const handleEdit = (id: number) => {
-        router.push(`/admins/protected/brands/${id}`);
+        router.push(`/admins/protected/items/${id}`);
     };
 
     const handleAdd = () => {
-        router.push(`/admins/protected/brands/store`);
+        router.push(`/admins/protected/items/store`);
     };
 
-    const handleDelete = (adminId: number) => {
-        id.current = adminId;
+    const handleDelete = (itemId: number) => {
+        id.current = itemId;
         dispatch(displayModal({ isVisible: true, type: "confirm" }));
     };
 
     //MARK:handleConfirm
     const handleConfirm = useCallback(() => {
-        const url = `/admin-panel/brand/${id.current}`;
+        const url = `/admin-panel/item/${id.current}`;
         const token = localStorage.getItem("adminToken");
 
         if (abortControllerForDelete.current) {
@@ -139,11 +142,11 @@ const GetBrands = () => {
                 router
             );
             if (response && response.success) {
-                const newBrands = brands.filter((brand) => {
-                    return brand.id !== id.current;
+                const newItems = items.filter((item) => {
+                    return item.id !== id.current;
                 });
 
-                setBrands(newBrands);
+                setItems(newItems);
                 dispatch(
                     display({ type: "success", message: response.msg.text })
                 );
@@ -157,12 +160,12 @@ const GetBrands = () => {
         };
 
         deleteData();
-    }, [brands, dispatch, router]);
+    }, [items, dispatch, router]);
 
     //MARK:PageChange
     const handlePageChange = ({ selected }: { selected: number }) => {
         const page = selected + 1;
-        const url = `/admin-panel/brand?page=${page}&keyToSort=${sortConfig.keyToSort}&direction=${sortConfig.direction}`;
+        const url = `/admin-panel/item?page=${page}&keyToSort=${sortConfig.keyToSort}&direction=${sortConfig.direction}`;
         const token = localStorage.getItem("adminToken");
 
         if (abortController.current) {
@@ -180,7 +183,7 @@ const GetBrands = () => {
                 router
             );
             if (response && response.success) {
-                setBrands(response.data.data);
+                setItems(response.data.data);
                 setMetaData({ ...metaData, currentPage: page });
             } else if (response) {
                 dispatch(
@@ -192,31 +195,35 @@ const GetBrands = () => {
         fetchData();
     };
 
-    //MARK:brandsRow
-    const brandsRow = brands.map((brand) => {
+    //MARK:itemsRow
+    const itemsRow = items.map((item) => {
         return (
             <tr
-                key={brand.id}
+                key={item.id}
                 className="hover:bg-gray-200"
             >
-                <td className="row_table">{brand.name}</td>
+                <td className="row_table">{item.name}</td>
+                <td className="row_table">{item.trans_lang}</td>
+                <td className="row_table">{item.condition}</td>
+                <td className="row_table">{item.approval}</td>
 
-                <td className="row_table">{brand.trans_lang}</td>
-                <td className="row_table">{brand.created_at}</td>
+                <td className="row_table">{item.price}</td>
+
+                <td className="row_table">{item.created_at}</td>
                 <td className="row_table">
                     <Button
                         classes={"bg-indigo-600 hover:bg-indigo-700 text-white"}
                         text={`Edit`}
                         type="button"
                         icon={faEdit}
-                        handleClick={() => handleEdit(brand.id)}
+                        handleClick={() => handleEdit(item.id)}
                     />
                     <Button
                         classes={"bg-red-600 hover:bg-red-700 text-white"}
                         text={`delete`}
                         type="button"
                         icon={faTrash}
-                        handleClick={() => handleDelete(brand.id)}
+                        handleClick={() => handleDelete(item.id)}
                     />
                 </td>
             </tr>
@@ -228,15 +235,23 @@ const GetBrands = () => {
             <DeleteConfirmationModal onConfirm={handleConfirm} />
 
             <Table
-                title={"brands"}
+                title={"items"}
                 classes={"bg-white"}
-                tableHeaders={["name", "language", "created_at", "action"]}
+                tableHeaders={[
+                    "name",
+                    "language",
+                    "condition",
+                    "approval",
+                    "price",
+                    "created_at",
+                    "action",
+                ]}
                 handleBtnClick={() => handleAdd()}
                 sortConfig={sortConfig}
                 handleHeaderClick={handleHeaderClick}
-                records={brands}
+                records={items}
             >
-                {brandsRow}
+                {itemsRow}
             </Table>
 
             <div className="flex justify-center">
@@ -266,4 +281,4 @@ const GetBrands = () => {
     );
 };
 
-export default GetBrands;
+export default GetItems;

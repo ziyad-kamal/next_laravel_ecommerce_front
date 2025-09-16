@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { memo, useCallback, useEffect, useRef, useState } from "react";
 import { faEdit, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { useRouter } from "next/navigation";
 import sendRequest from "@/functions/sendRequest";
@@ -13,10 +13,24 @@ import ReactPaginate from "react-paginate";
 import Modal from "@/components/Modal";
 import { displayModal } from "@/redux/DisplayModal";
 
+const DeleteConfirmationModal = memo(
+    ({ onConfirm }: { onConfirm: () => void }) => (
+        <Modal
+            title="delete user"
+            handleClick={onConfirm}
+        >
+            <p>Are you want to delete this user</p>
+        </Modal>
+    )
+);
+DeleteConfirmationModal.displayName = "DeleteConfirmationModal";
+
 const GetAdmins = () => {
     const router = useRouter();
     const dispatch = useAppDispatch();
     const id = useRef<number>(0);
+    const abortController = useRef<AbortController | null>(null);
+    const abortControllerForDelete = useRef<AbortController | null>(null);
 
     const [admins, setAdmins] = useState<AdminState[]>([
         {
@@ -28,10 +42,11 @@ const GetAdmins = () => {
     ]);
 
     const [sortConfig, setSortConfig] = useState<{
-        keyToSort: string; // 'name', 'email', or 'created_at'
+        keyToSort: string;
         direction: string;
     }>({ keyToSort: "name", direction: "asc" });
 
+    //MARK:handleHeaderClick
     const handleHeaderClick = (header: string) => {
         if (header !== "action") {
             setSortConfig((prev) => ({
@@ -44,20 +59,21 @@ const GetAdmins = () => {
         }
     };
 
-    const getSortedAdmins = (admins: AdminState[]) => {
-        const key = sortConfig.keyToSort as keyof AdminState;
-        if (sortConfig.direction === "asc") {
-            return admins.sort((a, b) => (a[key] > b[key] ? 1 : -1));
-        }
+    // const getSortedAdmins = (admins: AdminState[]) => {
+    //     const key = sortConfig.keyToSort as keyof AdminState;
+    //     if (sortConfig.direction === "asc") {
+    //         return admins.sort((a, b) => (a[key] > b[key] ? 1 : -1));
+    //     }
 
-        return admins.sort((a, b) => (a[key] > b[key] ? -1 : 1));
-    };
+    //     return admins.sort((a, b) => (a[key] > b[key] ? -1 : 1));
+    // };
 
     const [metaData, setMetaData] = useState<{
         totalPages: number;
         currentPage: number;
     }>({ totalPages: 0, currentPage: 1 });
 
+    //MARK:get admins
     useEffect(() => {
         const url = `/admin-panel/admin?keyToSort=${sortConfig.keyToSort}&direction=${sortConfig.direction}`;
         const abortController = new AbortController();
@@ -90,20 +106,31 @@ const GetAdmins = () => {
 
         return () => abortController.abort();
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [dispatch, router]);
+    }, [dispatch, router, sortConfig]);
 
+    //MARK:actions
     const handleEdit = (id: number) => {
         router.push(`/admins/protected/admins/${id}`);
     };
 
     const handleAdd = () => {
-        router.push(`/admins/add`);
+        router.push(`/admins/protected/admins/store`);
     };
 
-    const handleConfirm = () => {
+    const handleDelete = (adminId: number) => {
+        id.current = adminId;
+        dispatch(displayModal({ isVisible: true, type: "confirm" }));
+    };
+
+    //MARK:handleConfirm
+    const handleConfirm = useCallback(() => {
         const url = `/admin-panel/admin/${id.current}`;
-        const abortController = new AbortController();
         const token = localStorage.getItem("adminToken");
+
+        if (abortControllerForDelete.current) {
+            abortControllerForDelete.current.abort();
+        }
+        abortControllerForDelete.current = new AbortController();
 
         const deleteData = async () => {
             dispatch(displayModal({ disable: true }));
@@ -112,7 +139,7 @@ const GetAdmins = () => {
                 "delete",
                 url,
                 null,
-                abortController,
+                abortControllerForDelete.current,
                 token,
                 router
             );
@@ -135,31 +162,25 @@ const GetAdmins = () => {
         };
 
         deleteData();
-    };
+    }, [admins, dispatch, router]);
 
-    const handleDelete = (adminId: number) => {
-        id.current = adminId;
-        dispatch(displayModal({ isVisible: true, type: "confirm" }));
-    };
-
-    let abortControllerForPages: AbortController | null = null;
-
+    //MARK:handlePageChange
     const handlePageChange = ({ selected }: { selected: number }) => {
         const page = selected + 1;
         const url = `/admin-panel/admin?page=${page}&keyToSort=${sortConfig.keyToSort}&direction=${sortConfig.direction}`;
         const token = localStorage.getItem("adminToken");
 
-        if (abortControllerForPages) {
-            abortControllerForPages.abort();
+        if (abortController.current) {
+            abortController.current.abort();
         }
-        abortControllerForPages = new AbortController();
+        abortController.current = new AbortController();
 
         const fetchData = async () => {
             const response = await sendRequest(
                 "get",
                 url,
                 null,
-                abortControllerForPages,
+                abortController.current,
                 token,
                 router
             );
@@ -176,7 +197,8 @@ const GetAdmins = () => {
         fetchData();
     };
 
-    const adminsRow = getSortedAdmins(admins).map((admin) => {
+    //MARK:adminsRow
+    const adminsRow = admins.map((admin) => {
         return (
             <tr
                 key={admin.id}
@@ -208,6 +230,8 @@ const GetAdmins = () => {
 
     return (
         <>
+            <DeleteConfirmationModal onConfirm={handleConfirm} />
+
             <Modal
                 title="delete admin"
                 handleClick={handleConfirm}

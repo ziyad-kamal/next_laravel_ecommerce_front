@@ -46,6 +46,7 @@ const GetUsers = () => {
         direction: string;
     }>({ keyToSort: "name", direction: "asc" });
 
+    //MARK:handleHeaderClick
     const handleHeaderClick = (header: string) => {
         if (header !== "action") {
             setSortConfig((prev) => ({
@@ -58,17 +59,12 @@ const GetUsers = () => {
         }
     };
 
-    // if (sortConfig.direction === "asc") {
-    //     return users.sort((a, b) => (a[key] > b[key] ? 1 : -1));
-    // }
-
-    // return users.sort((a, b) => (a[key] > b[key] ? -1 : 1));
-
     const [metaData, setMetaData] = useState<{
         totalPages: number;
         currentPage: number;
     }>({ totalPages: 0, currentPage: 1 });
 
+    //MARK:get users
     useEffect(() => {
         const url = `/admin-panel/user?keyToSort=${sortConfig.keyToSort}&direction=${sortConfig.direction}`;
         const abortController = new AbortController();
@@ -103,6 +99,7 @@ const GetUsers = () => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [dispatch, router, sortConfig]);
 
+    //MARK:actions
     const handleEdit = (id: number) => {
         router.push(`/admins/protected/users/${id}`);
     };
@@ -111,6 +108,12 @@ const GetUsers = () => {
         router.push(`/admins/protected/users/store`);
     };
 
+    const handleDelete = (userId: number) => {
+        id.current = userId;
+        dispatch(displayModal({ isVisible: true, type: "confirm" }));
+    };
+
+    //MARK:handleConfirm
     const handleConfirm = useCallback(() => {
         const url = `/admin-panel/user/${id.current}`;
         const token = localStorage.getItem("adminToken");
@@ -151,11 +154,7 @@ const GetUsers = () => {
         deleteData();
     }, [dispatch, router]);
 
-    const handleDelete = (userId: number) => {
-        id.current = userId;
-        dispatch(displayModal({ isVisible: true, type: "confirm" }));
-    };
-
+    //MARK:PageChange
     const handlePageChange = ({ selected }: { selected: number }) => {
         const page = selected + 1;
         const url = `/admin-panel/user?page=${page}&keyToSort=${sortConfig.keyToSort}&direction=${sortConfig.direction}`;
@@ -188,6 +187,7 @@ const GetUsers = () => {
         fetchData();
     };
 
+    //MARK:usersRow
     const usersRow = users.map((user) => {
         return (
             <tr

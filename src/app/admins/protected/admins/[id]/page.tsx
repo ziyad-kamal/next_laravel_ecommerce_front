@@ -1,6 +1,12 @@
 "use client";
 
-import React, { ChangeEvent, FormEvent, useEffect, useState } from "react";
+import React, {
+    ChangeEvent,
+    FormEvent,
+    useEffect,
+    useRef,
+    useState,
+} from "react";
 import { useAppDispatch } from "@/lib/hooks";
 import { useRouter } from "next/navigation";
 import sendRequest from "@/functions/sendRequest";
@@ -19,6 +25,7 @@ const ShowAdmin = ({ params }: { params: Promise<{ id: number }> }) => {
     const dispatch = useAppDispatch();
     const [errors, setErrors] = useState(initialErrors);
     const router = useRouter();
+    const abortController = useRef<AbortController | null>(null);
 
     const [inputs, setInputs] = useState<{
         name: string;
@@ -32,11 +39,12 @@ const ShowAdmin = ({ params }: { params: Promise<{ id: number }> }) => {
         passwordConfirmation: "",
     });
 
-    // MARK: get admins
+    // MARK: get admin
     useEffect(() => {
         const url = `/admin-panel/admin/${id}`;
-        const abortController = new AbortController();
         const token = localStorage.getItem("adminToken");
+
+        const abortController = new AbortController();
 
         const fetchData = async () => {
             const response = await sendRequest(
@@ -62,6 +70,7 @@ const ShowAdmin = ({ params }: { params: Promise<{ id: number }> }) => {
         return () => abortController.abort();
     }, [router, dispatch, id]);
 
+    // MARK: handleInputChange
     const handleInputChange = (
         e: ChangeEvent<HTMLInputElement>,
         name: string
@@ -70,25 +79,25 @@ const ShowAdmin = ({ params }: { params: Promise<{ id: number }> }) => {
         setInputs({ ...inputs, [name]: value });
     };
 
-    let abortControllerForSubmit: AbortController | null = null;
-
     // MARK: handleSubmit
     const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
+        setIsLoading(true);
 
         const token = localStorage.getItem("adminToken");
         const url = `/admin-panel/admin/${id}?_method=put`;
-        if (abortControllerForSubmit) {
-            abortControllerForSubmit.abort();
+
+        if (abortController.current) {
+            abortController.current.abort();
         }
-        abortControllerForSubmit = new AbortController();
+        abortController.current = new AbortController();
 
         const submitData = async () => {
             const response = await sendRequest(
                 "post",
                 url,
                 inputs,
-                abortControllerForSubmit,
+                abortController.current,
                 token,
                 router
             );
@@ -119,7 +128,7 @@ const ShowAdmin = ({ params }: { params: Promise<{ id: number }> }) => {
 
     return (
         <div>
-            <div className="flex justify-center items-center h-100 mt-7">
+            <div className="flex justify-center items-center h-100 my-30">
                 <Card>
                     <div className="text-center mb-8">
                         <h1 className="text-3xl font-bold text-gray-900 mb-2">
@@ -178,20 +187,10 @@ const ShowAdmin = ({ params }: { params: Promise<{ id: number }> }) => {
                         />
 
                         <Button
-                            disable={isLoading}
+                            isLoading={isLoading}
+                            text="update"
                             classes="bg-indigo-700 hover:bg-indigo-800 w-full flex justify-center mt-5"
-                        >
-                            {isLoading ? (
-                                <div className="flex items-center">
-                                    <div className="animate-spin text-white  rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                                    update ...
-                                </div>
-                            ) : (
-                                <div className="flex text-white items-center">
-                                    update
-                                </div>
-                            )}
-                        </Button>
+                        ></Button>
                     </form>
                 </Card>
             </div>

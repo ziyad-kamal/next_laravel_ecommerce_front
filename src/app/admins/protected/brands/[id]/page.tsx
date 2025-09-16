@@ -79,6 +79,7 @@ const UpdateBrand = ({ params }: { params: Promise<{ id: number }> }) => {
         return () => abortController.abort();
     }, [router, dispatch, id]);
 
+    // MARK: InputChange
     const handleInputChange = (
         e: ChangeEvent<HTMLInputElement>,
         langIndex: number
@@ -178,20 +179,10 @@ const UpdateBrand = ({ params }: { params: Promise<{ id: number }> }) => {
                     ))}
 
                     <Button
-                        disable={isLoading}
+                        isLoading={isLoading}
+                        text="update"
                         classes="bg-indigo-700 hover:bg-indigo-800 w-full flex justify-center my-5"
-                    >
-                        {isLoading ? (
-                            <div className="flex text-white items-center">
-                                <div className="animate-spin  rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                                updating Brand...
-                            </div>
-                        ) : (
-                            <div className="flex text-white items-center">
-                                update Brand
-                            </div>
-                        )}
-                    </Button>
+                    ></Button>
                 </form>
             </div>
         </div>

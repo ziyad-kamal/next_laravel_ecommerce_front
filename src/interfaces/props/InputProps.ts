@@ -11,6 +11,7 @@ interface InputProps {
     inputRef?: RefObject<HTMLInputElement>;
     value?: string;
     error?: string;
+    accept?: string;
 }
 
 export default InputProps;

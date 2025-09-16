@@ -6,13 +6,14 @@ import { useRouter } from "next/navigation";
 import sendRequest from "@/functions/sendRequest";
 import { useAppDispatch, useAppSelector } from "@/lib/hooks";
 import { display } from "@/redux/DisplayToast";
-import BrandState from "@/interfaces/states/BrandState";
 import { Button } from "@/components";
 import Table from "@/components/Table";
 import ReactPaginate from "react-paginate";
 import Modal from "@/components/Modal";
 import { displayModal } from "@/redux/DisplayModal";
 import LocaleState from "@/interfaces/states/LocaleState";
+import CategoryState from "@/interfaces/states/CategoryState";
+import Image from "next/image";
 
 const DeleteConfirmationModal = memo(
     ({ onConfirm }: { onConfirm: () => void }) => (
@@ -26,7 +27,7 @@ const DeleteConfirmationModal = memo(
 );
 DeleteConfirmationModal.displayName = "DeleteConfirmationModal";
 
-const GetBrands = () => {
+const GetCategories = () => {
     const router = useRouter();
     const dispatch = useAppDispatch();
     const id = useRef<number>(0);
@@ -36,10 +37,11 @@ const GetBrands = () => {
     const abortController = useRef<AbortController | null>(null);
     const abortControllerForDelete = useRef<AbortController | null>(null);
 
-    const [brands, setBrands] = useState<BrandState[]>([
+    const [categories, setCategories] = useState<CategoryState[]>([
         {
             id: 0,
             name: "",
+            image: "",
             trans_lang: "",
             created_at: "",
         },
@@ -68,9 +70,9 @@ const GetBrands = () => {
         currentPage: number;
     }>({ totalPages: 0, currentPage: 1 });
 
-    //MARK:get brands
+    //MARK:get categories
     useEffect(() => {
-        const url = `/admin-panel/brand?keyToSort=${sortConfig.keyToSort}&direction=${sortConfig.direction}`;
+        const url = `/admin-panel/category?keyToSort=${sortConfig.keyToSort}&direction=${sortConfig.direction}`;
         const abortController = new AbortController();
         const token = localStorage.getItem("adminToken");
 
@@ -85,7 +87,7 @@ const GetBrands = () => {
             );
 
             if (response && response.success) {
-                setBrands(response.data.data);
+                setCategories(response.data.data);
                 setMetaData({
                     ...metaData,
                     totalPages: response.data.meta.total,
@@ -105,21 +107,21 @@ const GetBrands = () => {
 
     //MARK:actions
     const handleEdit = (id: number) => {
-        router.push(`/admins/protected/brands/${id}`);
+        router.push(`/admins/protected/categories/${id}`);
     };
 
     const handleAdd = () => {
-        router.push(`/admins/protected/brands/store`);
+        router.push(`/admins/protected/categories/store`);
     };
 
-    const handleDelete = (adminId: number) => {
-        id.current = adminId;
+    const handleDelete = (categoryId: number) => {
+        id.current = categoryId;
         dispatch(displayModal({ isVisible: true, type: "confirm" }));
     };
 
     //MARK:handleConfirm
     const handleConfirm = useCallback(() => {
-        const url = `/admin-panel/brand/${id.current}`;
+        const url = `/admin-panel/category/${id.current}`;
         const token = localStorage.getItem("adminToken");
 
         if (abortControllerForDelete.current) {
@@ -139,11 +141,11 @@ const GetBrands = () => {
                 router
             );
             if (response && response.success) {
-                const newBrands = brands.filter((brand) => {
-                    return brand.id !== id.current;
+                const newCategories = categories.filter((category) => {
+                    return category.id !== id.current;
                 });
 
-                setBrands(newBrands);
+                setCategories(newCategories);
                 dispatch(
                     display({ type: "success", message: response.msg.text })
                 );
@@ -157,12 +159,12 @@ const GetBrands = () => {
         };
 
         deleteData();
-    }, [brands, dispatch, router]);
+    }, [categories, dispatch, router]);
 
     //MARK:PageChange
     const handlePageChange = ({ selected }: { selected: number }) => {
         const page = selected + 1;
-        const url = `/admin-panel/brand?page=${page}&keyToSort=${sortConfig.keyToSort}&direction=${sortConfig.direction}`;
+        const url = `/admin-panel/category?page=${page}&keyToSort=${sortConfig.keyToSort}&direction=${sortConfig.direction}`;
         const token = localStorage.getItem("adminToken");
 
         if (abortController.current) {
@@ -180,7 +182,7 @@ const GetBrands = () => {
                 router
             );
             if (response && response.success) {
-                setBrands(response.data.data);
+                setCategories(response.data.data);
                 setMetaData({ ...metaData, currentPage: page });
             } else if (response) {
                 dispatch(
@@ -192,31 +194,44 @@ const GetBrands = () => {
         fetchData();
     };
 
-    //MARK:brandsRow
-    const brandsRow = brands.map((brand) => {
+    //MARK:categoriesRow
+    const categoriesRow = categories.map((category) => {
         return (
             <tr
-                key={brand.id}
+                key={category.id}
                 className="hover:bg-gray-200"
             >
-                <td className="row_table">{brand.name}</td>
+                <td className="row_table">{category.name}</td>
 
-                <td className="row_table">{brand.trans_lang}</td>
-                <td className="row_table">{brand.created_at}</td>
+                <td className="row_table">{category.trans_lang}</td>
+                <td className="row_table">
+                    {category.image && (
+                        <Image
+                            priority={metaData.currentPage === 1}
+                            alt="loading"
+                            src={category.image}
+                            width="0"
+                            height="0"
+                            sizes="100vw"
+                            style={{ width: "100px", height: "auto" }}
+                        />
+                    )}
+                </td>
+                <td className="row_table">{category.created_at}</td>
                 <td className="row_table">
                     <Button
                         classes={"bg-indigo-600 hover:bg-indigo-700 text-white"}
                         text={`Edit`}
                         type="button"
                         icon={faEdit}
-                        handleClick={() => handleEdit(brand.id)}
+                        handleClick={() => handleEdit(category.id)}
                     />
                     <Button
                         classes={"bg-red-600 hover:bg-red-700 text-white"}
                         text={`delete`}
                         type="button"
                         icon={faTrash}
-                        handleClick={() => handleDelete(brand.id)}
+                        handleClick={() => handleDelete(category.id)}
                     />
                 </td>
             </tr>
@@ -228,15 +243,21 @@ const GetBrands = () => {
             <DeleteConfirmationModal onConfirm={handleConfirm} />
 
             <Table
-                title={"brands"}
+                title={"categories"}
                 classes={"bg-white"}
-                tableHeaders={["name", "language", "created_at", "action"]}
+                tableHeaders={[
+                    "name",
+                    "language",
+                    "image",
+                    "created_at",
+                    "action",
+                ]}
                 handleBtnClick={() => handleAdd()}
                 sortConfig={sortConfig}
                 handleHeaderClick={handleHeaderClick}
-                records={brands}
+                records={categories}
             >
-                {brandsRow}
+                {categoriesRow}
             </Table>
 
             <div className="flex justify-center">
@@ -266,4 +287,4 @@ const GetBrands = () => {
     );
 };
 
-export default GetBrands;
+export default GetCategories;

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { ChangeEvent, FormEvent, useState } from "react";
+import React, { ChangeEvent, FormEvent, useRef, useState } from "react";
 import { useAppDispatch } from "@/lib/hooks";
 import { useRouter } from "next/navigation";
 import sendRequest from "@/functions/sendRequest";
@@ -13,24 +13,27 @@ const initialErrors = {
     email: [],
 };
 
-const ShowAdmin = () => {
+const initialInputs: {
+    name: string;
+    email: string;
+    password: string;
+    password_confirmation: string;
+} = {
+    name: "",
+    email: "",
+    password: "",
+    password_confirmation: "",
+};
+
+const StoreAdmin = () => {
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const dispatch = useAppDispatch();
     const [errors, setErrors] = useState(initialErrors);
     const router = useRouter();
+    const [inputs, setInputs] = useState(initialInputs);
+    const abortController = useRef<AbortController | null>(null);
 
-    const [inputs, setInputs] = useState<{
-        name: string;
-        email: string;
-        password: string;
-        passwordConfirmation: string;
-    }>({
-        name: "",
-        email: "",
-        password: "",
-        passwordConfirmation: "",
-    });
-
+    // MARK: handleChange
     const handleInputChange = (
         e: ChangeEvent<HTMLInputElement>,
         name: string
@@ -39,25 +42,25 @@ const ShowAdmin = () => {
         setInputs({ ...inputs, [name]: value });
     };
 
-    let abortControllerForSubmit: AbortController | null = null;
-
     // MARK: handleSubmit
     const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
+        setIsLoading(true);
 
         const token = localStorage.getItem("adminToken");
         const url = `/admin-panel/admin`;
-        if (abortControllerForSubmit) {
-            abortControllerForSubmit.abort();
+
+        if (abortController.current) {
+            abortController.current.abort();
         }
-        abortControllerForSubmit = new AbortController();
+        abortController.current = new AbortController();
 
         const submitData = async () => {
             const response = await sendRequest(
                 "post",
                 url,
                 inputs,
-                abortControllerForSubmit,
+                abortController.current,
                 token,
                 router
             );
@@ -68,6 +71,7 @@ const ShowAdmin = () => {
                     display({ type: "success", message: response.msg.text })
                 );
                 setIsLoading(false);
+                setInputs(initialInputs);
             } else if (response) {
                 dispatch(
                     display({ type: "error", message: response.msg.text })
@@ -132,6 +136,7 @@ const ShowAdmin = () => {
                                         focus:ring-indigo-500 
                                         bg-white/50 "
                             error={errors.password[0]}
+                            value={inputs.password ?? ""}
                         />
 
                         <Input
@@ -144,23 +149,14 @@ const ShowAdmin = () => {
                                         focus:ring-indigo-500 
                                         bg-white/50 "
                             placeholder="enter your password again"
+                            value={inputs.password_confirmation ?? ""}
                         />
 
                         <Button
-                            disable={isLoading}
+                            isLoading={isLoading}
+                            text="add"
                             classes="bg-indigo-700 hover:bg-indigo-800 w-full flex justify-center mt-5"
-                        >
-                            {isLoading ? (
-                                <div className="flex items-center">
-                                    <div className="animate-spin text-white  rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                                    add ...
-                                </div>
-                            ) : (
-                                <div className="flex text-white items-center">
-                                    add
-                                </div>
-                            )}
-                        </Button>
+                        ></Button>
                     </form>
                 </Card>
             </div>
@@ -168,4 +164,4 @@ const ShowAdmin = () => {
     );
 };
 
-export default ShowAdmin;
+export default StoreAdmin;
