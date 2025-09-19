@@ -9,9 +9,10 @@ interface InputProps {
     isRequired?: boolean;
     handleChange: (e: ChangeEvent<HTMLInputElement>, name: string) => void;
     inputRef?: RefObject<HTMLInputElement>;
-    value?: string;
+    value?: string | number;
     error?: string;
     accept?: string;
+    onBlur?: () => void;
 }
 
 export default InputProps;

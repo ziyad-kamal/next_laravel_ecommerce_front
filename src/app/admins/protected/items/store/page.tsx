@@ -1,14 +1,23 @@
 "use client";
 
-import React, { ChangeEvent, FormEvent, useRef, useState } from "react";
-import Image from "next/image";
+import React, {
+    ChangeEvent,
+    FormEvent,
+    useRef,
+    useState,
+    useEffect,
+    useCallback,
+} from "react";
+import { useDebounce } from "@/hooks/useDebounce";
 import { useAppDispatch } from "@/lib/hooks";
 import { useRouter } from "next/navigation";
 import sendRequest from "@/functions/sendRequest";
 import { display } from "@/redux/DisplayToast";
-import { Button, Card, Input } from "@/components";
+import { Button, Card, Dropdown, Input } from "@/components";
 import { languages } from "@/constants";
 import InitialErrors from "@/interfaces/states/InitialErrors";
+import type { SuggestionItem } from "@/interfaces/states/SuggestionItem";
+
 const initialErrors: InitialErrors = {};
 
 const StoreCategory = () => {
@@ -18,9 +27,9 @@ const StoreCategory = () => {
     const router = useRouter();
     const abortController = useRef<AbortController | null>(null);
 
-    // Initialize inputs with categories array for each language
+    // Initialize inputs with items array for each language
     const [inputs, setInputs] = useState<{
-        categories: Array<{
+        items: Array<{
             name: string;
             trans_lang: string;
             condition: string;
@@ -31,7 +40,7 @@ const StoreCategory = () => {
         }>;
         image: File | null;
     }>({
-        categories: languages().map((lang) => ({
+        items: languages().map((lang) => ({
             name: "",
             trans_lang: lang.abbre,
             condition: "",
@@ -43,7 +52,167 @@ const StoreCategory = () => {
         image: null,
     });
 
-    const [imagePreview, setImagePreview] = useState<string>("");
+    // New states for dropdown visibility and filtered results
+    const [showCategoryDropdown, setShowCategoryDropdown] = useState<{
+        [key: number]: boolean;
+    }>({});
+    const [showBrandDropdown, setShowBrandDropdown] = useState<{
+        [key: number]: boolean;
+    }>({});
+    const [filteredCategories, setFilteredCategories] = useState<
+        SuggestionItem[]
+    >([]);
+    const [filteredBrands, setFilteredBrands] = useState<SuggestionItem[]>([]);
+
+    // Refs for click outside detection
+    const categoryDropdownRefs = useRef<{
+        [key: number]: HTMLDivElement | null;
+    }>({});
+    const brandDropdownRefs = useRef<{ [key: number]: HTMLDivElement | null }>(
+        {}
+    );
+
+    // Fetch functions wrapped in useCallback
+    const fetchCategories = useCallback(
+        async (searchTerm: string, abortController: AbortController | null) => {
+            const url = `/admin-panel/search/items${
+                searchTerm ? `?search=${encodeURIComponent(searchTerm)}` : ""
+            }`;
+            const token = localStorage.getItem("adminToken");
+
+            const response = await sendRequest(
+                "get",
+                url,
+                null,
+                abortController,
+                token,
+                router
+            );
+
+            if (response && response.success) {
+                setFilteredCategories(response.data.data);
+            } else if (response) {
+                dispatch(
+                    display({ type: "error", message: response.msg.text })
+                );
+            }
+        },
+        [dispatch, router]
+    );
+
+    // Use debounced search functions
+    const handleCategorySearch = useCallback(
+        async (...args: unknown[]) => {
+            const [searchTerm, langIndex, abortController] = args as [
+                string,
+                number,
+                AbortController | null
+            ];
+            if (searchTerm.trim()) {
+                await fetchCategories(searchTerm, abortController);
+            } else {
+                setFilteredCategories([]);
+                setShowCategoryDropdown((prev) => ({
+                    ...prev,
+                    [langIndex]: false,
+                }));
+            }
+        },
+        [fetchCategories, setFilteredCategories]
+    );
+
+    // Function to fetch brands with search term
+    const fetchBrands = useCallback(
+        async (searchTerm: string, abortController: AbortController | null) => {
+            const url = `/admin-panel/search/brands${
+                searchTerm ? `?search=${encodeURIComponent(searchTerm)}` : ""
+            }`;
+            const token = localStorage.getItem("adminToken");
+
+            const response = await sendRequest(
+                "get",
+                url,
+                null,
+                abortController,
+                token,
+                router
+            );
+
+            if (response && response.success) {
+                setFilteredBrands(response.data.data);
+            } else if (response) {
+                dispatch(
+                    display({ type: "error", message: response.msg.text })
+                );
+            }
+        },
+        [dispatch, router]
+    );
+
+    const handleBrandSearch = useCallback(
+        async (...args: unknown[]) => {
+            const [searchTerm, langIndex, abortController] = args as [
+                string,
+                number,
+                AbortController | null
+            ];
+            if (searchTerm.trim()) {
+                await fetchBrands(searchTerm, abortController);
+            } else {
+                setFilteredBrands([]);
+                setShowBrandDropdown((prev) => ({
+                    ...prev,
+                    [langIndex]: false,
+                }));
+            }
+        },
+        [fetchBrands, setFilteredBrands]
+    );
+
+    const { debouncedFn: debouncedCategorySearch } = useDebounce(
+        handleCategorySearch,
+        { delay: 700 }
+    );
+    const { debouncedFn: debouncedBrandSearch } = useDebounce(
+        handleBrandSearch,
+        { delay: 700 }
+    );
+
+    // Click outside effect
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            const target = event.target as Node;
+
+            // Check category dropdowns
+            Object.keys(categoryDropdownRefs.current).forEach((key) => {
+                const langIndex = parseInt(key);
+                const ref = categoryDropdownRefs.current[langIndex];
+                if (ref && !ref.contains(target)) {
+                    setShowCategoryDropdown((prev) => ({
+                        ...prev,
+                        [langIndex]: false,
+                    }));
+                }
+            });
+
+            // Check brand dropdowns
+            Object.keys(brandDropdownRefs.current).forEach((key) => {
+                const langIndex = parseInt(key);
+                const ref = brandDropdownRefs.current[langIndex];
+                if (ref && !ref.contains(target)) {
+                    setShowBrandDropdown((prev) => ({
+                        ...prev,
+                        [langIndex]: false,
+                    }));
+                }
+            });
+        };
+
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => {
+            document.removeEventListener("mousedown", handleClickOutside);
+        };
+    }, []);
 
     // MARK: handleChange
     const handleInputChange = (
@@ -51,24 +220,62 @@ const StoreCategory = () => {
         langIndex: number
     ) => {
         const value = e.target.value;
+        const name = e.target.name;
+
+        // Update the input value
         setInputs((prevInputs) => ({
             ...prevInputs,
-            categories: prevInputs.categories.map((category, index) =>
-                index === langIndex ? { ...category, name: value } : category
+            items: prevInputs.items.map((item, index) =>
+                index === langIndex ? { ...item, [name]: value } : item
             ),
         }));
+
+        if (name === "category") {
+            // Show dropdown for this language index
+            setShowCategoryDropdown((prev) => ({ ...prev, [langIndex]: true }));
+
+            // Trigger debounced search
+            debouncedCategorySearch(value, langIndex, null);
+        }
+
+        if (name === "brand") {
+            // Show dropdown for this language index
+            setShowBrandDropdown((prev) => ({ ...prev, [langIndex]: true }));
+
+            // Trigger debounced search
+            debouncedBrandSearch(value, langIndex, null);
+        }
     };
 
-    // MARK: handleImageChange
-    const handleImageChange = (e: ChangeEvent<HTMLInputElement>) => {
-        const file = e.target.files?.[0];
-        if (file) {
-            setInputs((prevInputs) => ({
-                ...prevInputs,
-                image: file,
-            }));
-            setImagePreview(URL.createObjectURL(file));
-        }
+    // Handle selection from dropdown
+    const handleCategorySelect = (
+        category: SuggestionItem,
+        langIndex: number
+    ) => {
+        setInputs((prevInputs) => ({
+            ...prevInputs,
+            items: prevInputs.items.map((item, index) =>
+                index === langIndex
+                    ? {
+                          ...item,
+                          category: category.name || "",
+                      }
+                    : item
+            ),
+        }));
+        setShowCategoryDropdown((prev) => ({ ...prev, [langIndex]: false }));
+    };
+
+    const handleBrandSelect = (brand: SuggestionItem, langIndex: number) => {
+        setInputs((prevInputs) => ({
+            ...prevInputs,
+            items: prevInputs.items.map((item, index) =>
+                index === langIndex
+                    ? { ...item, brand: brand.name || "" }
+                    : item
+            ),
+        }));
+        setShowBrandDropdown((prev) => ({ ...prev, [langIndex]: false }));
     };
 
     // MARK: handleSubmit
@@ -90,14 +297,14 @@ const StoreCategory = () => {
 
             // Append image first (required field)
             if (inputs.image) {
-                formData.append("image", inputs.image, inputs.image.name); // Add filename explicitly
+                formData.append("image", inputs.image, inputs.image.name);
             }
 
             // Append each category as a separate array element
-            inputs.categories.forEach((category, index) => {
-                formData.append(`categories[${index}][name]`, category.name);
+            inputs.items.forEach((category, index) => {
+                formData.append(`items[${index}][name]`, category.name);
                 formData.append(
-                    `categories[${index}][trans_lang]`,
+                    `items[${index}][trans_lang]`,
                     category.trans_lang
                 );
             });
@@ -119,7 +326,7 @@ const StoreCategory = () => {
 
                 setIsLoading(false);
                 setInputs({
-                    categories: languages().map((lang) => ({
+                    items: languages().map((lang) => ({
                         name: "",
                         trans_lang: lang.abbre,
                         condition: "",
@@ -130,7 +337,6 @@ const StoreCategory = () => {
                     })),
                     image: null,
                 });
-                setImagePreview("");
             } else if (response) {
                 dispatch(
                     display({ type: "error", message: response.msg.text })
@@ -153,37 +359,6 @@ const StoreCategory = () => {
                     onSubmit={handleSubmit}
                     encType="multipart/form-data"
                 >
-                    <Card>
-                        <div className="text-center mb-8">
-                            <h1 className="text-3xl font-bold text-gray-900 mb-2">
-                                Category Image
-                            </h1>
-                        </div>
-                        <div className="mb-4">
-                            <Input
-                                label="image"
-                                name="image"
-                                type="file"
-                                handleChange={handleImageChange}
-                                classes="text-black border-gray-300 focus:ring-indigo-500 bg-white/50"
-                                error={errors.image ? errors.image[0] : ""}
-                                accept="image/*"
-                                isRequired={true}
-                            />
-                            {imagePreview && (
-                                <div className="mt-4 relative w-[200px] h-[200px]">
-                                    <Image
-                                        src={imagePreview}
-                                        alt="Category preview"
-                                        fill
-                                        className="object-contain"
-                                        sizes="200px"
-                                    />
-                                </div>
-                            )}
-                        </div>
-                    </Card>
-
                     {languages().map((lang, i) => (
                         <Card key={i}>
                             <div className="text-center mb-8">
@@ -195,7 +370,7 @@ const StoreCategory = () => {
 
                             <div className="mb-4">
                                 <Input
-                                    label={`Category Name`}
+                                    label={`name`}
                                     name={`name`}
                                     type="text"
                                     handleChange={(e) =>
@@ -206,11 +381,136 @@ const StoreCategory = () => {
                                             focus:ring-indigo-500 
                                             bg-white/50"
                                     error={
-                                        errors[`categories.${i}.name`]
-                                            ? errors[`categories.${i}.name`][0]
+                                        errors[`items.${i}.name`]
+                                            ? errors[`items.${i}.name`][0]
                                             : ""
                                     }
-                                    value={inputs.categories[i]?.name || ""}
+                                    value={inputs.items[i]?.name || ""}
+                                />
+
+                                {/* Category input with dropdown */}
+                                <div className="relative">
+                                    <Input
+                                        label={`Category`}
+                                        name={`category`}
+                                        type="text"
+                                        handleChange={(e) =>
+                                            handleInputChange(e, i)
+                                        }
+                                        classes="text-black 
+                                                border-gray-300 
+                                                focus:ring-indigo-500 
+                                                bg-white/50"
+                                        error={
+                                            errors[`items.${i}.category`]
+                                                ? errors[
+                                                      `items.${i}.category`
+                                                  ][0]
+                                                : ""
+                                        }
+                                        value={inputs.items[i]?.category || ""}
+                                    />
+                                    <Dropdown
+                                        items={filteredCategories}
+                                        onSelect={(category: SuggestionItem) =>
+                                            handleCategorySelect(category, i)
+                                        }
+                                        show={showCategoryDropdown[i] || false}
+                                        langIndex={i}
+                                        type="category"
+                                        ref={categoryDropdownRefs}
+                                    />
+                                </div>
+
+                                {/* Brand input with dropdown */}
+                                <div className="relative">
+                                    <Input
+                                        label={`brand`}
+                                        name={`brand`}
+                                        type="text"
+                                        handleChange={(e) =>
+                                            handleInputChange(e, i)
+                                        }
+                                        classes="text-black 
+                                                border-gray-300 
+                                                focus:ring-indigo-500 
+                                                bg-white/50"
+                                        error={
+                                            errors[`items.${i}.brand`]
+                                                ? errors[`items.${i}.brand`][0]
+                                                : ""
+                                        }
+                                        value={inputs.items[i]?.brand || ""}
+                                    />
+                                    <Dropdown
+                                        items={filteredBrands}
+                                        onSelect={(brand) =>
+                                            handleBrandSelect(brand, i)
+                                        }
+                                        show={showBrandDropdown[i] || false}
+                                        langIndex={i}
+                                        type="brand"
+                                        ref={brandDropdownRefs}
+                                    />
+                                </div>
+
+                                <Input
+                                    label={`price`}
+                                    name={`price`}
+                                    type="number"
+                                    handleChange={(e) =>
+                                        handleInputChange(e, i)
+                                    }
+                                    classes="text-black 
+                                            border-gray-300 
+                                            focus:ring-indigo-500 
+                                            bg-white/50"
+                                    error={
+                                        errors[`items.${i}.price`]
+                                            ? errors[`items.${i}.price`][0]
+                                            : ""
+                                    }
+                                    value={inputs.items[i]?.price || ""}
+                                />
+
+                                <Input
+                                    label={`condition`}
+                                    name={`condition`}
+                                    type="text"
+                                    handleChange={(e) =>
+                                        handleInputChange(e, i)
+                                    }
+                                    classes="text-black 
+                                            border-gray-300 
+                                            focus:ring-indigo-500 
+                                            bg-white/50"
+                                    error={
+                                        errors[`items.${i}.condition`]
+                                            ? errors[`items.${i}.condition`][0]
+                                            : ""
+                                    }
+                                    value={inputs.items[i]?.condition || ""}
+                                />
+
+                                <Input
+                                    label={`description`}
+                                    name={`description`}
+                                    type="text"
+                                    handleChange={(e) =>
+                                        handleInputChange(e, i)
+                                    }
+                                    classes="text-black 
+                                            border-gray-300 
+                                            focus:ring-indigo-500 
+                                            bg-white/50"
+                                    error={
+                                        errors[`items.${i}.description`]
+                                            ? errors[
+                                                  `items.${i}.description`
+                                              ][0]
+                                            : ""
+                                    }
+                                    value={inputs.items[i]?.description || ""}
                                 />
                             </div>
                         </Card>
