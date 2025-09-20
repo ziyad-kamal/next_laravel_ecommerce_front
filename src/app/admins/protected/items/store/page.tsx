@@ -13,7 +13,7 @@ import { useAppDispatch } from "@/lib/hooks";
 import { useRouter } from "next/navigation";
 import sendRequest from "@/functions/sendRequest";
 import { display } from "@/redux/DisplayToast";
-import { Button, Card, Dropdown, Input } from "@/components";
+import { Button, Card, Dropdown, Dropzone, Input } from "@/components";
 import { languages } from "@/constants";
 import InitialErrors from "@/interfaces/states/InitialErrors";
 import type { SuggestionItem } from "@/interfaces/states/SuggestionItem";
@@ -354,7 +354,8 @@ const StoreCategory = () => {
 
     return (
         <div>
-            <div className="flex flex-col justify-center items-center h-100 mt-130">
+            <div className="flex flex-col justify-center items-center h-100 mt-300">
+                <Dropzone className="p-16 mt-10 border border-neutral-200 rounded-2xl bg-gray-200" />
                 <form
                     onSubmit={handleSubmit}
                     encType="multipart/form-data"
