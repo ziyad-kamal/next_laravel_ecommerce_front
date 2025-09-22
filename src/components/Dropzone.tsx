@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { useCallback, useEffect, useState, FormEvent } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useDropzone, FileRejection } from "react-dropzone";
 
 import DropzoneProps from "@/interfaces/props/DropzoneProps";
@@ -7,8 +7,19 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowUp } from "@fortawesome/free-solid-svg-icons";
 import { faXmark } from "@fortawesome/free-solid-svg-icons/faXmark";
 import Button from "./Button";
+import { useAppDispatch } from "@/lib/hooks";
+import { useRouter } from "next/navigation";
+import sendRequest from "@/functions/sendRequest";
+import { display } from "@/redux/DisplayToast";
 
-const Dropzone = ({ className }: DropzoneProps) => {
+const Dropzone = <T extends object>({
+    className,
+    setInputs,
+}: DropzoneProps<T>) => {
+    const dispatch = useAppDispatch();
+    const abortController = useRef<AbortController | null>(null);
+    const router = useRouter();
+
     const [files, setFiles] = useState<(File & { preview: string })[]>([]);
     const [rejected, setRejected] = useState<
         { file: File; errors: Array<{ code: string; message: string }> }[]
@@ -25,6 +36,68 @@ const Dropzone = ({ className }: DropzoneProps) => {
                         })
                     ),
                 ]);
+
+                const token = localStorage.getItem("adminToken");
+                const url = `/admin-panel/file/upload`;
+
+                if (abortController.current) {
+                    abortController.current.abort();
+                }
+                abortController.current = new AbortController();
+
+                acceptedFiles.forEach((file) => {
+                    const submitData = async () => {
+                        const formData = new FormData();
+
+                        formData.append("image", file);
+
+                        const response = await sendRequest(
+                            "post",
+                            url,
+                            formData,
+                            abortController.current,
+                            token,
+                            router
+                        );
+                        // setErrors(initialErrors);
+
+                        if (response && response.success) {
+                            dispatch(
+                                display({
+                                    type: "success",
+                                    message: response.msg.text,
+                                })
+                            );
+
+                            setInputs((prevInputs) => ({
+                                ...prevInputs,
+                                images: [
+                                    ...prevInputs.images,
+                                    response.data.path,
+                                ],
+                            }));
+                        } else if (response) {
+                            dispatch(
+                                display({
+                                    type: "error",
+                                    message: response.msg.text,
+                                })
+                            );
+
+                            if (response.errors) {
+                                // setErrors(response.errors);
+                            }
+                        }
+                    };
+
+                    submitData();
+                });
+                // acceptedFiles.forEach(file=>{
+                //     setInputs((preFile) => ({
+                //         ...preFile,
+                //         image: [...preFile.image, URL.createObjectURL(file)],
+                //     }));
+                // })
             }
 
             if (fileRejections?.length) {
@@ -40,7 +113,7 @@ const Dropzone = ({ className }: DropzoneProps) => {
                 ]);
             }
         },
-        []
+        [dispatch, router, setInputs]
     );
 
     const { getRootProps, getInputProps, isDragActive } = useDropzone({
@@ -60,7 +133,7 @@ const Dropzone = ({ className }: DropzoneProps) => {
         setFiles((files) => files.filter((file) => file.name !== name));
     };
 
-    const removeAll = () => {
+    const removeAllFiles = () => {
         setFiles([]);
         setRejected([]);
     };
@@ -69,42 +142,8 @@ const Dropzone = ({ className }: DropzoneProps) => {
         setRejected((files) => files.filter(({ file }) => file.name !== name));
     };
 
-    const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
-        e.preventDefault();
-
-        if (!files?.length) return;
-
-        const formData = new FormData();
-        files.forEach((file) => formData.append("file", file));
-        formData.append("upload_preset", "friends");
-
-        const uploadUrl = process.env.NEXT_PUBLIC_CLOUDINARY_URL;
-        if (!uploadUrl) {
-            console.error("Cloudinary URL is not defined");
-            return;
-        }
-
-        try {
-            const response = await fetch(uploadUrl, {
-                method: "POST",
-                body: formData,
-            });
-
-            if (!response.ok) {
-                throw new Error(
-                    `Upload failed with status: ${response.status}`
-                );
-            }
-
-            const data = await response.json();
-            console.log(data);
-        } catch (error) {
-            console.error("Upload failed:", error);
-        }
-    };
-
     return (
-        <form onSubmit={handleSubmit}>
+        <>
             <div
                 {...getRootProps({
                     className: className,
@@ -131,7 +170,7 @@ const Dropzone = ({ className }: DropzoneProps) => {
                     <Button
                         text="Remove all files"
                         classes="bg-red-500 hover:bg-red-600"
-                        handleClick={removeAll}
+                        handleClick={removeAllFiles}
                     />
                 </div>
 
@@ -211,7 +250,7 @@ const Dropzone = ({ className }: DropzoneProps) => {
                     </>
                 ) : null}
             </section>
-        </form>
+        </>
     );
 };
 

@@ -18,6 +18,16 @@ import { languages } from "@/constants";
 import InitialErrors from "@/interfaces/states/InitialErrors";
 import type { SuggestionItem } from "@/interfaces/states/SuggestionItem";
 
+export interface ItemType {
+    name: string;
+    trans_lang: string;
+    condition: string;
+    price: number;
+    description: string;
+    category: string;
+    brand: string;
+}
+
 const initialErrors: InitialErrors = {};
 
 const StoreCategory = () => {
@@ -29,27 +39,21 @@ const StoreCategory = () => {
 
     // Initialize inputs with items array for each language
     const [inputs, setInputs] = useState<{
-        items: Array<{
-            name: string;
-            trans_lang: string;
-            condition: string;
-            price: number;
-            description: string;
-            category: string;
-            brand: string;
-        }>;
-        image: File | null;
+        items: Array<ItemType>;
+        images: string[];
     }>({
-        items: languages().map((lang) => ({
-            name: "",
-            trans_lang: lang.abbre,
-            condition: "",
-            price: 0,
-            description: "",
-            category: "",
-            brand: "",
-        })),
-        image: null,
+        items: languages().map(
+            (lang): ItemType => ({
+                name: "",
+                trans_lang: lang.abbre,
+                condition: "",
+                price: 0,
+                description: "",
+                category: "",
+                brand: "",
+            })
+        ),
+        images: [],
     });
 
     // New states for dropdown visibility and filtered results
@@ -293,26 +297,10 @@ const StoreCategory = () => {
         abortController.current = new AbortController();
 
         const submitData = async () => {
-            const formData = new FormData();
-
-            // Append image first (required field)
-            if (inputs.image) {
-                formData.append("image", inputs.image, inputs.image.name);
-            }
-
-            // Append each category as a separate array element
-            inputs.items.forEach((category, index) => {
-                formData.append(`items[${index}][name]`, category.name);
-                formData.append(
-                    `items[${index}][trans_lang]`,
-                    category.trans_lang
-                );
-            });
-
             const response = await sendRequest(
                 "post",
                 url,
-                formData,
+                inputs,
                 abortController.current,
                 token,
                 router
@@ -335,7 +323,7 @@ const StoreCategory = () => {
                         category: "",
                         brand: "",
                     })),
-                    image: null,
+                    images: [],
                 });
             } else if (response) {
                 dispatch(
@@ -355,7 +343,10 @@ const StoreCategory = () => {
     return (
         <div>
             <div className="flex flex-col justify-center items-center h-100 mt-300">
-                <Dropzone className="p-16 mt-10 border border-neutral-200 rounded-2xl bg-gray-200" />
+                <Dropzone<ItemType>
+                    setInputs={setInputs}
+                    className="p-16 mt-10 border border-neutral-200 rounded-2xl bg-gray-200"
+                />
                 <form
                     onSubmit={handleSubmit}
                     encType="multipart/form-data"
