@@ -1,17 +1,18 @@
-import InputProps from "@/interfaces/props/InputProps";
+import TextareaProps from "@/interfaces/props/TextareaProps";
 
-const Input = ({
+const Textarea = ({
     label,
     name,
     classes = "focus:shadow-blue-500 focus:border-blue-500 bg-white",
-    type = "text",
     isRequired = true,
     handleChange,
     placeholder,
     value,
     inputRef,
     error = "",
-}: InputProps) => {
+    cols,
+    rows,
+}: TextareaProps) => {
     return (
         <>
             {label ? (
@@ -23,13 +24,14 @@ const Input = ({
                 </label>
             ) : null}
 
-            <input
+            <textarea
+                cols={cols}
+                rows={rows}
                 className={`block w-full pl-10 pr-3 py-3 border 
                         rounded-lg focus:outline-none focus:ring-3
                         focus:border-transparent 
                         "${classes} 
                         `}
-                type={type}
                 name={name}
                 placeholder={placeholder ?? `enter your ${name}`}
                 required={isRequired}
@@ -46,4 +48,4 @@ const Input = ({
     );
 };
 
-export default Input;
+export default Textarea;

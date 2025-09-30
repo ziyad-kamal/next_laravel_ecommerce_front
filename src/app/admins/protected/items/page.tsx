@@ -41,7 +41,7 @@ const GetItems = () => {
             id: 0,
             name: "",
             condition: "",
-            price: "",
+            price: null,
             approval: "",
             trans_lang: "",
             created_at: "",

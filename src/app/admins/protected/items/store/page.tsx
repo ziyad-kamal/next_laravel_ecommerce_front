@@ -13,24 +13,24 @@ import { useAppDispatch } from "@/lib/hooks";
 import { useRouter } from "next/navigation";
 import sendRequest from "@/functions/sendRequest";
 import { display } from "@/redux/DisplayToast";
-import { Button, Card, Dropdown, Dropzone, Input } from "@/components";
+import {
+    Button,
+    Card,
+    Dropdown,
+    Dropzone,
+    Input,
+    SelectInput,
+    Textarea,
+} from "@/components";
 import { languages } from "@/constants";
 import InitialErrors from "@/interfaces/states/InitialErrors";
 import type { SuggestionItem } from "@/interfaces/states/SuggestionItem";
-
-export interface ItemType {
-    name: string;
-    trans_lang: string;
-    condition: string;
-    price: number;
-    description: string;
-    category: string;
-    brand: string;
-}
+import Option from "@/interfaces/props/Option";
+import ItemDataState from "@/interfaces/states/ItemDataState";
 
 const initialErrors: InitialErrors = {};
 
-const StoreCategory = () => {
+const StoreItem = () => {
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const dispatch = useAppDispatch();
     const [errors, setErrors] = useState<InitialErrors>(initialErrors);
@@ -39,21 +39,23 @@ const StoreCategory = () => {
 
     // Initialize inputs with items array for each language
     const [inputs, setInputs] = useState<{
-        items: Array<ItemType>;
-        images: string[];
+        items: Array<ItemDataState>;
+        images: { originalName: string; path: string }[];
     }>({
         items: languages().map(
-            (lang): ItemType => ({
+            (lang): ItemDataState => ({
                 name: "",
                 trans_lang: lang.abbre,
-                condition: "",
-                price: 0,
+                condition: null,
+                price: null,
                 description: "",
-                category: "",
-                brand: "",
+                categoryId: null,
+                categoryName: "",
+                brandId: null,
+                brandName: "",
             })
         ),
-        images: [],
+        images: [{ originalName: "", path: "" }],
     });
 
     // New states for dropdown visibility and filtered results
@@ -79,7 +81,7 @@ const StoreCategory = () => {
     // Fetch functions wrapped in useCallback
     const fetchCategories = useCallback(
         async (searchTerm: string, abortController: AbortController | null) => {
-            const url = `/admin-panel/search/items${
+            const url = `/admin-panel/search/categories${
                 searchTerm ? `?search=${encodeURIComponent(searchTerm)}` : ""
             }`;
             const token = localStorage.getItem("adminToken");
@@ -218,9 +220,16 @@ const StoreCategory = () => {
         };
     }, []);
 
+    const conditionOptions: Option[] = [
+        { value: 1, label: "new" },
+        { value: 2, label: "used" },
+    ];
+
     // MARK: handleChange
     const handleInputChange = (
-        e: ChangeEvent<HTMLInputElement>,
+        e: ChangeEvent<
+            HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
+        >,
         langIndex: number
     ) => {
         const value = e.target.value;
@@ -262,7 +271,8 @@ const StoreCategory = () => {
                 index === langIndex
                     ? {
                           ...item,
-                          category: category.name || "",
+                          category_id: category.id || null,
+                          categoryName: category.name || "",
                       }
                     : item
             ),
@@ -275,7 +285,11 @@ const StoreCategory = () => {
             ...prevInputs,
             items: prevInputs.items.map((item, index) =>
                 index === langIndex
-                    ? { ...item, brand: brand.name || "" }
+                    ? {
+                          ...item,
+                          brandId: brand.id || null,
+                          brandName: brand.name || "",
+                      }
                     : item
             ),
         }));
@@ -289,7 +303,7 @@ const StoreCategory = () => {
         setIsLoading(true);
 
         const token = localStorage.getItem("adminToken");
-        const url = `/admin-panel/category`;
+        const url = `/admin-panel/item`;
 
         if (abortController.current) {
             abortController.current.abort();
@@ -317,13 +331,15 @@ const StoreCategory = () => {
                     items: languages().map((lang) => ({
                         name: "",
                         trans_lang: lang.abbre,
-                        condition: "",
-                        price: 0,
+                        condition: null,
+                        price: null,
                         description: "",
-                        category: "",
-                        brand: "",
+                        categoryId: null,
+                        categoryName: "",
+                        brandId: null,
+                        brandName: "",
                     })),
-                    images: [],
+                    images: [{ originalName: "", path: "" }],
                 });
             } else if (response) {
                 dispatch(
@@ -342,11 +358,11 @@ const StoreCategory = () => {
 
     return (
         <div>
-            <div className="flex flex-col justify-center items-center h-100 mt-300">
-                <Dropzone<ItemType>
-                    setInputs={setInputs}
-                    className="p-16 mt-10 border border-neutral-200 rounded-2xl bg-gray-200"
-                />
+            <Dropzone<ItemDataState>
+                setInputs={setInputs}
+                className="p-16 mt-5 border border-neutral-200 rounded-2xl bg-gray-200"
+            />
+            <div className="flex flex-col justify-center items-center h-100 mt-250">
                 <form
                     onSubmit={handleSubmit}
                     encType="multipart/form-data"
@@ -378,6 +394,7 @@ const StoreCategory = () => {
                                             : ""
                                     }
                                     value={inputs.items[i]?.name || ""}
+                                    isRequired={false}
                                 />
 
                                 {/* Category input with dropdown */}
@@ -400,7 +417,10 @@ const StoreCategory = () => {
                                                   ][0]
                                                 : ""
                                         }
-                                        value={inputs.items[i]?.category || ""}
+                                        value={
+                                            inputs.items[i]?.categoryName || ""
+                                        }
+                                        isRequired={false}
                                     />
                                     <Dropdown
                                         items={filteredCategories}
@@ -432,7 +452,8 @@ const StoreCategory = () => {
                                                 ? errors[`items.${i}.brand`][0]
                                                 : ""
                                         }
-                                        value={inputs.items[i]?.brand || ""}
+                                        value={inputs.items[i]?.brandName || ""}
+                                        isRequired={false}
                                     />
                                     <Dropdown
                                         items={filteredBrands}
@@ -463,28 +484,26 @@ const StoreCategory = () => {
                                             : ""
                                     }
                                     value={inputs.items[i]?.price || ""}
+                                    isRequired={false}
                                 />
 
-                                <Input
-                                    label={`condition`}
-                                    name={`condition`}
-                                    type="text"
+                                <SelectInput
+                                    label="condition"
+                                    options={conditionOptions}
+                                    placeholder="Pick a condition"
+                                    value={inputs.items[i]?.condition || ""}
                                     handleChange={(e) =>
                                         handleInputChange(e, i)
                                     }
-                                    classes="text-black 
-                                            border-gray-300 
-                                            focus:ring-indigo-500 
-                                            bg-white/50"
                                     error={
                                         errors[`items.${i}.condition`]
                                             ? errors[`items.${i}.condition`][0]
                                             : ""
                                     }
-                                    value={inputs.items[i]?.condition || ""}
+                                    name="condition"
                                 />
 
-                                <Input
+                                <Textarea
                                     label={`description`}
                                     name={`description`}
                                     type="text"
@@ -503,6 +522,7 @@ const StoreCategory = () => {
                                             : ""
                                     }
                                     value={inputs.items[i]?.description || ""}
+                                    isRequired={false}
                                 />
                             </div>
                         </Card>
@@ -519,4 +539,4 @@ const StoreCategory = () => {
     );
 };
 
-export default StoreCategory;
+export default StoreItem;

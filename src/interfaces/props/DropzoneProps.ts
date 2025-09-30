@@ -3,7 +3,7 @@ interface DropzoneProps<T = object> {
     setInputs: React.Dispatch<
         React.SetStateAction<{
             items: Array<T>;
-            images: string[];
+            images: { originalName: string; path: string }[];
         }>
     >;
 }

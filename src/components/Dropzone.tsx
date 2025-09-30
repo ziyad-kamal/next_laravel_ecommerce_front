@@ -19,6 +19,7 @@ const Dropzone = <T extends object>({
     const dispatch = useAppDispatch();
     const abortController = useRef<AbortController | null>(null);
     const router = useRouter();
+    const [errors, setErrors] = useState([]);
 
     const [files, setFiles] = useState<(File & { preview: string })[]>([]);
     const [rejected, setRejected] = useState<
@@ -59,7 +60,7 @@ const Dropzone = <T extends object>({
                             token,
                             router
                         );
-                        // setErrors(initialErrors);
+                        setErrors([]);
 
                         if (response && response.success) {
                             dispatch(
@@ -73,7 +74,11 @@ const Dropzone = <T extends object>({
                                 ...prevInputs,
                                 images: [
                                     ...prevInputs.images,
-                                    response.data.path,
+                                    {
+                                        originalName:
+                                            response.data.originalName,
+                                        path: response.data.path,
+                                    },
                                 ],
                             }));
                         } else if (response) {
@@ -85,19 +90,13 @@ const Dropzone = <T extends object>({
                             );
 
                             if (response.errors) {
-                                // setErrors(response.errors);
+                                setErrors(response.errors.image);
                             }
                         }
                     };
 
                     submitData();
                 });
-                // acceptedFiles.forEach(file=>{
-                //     setInputs((preFile) => ({
-                //         ...preFile,
-                //         image: [...preFile.image, URL.createObjectURL(file)],
-                //     }));
-                // })
             }
 
             if (fileRejections?.length) {
@@ -118,10 +117,11 @@ const Dropzone = <T extends object>({
 
     const { getRootProps, getInputProps, isDragActive } = useDropzone({
         accept: {
-            "image/*": [],
+            "image/*": [".png", ".jepg", ".jpg", ".webp"],
         },
-        maxSize: 1024 * 1000,
+        maxSize: 1024 * 10000,
         onDrop,
+        maxFiles: 4,
     });
 
     useEffect(() => {
@@ -131,9 +131,19 @@ const Dropzone = <T extends object>({
 
     const removeFile = (name: string) => {
         setFiles((files) => files.filter((file) => file.name !== name));
+        setInputs((prevInputs) => ({
+            ...prevInputs,
+            images: prevInputs.images.filter(
+                (image) => image.originalName !== name
+            ),
+        }));
     };
 
     const removeAllFiles = () => {
+        setInputs((prevInputs) => ({
+            ...prevInputs,
+            images: [],
+        }));
         setFiles([]);
         setRejected([]);
     };
@@ -162,54 +172,72 @@ const Dropzone = <T extends object>({
                     )}
                 </div>
             </div>
+            <div className="mt-2">
+                {errors.map((error, i) => (
+                    <p
+                        className="text-red-600 text-start text-sm mt-1"
+                        key={i}
+                    >
+                        {error}
+                    </p>
+                ))}
+            </div>
 
             {/* Preview */}
-            <section className="mt-10">
-                <div className="flex gap-4">
-                    <h2 className="title text-3xl font-semibold">Preview</h2>
-                    <Button
-                        text="Remove all files"
-                        classes="bg-red-500 hover:bg-red-600"
-                        handleClick={removeAllFiles}
-                    />
-                </div>
 
-                {/* Accepted files */}
-                <h3 className="title text-lg font-semibold text-neutral-600 mt-10 border-b pb-3">
-                    Accepted Files
-                </h3>
-                <ul className="mt-6 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-10">
-                    {files.map((file) => (
-                        <li
-                            key={file.name}
-                            className="relative h-32 rounded-md shadow-lg mb-10"
-                        >
-                            <Image
-                                src={file.preview}
-                                alt={file.name}
-                                width={100}
-                                height={100}
-                                onLoad={() => {
-                                    URL.revokeObjectURL(file.preview);
-                                }}
-                                className="h-full w-full object-contain rounded-md"
+            <section className="mt-10">
+                {files.length > 0 ? (
+                    <>
+                        <div className="flex gap-4">
+                            <h2 className="title text-3xl font-semibold">
+                                Preview
+                            </h2>
+                            <Button
+                                text="Remove all files"
+                                classes="bg-red-500 hover:bg-red-600"
+                                handleClick={removeAllFiles}
                             />
-                            <button
-                                type="button"
-                                className="w-7 h-7 border cursor-pointer  bg-red-500 rounded-full flex justify-center items-center absolute -top-3 -right-3 hover:bg-red-600 transition-colors"
-                                onClick={() => removeFile(file.name)}
-                            >
-                                <FontAwesomeIcon
-                                    icon={faXmark}
-                                    className="w-5 h-5  hover:fill-secondary-400 transition-colors"
-                                />
-                            </button>
-                            <p className="mt-2 text-neutral-500 text-[12px] font-medium">
-                                {file.name}
-                            </p>
-                        </li>
-                    ))}
-                </ul>
+                        </div>
+
+                        {/* Accepted files */}
+
+                        <h3 className="title text-lg font-semibold text-neutral-600 mt-10 border-b pb-3">
+                            Accepted Files
+                        </h3>
+                        <ul className="mt-6 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-10">
+                            {files.map((file) => (
+                                <li
+                                    key={file.name}
+                                    className="relative h-32 rounded-md shadow-lg mb-10"
+                                >
+                                    <Image
+                                        src={file.preview}
+                                        alt={file.name}
+                                        width={100}
+                                        height={100}
+                                        onLoad={() => {
+                                            URL.revokeObjectURL(file.preview);
+                                        }}
+                                        className="h-full w-full object-contain rounded-md"
+                                    />
+                                    <button
+                                        type="button"
+                                        className="w-7 h-7 border cursor-pointer  bg-red-500 rounded-full flex justify-center items-center absolute -top-3 -right-3 hover:bg-red-600 transition-colors"
+                                        onClick={() => removeFile(file.name)}
+                                    >
+                                        <FontAwesomeIcon
+                                            icon={faXmark}
+                                            className="w-5 h-5  hover:fill-secondary-400 transition-colors"
+                                        />
+                                    </button>
+                                    <p className="mt-2 text-neutral-500 text-[12px] font-medium">
+                                        {file.name}
+                                    </p>
+                                </li>
+                            ))}
+                        </ul>
+                    </>
+                ) : null}
 
                 {/* Rejected Files */}
                 {rejected.length > 0 ? (
@@ -235,15 +263,13 @@ const Dropzone = <T extends object>({
                                             ))}
                                         </ul>
                                     </div>
-                                    <button
-                                        type="button"
-                                        className="mt-1 py-1 text-[12px] uppercase tracking-wider font-bold text-neutral-500 border border-secondary-400 rounded-md px-3 hover:bg-secondary-400 hover:text-white transition-colors"
-                                        onClick={() =>
+                                    <Button
+                                        text="remove"
+                                        classes="bg-red-500 hover:bg-red-600"
+                                        handleClick={() =>
                                             removeRejected(file.name)
                                         }
-                                    >
-                                        remove
-                                    </button>
+                                    />
                                 </li>
                             ))}
                         </ul>

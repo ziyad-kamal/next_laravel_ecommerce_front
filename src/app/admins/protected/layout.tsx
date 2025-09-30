@@ -24,7 +24,7 @@ export default function ProtectedLayout({
 
     // Optionally, you can add a loading state here
     return (
-        <>
+        <div className="container mx-auto px-4 py-8">
             {isLoading ? (
                 <div className="flex items-center justify-center min-h-screen w-full">
                     <div className="animate-spin rounded-full h-14 w-14 border-b-4 border-primary-color mr-2"></div>
@@ -32,6 +32,6 @@ export default function ProtectedLayout({
             ) : (
                 children
             )}
-        </>
+        </div>
     );
 }
