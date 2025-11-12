@@ -4,7 +4,7 @@ import Option from "./Option";
 interface SelectInputProps {
     options: Option[];
     placeholder?: string;
-    value?: string | number;
+    value?: string | number | undefined;
     handleChange: (e: ChangeEvent<HTMLSelectElement>, name: string) => void;
     disabled?: boolean;
     error?: string;

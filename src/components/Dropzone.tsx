@@ -1,7 +1,6 @@
 import Image from "next/image";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useDropzone, FileRejection } from "react-dropzone";
-
 import DropzoneProps from "@/interfaces/props/DropzoneProps";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowUp } from "@fortawesome/free-solid-svg-icons";
@@ -15,13 +14,14 @@ import { display } from "@/redux/DisplayToast";
 const Dropzone = <T extends object>({
     className,
     setInputs,
+    inputs,
+    uploadedFiles,
 }: DropzoneProps<T>) => {
     const dispatch = useAppDispatch();
     const abortController = useRef<AbortController | null>(null);
     const router = useRouter();
     const [errors, setErrors] = useState([]);
 
-    const [files, setFiles] = useState<(File & { preview: string })[]>([]);
     const [rejected, setRejected] = useState<
         { file: File; errors: Array<{ code: string; message: string }> }[]
     >([]);
@@ -29,15 +29,6 @@ const Dropzone = <T extends object>({
     const onDrop = useCallback(
         (acceptedFiles: File[], fileRejections: FileRejection[]) => {
             if (acceptedFiles?.length) {
-                setFiles((previousFiles) => [
-                    ...previousFiles,
-                    ...acceptedFiles.map((file) =>
-                        Object.assign(file, {
-                            preview: URL.createObjectURL(file),
-                        })
-                    ),
-                ]);
-
                 const token = localStorage.getItem("adminToken");
                 const url = `/admin-panel/file/upload`;
 
@@ -45,6 +36,8 @@ const Dropzone = <T extends object>({
                     abortController.current.abort();
                 }
                 abortController.current = new AbortController();
+
+                setErrors([]);
 
                 acceptedFiles.forEach((file) => {
                     const submitData = async () => {
@@ -60,7 +53,6 @@ const Dropzone = <T extends object>({
                             token,
                             router
                         );
-                        setErrors([]);
 
                         if (response && response.success) {
                             dispatch(
@@ -78,6 +70,7 @@ const Dropzone = <T extends object>({
                                         originalName:
                                             response.data.originalName,
                                         path: response.data.path,
+                                        preview: URL.createObjectURL(file),
                                     },
                                 ],
                             }));
@@ -126,25 +119,113 @@ const Dropzone = <T extends object>({
 
     useEffect(() => {
         // Revoke the data uris to avoid memory leaks
-        return () => files.forEach((file) => URL.revokeObjectURL(file.preview));
-    }, [files]);
+        return () =>
+            inputs.images.forEach((file) => URL.revokeObjectURL(file.preview));
+    }, [inputs.images]);
 
-    const removeFile = (name: string) => {
-        setFiles((files) => files.filter((file) => file.name !== name));
+    const removeFile = (path: string) => {
         setInputs((prevInputs) => ({
             ...prevInputs,
-            images: prevInputs.images.filter(
-                (image) => image.originalName !== name
-            ),
+            images: prevInputs.images.filter((image) => image.path !== path),
         }));
+
+        const token = localStorage.getItem("adminToken");
+        const url = `/admin-panel/file/delete/items_files`;
+
+        if (abortController.current) {
+            abortController.current.abort();
+        }
+        abortController.current = new AbortController();
+
+        const file: string[] = [];
+        file.push(path);
+
+        const submitData = async () => {
+            const response = await sendRequest(
+                "post",
+                url,
+                { images: file },
+                abortController.current,
+                token,
+                router
+            );
+            setErrors([]);
+
+            if (response && response.success) {
+                dispatch(
+                    display({
+                        type: "success",
+                        message: response.msg.text,
+                    })
+                );
+            } else if (response) {
+                dispatch(
+                    display({
+                        type: "error",
+                        message: response.msg.text,
+                    })
+                );
+
+                if (response.errors) {
+                    setErrors(response.errors.image);
+                }
+            }
+        };
+
+        submitData();
     };
 
     const removeAllFiles = () => {
+        const token = localStorage.getItem("adminToken");
+        const url = `/admin-panel/file/delete/items_files`;
+
+        if (abortController.current) {
+            abortController.current.abort();
+        }
+        abortController.current = new AbortController();
+
+        const files = inputs.images.map((image) => {
+            return image.path;
+        });
+
+        const submitData = async () => {
+            const response = await sendRequest(
+                "post",
+                url,
+                { images: files },
+                abortController.current,
+                token,
+                router
+            );
+            setErrors([]);
+
+            if (response && response.success) {
+                dispatch(
+                    display({
+                        type: "success",
+                        message: response.msg.text,
+                    })
+                );
+            } else if (response) {
+                dispatch(
+                    display({
+                        type: "error",
+                        message: response.msg.text,
+                    })
+                );
+
+                if (response.errors) {
+                    setErrors(response.errors.image);
+                }
+            }
+        };
+
+        submitData();
+
         setInputs((prevInputs) => ({
             ...prevInputs,
             images: [],
         }));
-        setFiles([]);
         setRejected([]);
     };
 
@@ -172,6 +253,7 @@ const Dropzone = <T extends object>({
                     )}
                 </div>
             </div>
+
             <div className="mt-2">
                 {errors.map((error, i) => (
                     <p
@@ -185,8 +267,48 @@ const Dropzone = <T extends object>({
 
             {/* Preview */}
 
+            {uploadedFiles && uploadedFiles.length > 0 ? (
+                <>
+                    <h3 className="title text-lg font-semibold text-neutral-600 mt-10 border-b pb-3">
+                        uploaded Files
+                    </h3>
+                    <ul className="mt-6 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-10">
+                        {uploadedFiles.map((file) =>
+                            file ? (
+                                <li
+                                    key={file}
+                                    className="relative h-32 rounded-md shadow-lg mb-10"
+                                >
+                                    <Image
+                                        src={file}
+                                        alt={file}
+                                        width={100}
+                                        height={100}
+                                        onLoad={() => {
+                                            URL.revokeObjectURL(file);
+                                        }}
+                                        className="h-full w-full object-contain rounded-md"
+                                    />
+
+                                    <button
+                                        type="button"
+                                        className="w-7 h-7 border cursor-pointer  bg-red-500 rounded-full flex justify-center items-center absolute -top-3 -right-3 hover:bg-red-600 transition-colors"
+                                        onClick={() => removeFile(file)}
+                                    >
+                                        <FontAwesomeIcon
+                                            icon={faXmark}
+                                            className="w-5 h-5  hover:fill-secondary-400 transition-colors"
+                                        />
+                                    </button>
+                                </li>
+                            ) : null
+                        )}
+                    </ul>
+                </>
+            ) : null}
+
             <section className="mt-10">
-                {files.length > 0 ? (
+                {inputs.images.length > 0 ? (
                     <>
                         <div className="flex gap-4">
                             <h2 className="title text-3xl font-semibold">
@@ -205,36 +327,43 @@ const Dropzone = <T extends object>({
                             Accepted Files
                         </h3>
                         <ul className="mt-6 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-10">
-                            {files.map((file) => (
-                                <li
-                                    key={file.name}
-                                    className="relative h-32 rounded-md shadow-lg mb-10"
-                                >
-                                    <Image
-                                        src={file.preview}
-                                        alt={file.name}
-                                        width={100}
-                                        height={100}
-                                        onLoad={() => {
-                                            URL.revokeObjectURL(file.preview);
-                                        }}
-                                        className="h-full w-full object-contain rounded-md"
-                                    />
-                                    <button
-                                        type="button"
-                                        className="w-7 h-7 border cursor-pointer  bg-red-500 rounded-full flex justify-center items-center absolute -top-3 -right-3 hover:bg-red-600 transition-colors"
-                                        onClick={() => removeFile(file.name)}
+                            {inputs.images.map((file) =>
+                                file.preview ? (
+                                    <li
+                                        key={file.preview}
+                                        className="relative h-32 rounded-md shadow-lg mb-10"
                                     >
-                                        <FontAwesomeIcon
-                                            icon={faXmark}
-                                            className="w-5 h-5  hover:fill-secondary-400 transition-colors"
+                                        <Image
+                                            src={file.preview}
+                                            alt={file.originalName}
+                                            width={100}
+                                            height={100}
+                                            onLoad={() => {
+                                                URL.revokeObjectURL(
+                                                    file.preview
+                                                );
+                                            }}
+                                            className="h-full w-full object-contain rounded-md"
                                         />
-                                    </button>
-                                    <p className="mt-2 text-neutral-500 text-[12px] font-medium">
-                                        {file.name}
-                                    </p>
-                                </li>
-                            ))}
+
+                                        <button
+                                            type="button"
+                                            className="w-7 h-7 border cursor-pointer  bg-red-500 rounded-full flex justify-center items-center absolute -top-3 -right-3 hover:bg-red-600 transition-colors"
+                                            onClick={() =>
+                                                removeFile(file.path)
+                                            }
+                                        >
+                                            <FontAwesomeIcon
+                                                icon={faXmark}
+                                                className="w-5 h-5  hover:fill-secondary-400 transition-colors"
+                                            />
+                                        </button>
+                                        <p className="mt-2 text-neutral-500 text-[12px] font-medium">
+                                            {file.originalName}
+                                        </p>
+                                    </li>
+                                ) : null
+                            )}
                         </ul>
                     </>
                 ) : null}

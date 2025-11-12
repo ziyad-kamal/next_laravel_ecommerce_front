@@ -37,26 +37,27 @@ const UpdateItem = ({ params }: { params: Promise<{ id: number }> }) => {
     const router = useRouter();
     const abortController = useRef<AbortController | null>(null);
     const { id } = React.use(params);
+    const [uploadedFiles, setUploadedFiles] = useState<string[]>([]);
 
     // Initialize inputs with items array for each language
     const [inputs, setInputs] = useState<{
         items: Array<ItemDataState>;
-        images: { originalName: string; path: string }[];
+        images: { originalName: string; path: string; preview: string }[];
     }>({
         items: languages().map(
             (lang): ItemDataState => ({
                 name: "",
                 trans_lang: lang.abbre,
-                condition: null,
+                condition: "",
                 price: null,
                 description: "",
-                categoryId: null,
-                categoryName: "",
-                brandId: null,
-                brandName: "",
+                category_id: null,
+                category_name: "",
+                brand_id: null,
+                brand_name: "",
             })
         ),
-        images: [{ originalName: "", path: "" }],
+        images: [{ originalName: "", path: "", preview: "" }],
     });
 
     // New states for dropdown visibility and filtered results
@@ -80,6 +81,11 @@ const UpdateItem = ({ params }: { params: Promise<{ id: number }> }) => {
     );
 
     useEffect(() => {
+        setInputs((prevInputs) => ({
+            ...prevInputs,
+            images: [],
+        }));
+
         const url = `/admin-panel/item/${id}`;
         const abortController = new AbortController();
         const token = localStorage.getItem("adminToken");
@@ -97,34 +103,32 @@ const UpdateItem = ({ params }: { params: Promise<{ id: number }> }) => {
             if (response && response.success) {
                 if (response && response.success) {
                     const itemsByLanguage = languages().map((lang) => {
-                        const categoryForLang = response.data.data.find(
-                            (category: { trans_lang: string }) =>
-                                category.trans_lang === lang.abbre
+                        const itemForLang = response.data.data.find(
+                            (item: { trans_lang: string }) =>
+                                item.trans_lang === lang.abbre
                         );
-                        return categoryForLang
-                            ? {
-                                  name: categoryForLang.name,
-                                  id: categoryForLang.id,
-                                  trans_lang: categoryForLang.trans_lang,
-                                  price: categoryForLang.price,
-                                  condition: categoryForLang.condition,
-                                  description: categoryForLang.description,
-                                  categoryName: categoryForLang.categoryName,
-                                  categoryId: categoryForLang.categoryId,
-                                  brandName: categoryForLang.brandName,
-                                  brandId: categoryForLang.brandId,
-                              }
-                            : {
-                                  name: "",
-                                  id: 0,
-                                  trans_lang: lang.abbre || "",
-                                  price: null,
-                                  condition: "",
-                                  description: "",
-                              };
+
+                        return {
+                            name: itemForLang.name,
+                            id: itemForLang.id,
+                            trans_lang: itemForLang.trans_lang,
+                            price: itemForLang.price,
+                            condition: itemForLang.condition == "used" ? 2 : 1,
+                            description: itemForLang.description,
+                            category_name: itemForLang.category_name,
+                            category_id: itemForLang.category_id,
+                            brand_name: itemForLang.brand_name,
+                            brand_id: itemForLang.brand_id,
+                        };
                     });
 
-                    setInputs((prevInputs) => ({
+                    const allImages = response.data.data.flatMap(
+                        (item: { images: { path: string }[] }) =>
+                            item.images?.map((img) => img.path) || []
+                    );
+                    setUploadedFiles(allImages);
+
+                    setInputs(() => ({
                         items: itemsByLanguage.map(
                             ({
                                 name,
@@ -133,10 +137,10 @@ const UpdateItem = ({ params }: { params: Promise<{ id: number }> }) => {
                                 condition,
                                 price,
                                 description,
-                                categoryName,
-                                categoryId,
-                                brandName,
-                                brandId,
+                                category_name,
+                                category_id,
+                                brand_name,
+                                brand_id,
                             }) => ({
                                 name,
                                 trans_lang,
@@ -144,13 +148,13 @@ const UpdateItem = ({ params }: { params: Promise<{ id: number }> }) => {
                                 condition,
                                 price,
                                 description,
-                                categoryName,
-                                categoryId,
-                                brandName,
-                                brandId,
+                                category_name,
+                                category_id,
+                                brand_name,
+                                brand_id,
                             })
                         ),
-                        images: prevInputs.images,
+                        images: [],
                     }));
                 }
             } else if (response) {
@@ -358,8 +362,8 @@ const UpdateItem = ({ params }: { params: Promise<{ id: number }> }) => {
                 index === langIndex
                     ? {
                           ...item,
-                          categoryId: category.id || null,
-                          categoryName: category.name || "",
+                          category_id: category.id || null,
+                          category_name: category.name || "",
                       }
                     : item
             ),
@@ -374,8 +378,8 @@ const UpdateItem = ({ params }: { params: Promise<{ id: number }> }) => {
                 index === langIndex
                     ? {
                           ...item,
-                          brandId: brand.id || null,
-                          brandName: brand.name || "",
+                          brand_id: brand.id || null,
+                          brand_name: brand.name || "",
                       }
                     : item
             ),
@@ -390,7 +394,7 @@ const UpdateItem = ({ params }: { params: Promise<{ id: number }> }) => {
         setIsLoading(true);
 
         const token = localStorage.getItem("adminToken");
-        const url = `/admin-panel/item`;
+        const url = `/admin-panel/item/${id}?_method=put`;
 
         if (abortController.current) {
             abortController.current.abort();
@@ -414,20 +418,6 @@ const UpdateItem = ({ params }: { params: Promise<{ id: number }> }) => {
                 );
 
                 setIsLoading(false);
-                setInputs({
-                    items: languages().map((lang) => ({
-                        name: "",
-                        trans_lang: lang.abbre,
-                        condition: null,
-                        price: null,
-                        description: "",
-                        categoryId: null,
-                        categoryName: "",
-                        brandId: null,
-                        brandName: "",
-                    })),
-                    images: [{ originalName: "", path: "" }],
-                });
             } else if (response) {
                 dispatch(
                     display({ type: "error", message: response.msg.text })
@@ -446,6 +436,8 @@ const UpdateItem = ({ params }: { params: Promise<{ id: number }> }) => {
     return (
         <div>
             <Dropzone<ItemDataState>
+                uploadedFiles={uploadedFiles}
+                inputs={inputs}
                 setInputs={setInputs}
                 className="p-16 mt-5 border border-neutral-200 rounded-2xl bg-gray-200"
             />
@@ -505,7 +497,7 @@ const UpdateItem = ({ params }: { params: Promise<{ id: number }> }) => {
                                                 : ""
                                         }
                                         value={
-                                            inputs.items[i]?.categoryName || ""
+                                            inputs.items[i]?.category_name || ""
                                         }
                                         isRequired={false}
                                     />
@@ -539,7 +531,9 @@ const UpdateItem = ({ params }: { params: Promise<{ id: number }> }) => {
                                                 ? errors[`items.${i}.brand`][0]
                                                 : ""
                                         }
-                                        value={inputs.items[i]?.brandName || ""}
+                                        value={
+                                            inputs.items[i]?.brand_name || ""
+                                        }
                                         isRequired={false}
                                     />
                                     <Dropdown
@@ -578,11 +572,7 @@ const UpdateItem = ({ params }: { params: Promise<{ id: number }> }) => {
                                     label="condition"
                                     options={conditionOptions}
                                     placeholder="Pick a condition"
-                                    value={
-                                        inputs.items[i]?.condition === "new"
-                                            ? 1
-                                            : 2
-                                    }
+                                    value={inputs.items[i]?.condition}
                                     handleChange={(e) =>
                                         handleInputChange(e, i)
                                     }
@@ -621,7 +611,7 @@ const UpdateItem = ({ params }: { params: Promise<{ id: number }> }) => {
 
                     <Button
                         isLoading={isLoading}
-                        text="add"
+                        text="update"
                         classes="bg-indigo-700 hover:bg-indigo-800 w-full flex justify-center my-5"
                     ></Button>
                 </form>

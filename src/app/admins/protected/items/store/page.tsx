@@ -40,7 +40,7 @@ const StoreItem = () => {
     // Initialize inputs with items array for each language
     const [inputs, setInputs] = useState<{
         items: Array<ItemDataState>;
-        images: { originalName: string; path: string }[];
+        images: { originalName: string; path: string; preview: string }[];
     }>({
         items: languages().map(
             (lang): ItemDataState => ({
@@ -55,7 +55,7 @@ const StoreItem = () => {
                 brandName: "",
             })
         ),
-        images: [{ originalName: "", path: "" }],
+        images: [{ originalName: "", path: "", preview: "" }],
     });
 
     // New states for dropdown visibility and filtered results
@@ -339,7 +339,7 @@ const StoreItem = () => {
                         brandId: null,
                         brandName: "",
                     })),
-                    images: [{ originalName: "", path: "" }],
+                    images: [],
                 });
             } else if (response) {
                 dispatch(
@@ -359,6 +359,7 @@ const StoreItem = () => {
     return (
         <div>
             <Dropzone<ItemDataState>
+                inputs={inputs}
                 setInputs={setInputs}
                 className="p-16 mt-5 border border-neutral-200 rounded-2xl bg-gray-200"
             />
