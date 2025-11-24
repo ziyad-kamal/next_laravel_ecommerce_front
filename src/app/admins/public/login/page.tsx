@@ -3,7 +3,6 @@
 import { ChangeEvent, FormEvent, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-    faArrowRight,
     faEnvelope,
     faEye,
     faEyeSlash,
@@ -184,24 +183,10 @@ const LoginPage = () => {
 
                         {/* Submit button */}
                         <Button
-                            disable={isLoading}
+                            isLoading={isLoading}
                             classes="bg-indigo-700 hover:bg-indigo-800 w-full flex justify-center"
-                        >
-                            {isLoading ? (
-                                <div className="flex items-center">
-                                    <div className="animate-spin text-white  rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                                    Signing in...
-                                </div>
-                            ) : (
-                                <div className="flex text-white items-center">
-                                    Sign in
-                                    <FontAwesomeIcon
-                                        icon={faArrowRight}
-                                        className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform"
-                                    />
-                                </div>
-                            )}
-                        </Button>
+                            text="login"
+                        ></Button>
                     </form>
                 </Card>
             </div>

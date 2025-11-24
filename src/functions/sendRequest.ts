@@ -59,7 +59,7 @@ export default function sendRequest(
                     localStorage.removeItem("adminToken");
 
                     if (router) {
-                        router.push("users/public/login");
+                        router.push("/users/public/login");
                     }
                 } else if (status === 404) {
                     return {

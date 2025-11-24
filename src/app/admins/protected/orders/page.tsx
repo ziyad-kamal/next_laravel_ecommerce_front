@@ -37,6 +37,7 @@ const GetOrders = () => {
             id: 0,
             user_name: "",
             total_amount: 0,
+            state: "",
             created_at: "",
         },
     ]);
@@ -205,7 +206,7 @@ const GetOrders = () => {
                 className="hover:bg-gray-200"
             >
                 <td className="row_table">${order.total_amount}</td>
-
+                <td className="row_table">{order.state}</td>
                 <td className="row_table">{order.user_name}</td>
                 <td className="row_table">{order.created_at}</td>
                 <td className="row_table">
@@ -242,7 +243,13 @@ const GetOrders = () => {
             <Table
                 title={"orders"}
                 classes={"bg-white"}
-                tableHeaders={["total_amount", "name", "created_at", "action"]}
+                tableHeaders={[
+                    "total_amount",
+                    "state",
+                    "name",
+                    "created_at",
+                    "action",
+                ]}
                 handleBtnClick={() => handleAdd()}
                 sortConfig={sortConfig}
                 handleHeaderClick={handleHeaderClick}
