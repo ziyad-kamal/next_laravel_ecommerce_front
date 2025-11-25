@@ -1,6 +1,7 @@
 interface OrderDetailsState {
     id: number;
     total_amount: number;
+    quantity: number;
     user_name: string;
     created_at: string;
     items: {

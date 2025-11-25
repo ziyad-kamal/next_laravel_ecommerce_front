@@ -51,7 +51,7 @@ const GetItems = () => {
     const [sortConfig, setSortConfig] = useState<{
         keyToSort: string; // 'name', 'email', or 'created_at'
         direction: string;
-    }>({ keyToSort: "approval", direction: "desc" });
+    }>({ keyToSort: "approval", direction: "asc" });
 
     //MARK:HeaderClick
     const handleHeaderClick = (header: string) => {

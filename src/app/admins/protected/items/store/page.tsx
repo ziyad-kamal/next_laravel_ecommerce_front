@@ -46,13 +46,13 @@ const StoreItem = () => {
             (lang): ItemDataState => ({
                 name: "",
                 trans_lang: lang.abbre,
-                condition: null,
+                condition: 0,
                 price: null,
                 description: "",
-                categoryId: null,
-                categoryName: "",
-                brandId: null,
-                brandName: "",
+                category_id: 0,
+                category_name: "",
+                brand_id: null,
+                brand_name: "",
             })
         ),
         images: [{ originalName: "", path: "", preview: "" }],
@@ -186,6 +186,11 @@ const StoreItem = () => {
 
     // Click outside effect
     useEffect(() => {
+        setInputs((prevInputs) => ({
+            ...prevInputs,
+            images: [],
+        }));
+
         const handleClickOutside = (event: MouseEvent) => {
             const target = event.target as Node;
 
@@ -272,7 +277,7 @@ const StoreItem = () => {
                     ? {
                           ...item,
                           category_id: category.id || null,
-                          categoryName: category.name || "",
+                          category_name: category.name || "",
                       }
                     : item
             ),
@@ -287,8 +292,8 @@ const StoreItem = () => {
                 index === langIndex
                     ? {
                           ...item,
-                          brandId: brand.id || null,
-                          brandName: brand.name || "",
+                          brand_id: brand.id || null,
+                          brand_name: brand.name || "",
                       }
                     : item
             ),
@@ -331,13 +336,13 @@ const StoreItem = () => {
                     items: languages().map((lang) => ({
                         name: "",
                         trans_lang: lang.abbre,
-                        condition: null,
+                        condition: 0,
                         price: null,
                         description: "",
-                        categoryId: null,
-                        categoryName: "",
-                        brandId: null,
-                        brandName: "",
+                        category_id: null,
+                        category_name: "",
+                        brand_id: null,
+                        brand_name: "",
                     })),
                     images: [],
                 });
@@ -372,7 +377,7 @@ const StoreItem = () => {
                         <Card key={i}>
                             <div className="text-center mb-8">
                                 <h1 className="text-3xl font-bold text-gray-900 mb-2">
-                                    Add Category
+                                    Add item
                                 </h1>
                                 <span>{`(in ${lang.name})`}</span>
                             </div>
@@ -419,7 +424,7 @@ const StoreItem = () => {
                                                 : ""
                                         }
                                         value={
-                                            inputs.items[i]?.categoryName || ""
+                                            inputs.items[i]?.category_name || ""
                                         }
                                         isRequired={false}
                                     />
@@ -453,7 +458,9 @@ const StoreItem = () => {
                                                 ? errors[`items.${i}.brand`][0]
                                                 : ""
                                         }
-                                        value={inputs.items[i]?.brandName || ""}
+                                        value={
+                                            inputs.items[i]?.brand_name || ""
+                                        }
                                         isRequired={false}
                                     />
                                     <Dropdown

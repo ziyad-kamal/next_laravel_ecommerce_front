@@ -19,6 +19,7 @@ const OrderDetailsPage = ({ params }: { params: Promise<{ id: number }> }) => {
     const [order, setOrder] = useState<OrderDetailsState>({
         id: 0,
         total_amount: 0,
+        quantity: 0,
         user_name: "",
         created_at: "",
         items: [],
@@ -151,15 +152,15 @@ const OrderDetailsPage = ({ params }: { params: Promise<{ id: number }> }) => {
                                             </p>
                                         </div>
                                         <div className="text-right">
-                                            {/* <p className="text-sm text-gray-600">
-                                                Qty: {item.quantity}
+                                            <p className="text-sm text-gray-600">
+                                                Qty: {order.quantity}
                                             </p>
                                             <p className="font-semibold text-gray-900">
                                                 $
                                                 {(
-                                                    item.price * item.quantity
+                                                    item.price * order.quantity
                                                 ).toFixed(2)}
-                                            </p> */}
+                                            </p>
                                         </div>
                                     </div>
                                 ))}
