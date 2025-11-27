@@ -1,24 +1,36 @@
 "use client";
 
+import { Button, SelectInput } from "@/components";
 import sendRequest from "@/functions/sendRequest";
+import Option from "@/interfaces/props/Option";
 import OrderDetailsState from "@/interfaces/states/OrderDetailsState";
+import { useAppDispatch } from "@/lib/hooks";
+import { display } from "@/redux/DisplayToast";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
-import React, { useEffect, useState } from "react";
+import React, { ChangeEvent, useEffect, useRef, useState } from "react";
 
 const OrderDetailsPage = ({ params }: { params: Promise<{ id: number }> }) => {
-    type OrderStatus =
-        | "pending"
-        | "processing"
-        | "shipped"
-        | "delivered"
-        | "cancelled";
-    const [orderStatus, setOrderStatus] = useState<OrderStatus>("processing");
+    type OrderStatus = 1 | 2 | 3 | 4 | 5;
+    const [orderStatus, setOrderStatus] = useState<OrderStatus>(1);
+    const stateOptions: Option[] = [
+        { value: 1, label: "pending" },
+        { value: 2, label: "processing" },
+        { value: 3, label: "shipped" },
+        { value: 4, label: "delivered" },
+        { value: 5, label: "cancelled" },
+    ];
+    const [isLoading, setIsLoading] = useState<boolean>(false);
+    const abortController = useRef<AbortController | null>(null);
+    const dispatch = useAppDispatch();
+
     const router = useRouter();
     const { id } = React.use(params);
 
     const [order, setOrder] = useState<OrderDetailsState>({
         id: 0,
         total_amount: 0,
+        state: "",
         quantity: 0,
         user_name: "",
         created_at: "",
@@ -41,7 +53,16 @@ const OrderDetailsPage = ({ params }: { params: Promise<{ id: number }> }) => {
             );
 
             if (response && response.success) {
-                setOrder(response.data.data);
+                setOrder(response.data.order);
+                // Map state string to numeric value
+                const stateMap: { [key: string]: OrderStatus } = {
+                    pending: 1,
+                    processing: 2,
+                    shipped: 3,
+                    delivered: 4,
+                    cancelled: 5,
+                };
+                setOrderStatus(stateMap[response.data.order.state] || 1);
             }
         };
 
@@ -49,6 +70,48 @@ const OrderDetailsPage = ({ params }: { params: Promise<{ id: number }> }) => {
 
         return () => abortController.abort();
     }, [router, id]);
+
+    const handleInputChange = (e: ChangeEvent<HTMLSelectElement>) => {
+        setOrderStatus(Number(e.target.value) as OrderStatus);
+    };
+
+    const handleClickUpdate = () => {
+        setIsLoading(true);
+
+        const token = localStorage.getItem("adminToken");
+        const url = `/admin-panel/order/${id}?_method=put`;
+
+        if (abortController.current) {
+            abortController.current.abort();
+        }
+        abortController.current = new AbortController();
+
+        const submitData = async () => {
+            const response = await sendRequest(
+                "post",
+                url,
+                { state: orderStatus },
+                abortController.current,
+                token,
+                router
+            );
+
+            if (response && response.success) {
+                dispatch(
+                    display({ type: "success", message: response.msg.text })
+                );
+
+                setIsLoading(false);
+            } else if (response) {
+                dispatch(
+                    display({ type: "error", message: response.msg.text })
+                );
+                setIsLoading(false);
+            }
+        };
+
+        submitData();
+    };
 
     return (
         <div className="min-h-screen bg-gray-50 p-6">
@@ -97,35 +160,21 @@ const OrderDetailsPage = ({ params }: { params: Promise<{ id: number }> }) => {
                                 Order Status
                             </h2>
                             <div className="flex items-center gap-4">
-                                <select
+                                <SelectInput
+                                    label="state"
+                                    options={stateOptions}
+                                    placeholder="Pick a state"
                                     value={orderStatus}
-                                    onChange={(e) =>
-                                        setOrderStatus(
-                                            e.target.value as OrderStatus
-                                        )
-                                    }
-                                    className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                >
-                                    <option value="pending">Pending</option>
-                                    <option value="processing">
-                                        Processing
-                                    </option>
-                                    <option value="shipped">Shipped</option>
-                                    <option value="delivered">Delivered</option>
-                                    <option value="cancelled">Cancelled</option>
-                                </select>
-                                <button className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">
-                                    Update Status
-                                </button>
-                            </div>
-                            <div className="mt-4">
-                                <span
-                                    className={`inline-block px-4 py-2 rounded-full text-sm font-medium }`}
-                                >
-                                    <i className="fas fa-circle text-xs mr-2"></i>
-                                    {orderStatus.charAt(0).toUpperCase() +
-                                        orderStatus.slice(1)}
-                                </span>
+                                    handleChange={(e) => handleInputChange(e)}
+                                    name="state"
+                                    className="mb-10 w-70"
+                                />
+
+                                <Button
+                                    text="update state"
+                                    isLoading={isLoading}
+                                    handleClick={handleClickUpdate}
+                                />
                             </div>
                         </div>
 
@@ -140,9 +189,20 @@ const OrderDetailsPage = ({ params }: { params: Promise<{ id: number }> }) => {
                                         key={item.id}
                                         className="flex items-center gap-4 pb-4 border-b last:border-b-0"
                                     >
-                                        {/* <div className="w-16 h-16 bg-gray-100 rounded-lg flex items-center justify-center text-3xl">
-                                            {item.image}
-                                        </div> */}
+                                        <div className="relative w-16 h-16 bg-gray-100 rounded-lg flex items-center justify-center flex-shrink-0 overflow-hidden">
+                                            {item.images && item.images[0] ? (
+                                                <Image
+                                                    src={item.images[0].path}
+                                                    alt={item.name}
+                                                    fill
+                                                    className="object-contain p-1"
+                                                    sizes="64px"
+                                                    unoptimized
+                                                />
+                                            ) : (
+                                                <i className="fas fa-image text-gray-400 text-2xl"></i>
+                                            )}
+                                        </div>
                                         <div className="flex-1">
                                             <h3 className="font-medium text-gray-900">
                                                 {item.name}
@@ -156,10 +216,7 @@ const OrderDetailsPage = ({ params }: { params: Promise<{ id: number }> }) => {
                                                 Qty: {order.quantity}
                                             </p>
                                             <p className="font-semibold text-gray-900">
-                                                $
-                                                {(
-                                                    item.price * order.quantity
-                                                ).toFixed(2)}
+                                                ${item.price * order.quantity}
                                             </p>
                                         </div>
                                     </div>
@@ -170,9 +227,7 @@ const OrderDetailsPage = ({ params }: { params: Promise<{ id: number }> }) => {
                             <div className="mt-6 pt-6 border-t space-y-3">
                                 <div className="flex justify-between text-gray-600">
                                     <span>Subtotal</span>
-                                    <span>
-                                        ${order.total_amount.toFixed(2)}
-                                    </span>
+                                    <span>${order.total_amount}</span>
                                 </div>
                                 <div className="flex justify-between text-gray-600">
                                     <span>Shipping</span>
@@ -181,9 +236,7 @@ const OrderDetailsPage = ({ params }: { params: Promise<{ id: number }> }) => {
 
                                 <div className="flex justify-between text-lg font-bold text-gray-900 pt-3 border-t">
                                     <span>Total</span>
-                                    <span>
-                                        ${order.total_amount.toFixed(2) + 5}
-                                    </span>
+                                    <span>${order.total_amount + 5}</span>
                                 </div>
                             </div>
                         </div>

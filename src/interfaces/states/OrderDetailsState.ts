@@ -3,6 +3,7 @@ interface OrderDetailsState {
     total_amount: number;
     quantity: number;
     user_name: string;
+    state: string;
     created_at: string;
     items: {
         id: number;
@@ -19,6 +20,7 @@ interface OrderDetailsState {
         trans_lang: string;
         created_at: string;
         updated_at: string;
+        images: { path: string }[];
     }[];
 }
 
