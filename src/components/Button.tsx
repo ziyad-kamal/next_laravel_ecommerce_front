@@ -13,7 +13,7 @@ const Button = ({
     return (
         <>
             <button
-                className={`text-sm font-bold inline-flex text-center  mx-1
+                className={`text-sm font-bold inline-flex  items-center justify-center  mx-1
                     px-3 py-2 w-auto rounded-lg cursor-pointer ${classes}`}
                 type={type}
                 onClick={handleClick}

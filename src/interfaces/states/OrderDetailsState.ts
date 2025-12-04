@@ -2,7 +2,18 @@ interface OrderDetailsState {
     id: number;
     total_amount: number;
     quantity: number;
-    user_name: string;
+    method: string;
+    user: {
+        name: string;
+        email: string;
+        user_infos: {
+            address: string;
+            card_type: string;
+            card_num: string;
+            phone: number | null;
+        };
+    };
+
     state: string;
     created_at: string;
     items: {

@@ -6,12 +6,14 @@ import Option from "@/interfaces/props/Option";
 import OrderDetailsState from "@/interfaces/states/OrderDetailsState";
 import { useAppDispatch } from "@/lib/hooks";
 import { display } from "@/redux/DisplayToast";
+import { faEnvelope, faPhone } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import React, { ChangeEvent, useEffect, useRef, useState } from "react";
 
 const OrderDetailsPage = ({ params }: { params: Promise<{ id: number }> }) => {
-    type OrderStatus = 1 | 2 | 3 | 4 | 5;
+    type OrderStatus = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8;
     const [orderStatus, setOrderStatus] = useState<OrderStatus>(1);
     const stateOptions: Option[] = [
         { value: 1, label: "pending" },
@@ -19,6 +21,9 @@ const OrderDetailsPage = ({ params }: { params: Promise<{ id: number }> }) => {
         { value: 3, label: "shipped" },
         { value: 4, label: "delivered" },
         { value: 5, label: "cancelled" },
+        { value: 6, label: "pending to refund" },
+        { value: 7, label: "refunding" },
+        { value: 8, label: "refunded" },
     ];
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const abortController = useRef<AbortController | null>(null);
@@ -32,7 +37,18 @@ const OrderDetailsPage = ({ params }: { params: Promise<{ id: number }> }) => {
         total_amount: 0,
         state: "",
         quantity: 0,
-        user_name: "",
+        method: "",
+        user: {
+            name: "",
+            email: "",
+            user_infos: {
+                address: "",
+                card_num: "",
+                card_type: "",
+                phone: null,
+            },
+        },
+
         created_at: "",
         items: [],
     });
@@ -61,6 +77,9 @@ const OrderDetailsPage = ({ params }: { params: Promise<{ id: number }> }) => {
                     shipped: 3,
                     delivered: 4,
                     cancelled: 5,
+                    pendingToRefund: 6,
+                    refunding: 7,
+                    refunded: 8,
                 };
                 setOrderStatus(stateMap[response.data.order.state] || 1);
             }
@@ -75,8 +94,22 @@ const OrderDetailsPage = ({ params }: { params: Promise<{ id: number }> }) => {
         setOrderStatus(Number(e.target.value) as OrderStatus);
     };
 
-    const handleClickUpdate = () => {
+    const handleClickUpdate = (state: number | null = null) => {
         setIsLoading(true);
+
+        if (state == null) {
+            state = orderStatus;
+
+            if (orderStatus == 8) {
+                handleClickRefund();
+                return;
+            }
+
+            if (orderStatus == 4) {
+                handleClickDelivery();
+                return;
+            }
+        }
 
         const token = localStorage.getItem("adminToken");
         const url = `/admin-panel/order/${id}?_method=put`;
@@ -90,7 +123,7 @@ const OrderDetailsPage = ({ params }: { params: Promise<{ id: number }> }) => {
             const response = await sendRequest(
                 "post",
                 url,
-                { state: orderStatus },
+                { state: state },
                 abortController.current,
                 token,
                 router
@@ -100,17 +133,87 @@ const OrderDetailsPage = ({ params }: { params: Promise<{ id: number }> }) => {
                 dispatch(
                     display({ type: "success", message: response.msg.text })
                 );
-
-                setIsLoading(false);
             } else if (response) {
                 dispatch(
                     display({ type: "error", message: response.msg.text })
                 );
-                setIsLoading(false);
             }
         };
 
         submitData();
+        setIsLoading(false);
+    };
+
+    const handleClickDelivery = () => {
+        setIsLoading(true);
+
+        const token = localStorage.getItem("adminToken");
+        const url = `/admin-panel/order/delivery/${id}?_method=put`;
+
+        if (abortController.current) {
+            abortController.current.abort();
+        }
+        abortController.current = new AbortController();
+
+        const submitData = async () => {
+            const response = await sendRequest(
+                "post",
+                url,
+                {},
+                abortController.current,
+                token,
+                router
+            );
+
+            if (response && response.success) {
+                dispatch(
+                    display({ type: "success", message: response.msg.text })
+                );
+            } else if (response) {
+                dispatch(
+                    display({ type: "error", message: response.msg.text })
+                );
+            }
+        };
+
+        submitData();
+        setIsLoading(false);
+    };
+
+    const handleClickRefund = () => {
+        setIsLoading(true);
+
+        const token = localStorage.getItem("adminToken");
+        const url = `/admin-panel/order/refund/${id}?_method=put`;
+
+        if (abortController.current) {
+            abortController.current.abort();
+        }
+        abortController.current = new AbortController();
+
+        const submitData = async () => {
+            const response = await sendRequest(
+                "post",
+                url,
+                {},
+                abortController.current,
+                token,
+                router
+            );
+
+            if (response && response.success) {
+                dispatch(
+                    display({ type: "success", message: response.msg.text })
+                );
+            } else if (response) {
+                dispatch(
+                    display({ type: "error", message: response.msg.text })
+                );
+            }
+        };
+
+        submitData();
+        setIsLoading(false);
     };
 
     return (
@@ -138,16 +241,6 @@ const OrderDetailsPage = ({ params }: { params: Promise<{ id: number }> }) => {
                                 {order.created_at}
                             </p>
                         </div>
-                        <div className="flex gap-3">
-                            <button className="px-4 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition">
-                                <i className="fas fa-print mr-2"></i>
-                                Print
-                            </button>
-                            <button className="px-4 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition">
-                                <i className="fas fa-download mr-2"></i>
-                                Invoice
-                            </button>
-                        </div>
                     </div>
                 </div>
 
@@ -173,7 +266,7 @@ const OrderDetailsPage = ({ params }: { params: Promise<{ id: number }> }) => {
                                 <Button
                                     text="update state"
                                     isLoading={isLoading}
-                                    handleClick={handleClickUpdate}
+                                    handleClick={() => handleClickUpdate()}
                                 />
                             </div>
                         </div>
@@ -248,14 +341,11 @@ const OrderDetailsPage = ({ params }: { params: Promise<{ id: number }> }) => {
                                     <i className="fas fa-truck mr-2 text-blue-600"></i>
                                     Shipping Address
                                 </h2>
-                                {/* <div className="text-gray-700 space-y-1">
-                                    <p>{order.shippingAddress.street}</p>
-                                    <p>
-                                        {order.shippingAddress.city},{" "}
-                                        {order.shippingAddress.state}{" "}
-                                    </p>
-                                    <p>{order.shippingAddress.country}</p>
-                                </div> */}
+                                {
+                                    <div className="text-gray-700 space-y-1">
+                                        <p>{order.user.user_infos.address}</p>
+                                    </div>
+                                }
                             </div>
                         </div>
                     </div>
@@ -267,73 +357,79 @@ const OrderDetailsPage = ({ params }: { params: Promise<{ id: number }> }) => {
                             <h2 className="text-lg font-semibold mb-4">
                                 Customer Information
                             </h2>
-                            {/* <div className="flex items-center gap-3 mb-4">
-                                <div>
-                                    <h3 className="font-medium text-gray-900">
-                                        {order.customer.name}
-                                    </h3>
-                                    <button className="text-sm text-blue-600 hover:underline">
-                                        View Profile
-                                    </button>
-                                </div>
-                            </div>
-                            <div className="space-y-3">
-                                <div className="flex items-center gap-3 text-gray-700">
-                                    <i className="fas fa-envelope w-5 text-gray-400"></i>
-                                    <span className="text-sm">
-                                        {order.customer.email}
-                                    </span>
-                                </div>
-                                <div className="flex items-center gap-3 text-gray-700">
-                                    <i className="fas fa-phone w-5 text-gray-400"></i>
-                                    <span className="text-sm">
-                                        {order.customer.phone}
-                                    </span>
-                                </div>
-                            </div> */}
+                            {
+                                <>
+                                    <div className="flex items-center gap-3 mb-4">
+                                        <div>
+                                            <h3 className="font-medium text-gray-900">
+                                                {order.user.name}
+                                            </h3>
+                                            <button className="text-sm text-blue-600 hover:underline">
+                                                View Profile
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div className="space-y-3">
+                                        <div className="flex items-center gap-3 text-gray-700">
+                                            <FontAwesomeIcon
+                                                icon={faEnvelope}
+                                                className="text-primary-color"
+                                            />
+                                            <span className="text-sm">
+                                                {order.user.email}
+                                            </span>
+                                        </div>
+                                        <div className="flex items-center gap-3 text-gray-700">
+                                            <FontAwesomeIcon
+                                                icon={faPhone}
+                                                className="text-primary-color"
+                                            />
+                                            <span className="text-sm">
+                                                {order.user.user_infos.phone}
+                                            </span>
+                                        </div>
+                                    </div>
+                                </>
+                            }
                         </div>
 
                         {/* Payment Info */}
-                        {/* <div className="bg-white rounded-lg shadow-sm p-6">
-                            <h2 className="text-lg font-semibold mb-4">
-                                Payment Information
-                            </h2>
-                            <div className="space-y-3">
-                                <div className="flex justify-between">
-                                    <span className="text-gray-600">
-                                        Method
-                                    </span>
-                                    <span className="font-medium">
-                                        {order.payment.method}
-                                    </span>
-                                </div>
-                                <div className="flex justify-between">
-                                    <span className="text-gray-600">
-                                        Card Type
-                                    </span>
-                                    <span className="font-medium">
-                                        {order.payment.cardType}
-                                    </span>
-                                </div>
-                                <div className="flex justify-between">
-                                    <span className="text-gray-600">
-                                        Card Number
-                                    </span>
-                                    <span className="font-medium">
-                                        •••• {order.payment.last4}
-                                    </span>
-                                </div>
-                                <div className="flex justify-between items-center pt-3 border-t">
-                                    <span className="text-gray-600">
-                                        Status
-                                    </span>
-                                    <span className="inline-block px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm font-medium">
-                                        <i className="fas fa-check-circle mr-1"></i>
-                                        {order.payment.status}
-                                    </span>
+                        {
+                            <div className="bg-white rounded-lg shadow-sm p-6">
+                                <h2 className="text-lg font-semibold mb-4">
+                                    Payment Information
+                                </h2>
+                                <div className="space-y-3">
+                                    <div className="flex justify-between">
+                                        <span className="text-gray-600">
+                                            Method
+                                        </span>
+                                        <span className="font-medium">
+                                            {order.method}
+                                        </span>
+                                    </div>
+                                    <div className="flex justify-between">
+                                        <span className="text-gray-600">
+                                            Card Type
+                                        </span>
+                                        <span className="font-medium">
+                                            {order.user.user_infos.card_type}
+                                        </span>
+                                    </div>
+                                    <div className="flex justify-between">
+                                        <span className="text-gray-600">
+                                            Card Number
+                                        </span>
+                                        <span className="font-medium">
+                                            ••••{" "}
+                                            {order.user.user_infos.card_num.match(
+                                                /(\d{4})[^"]*"/
+                                            )?.[1] || "••••"}
+                                        </span>
+                                    </div>
                                 </div>
                             </div>
-                        </div> */}
+                        }
 
                         {/* Actions */}
                         <div className="bg-white rounded-lg shadow-sm p-6">
@@ -341,18 +437,18 @@ const OrderDetailsPage = ({ params }: { params: Promise<{ id: number }> }) => {
                                 Actions
                             </h2>
                             <div className="space-y-3">
-                                <button className="w-full px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">
-                                    <i className="fas fa-envelope mr-2"></i>
-                                    Send Email to Customer
-                                </button>
-                                <button className="w-full px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition">
-                                    <i className="fas fa-redo mr-2"></i>
-                                    Process Refund
-                                </button>
-                                <button className="w-full px-4 py-2 bg-white border border-red-300 text-red-600 rounded-lg hover:bg-red-50 transition">
-                                    <i className="fas fa-times-circle mr-2"></i>
-                                    Cancel Order
-                                </button>
+                                <Button
+                                    text="process to refund"
+                                    isLoading={isLoading}
+                                    handleClick={() => handleClickRefund()}
+                                    classes="bg-gray-500 hover:bg-gray-600 w-full"
+                                />
+                                <Button
+                                    text="cancel"
+                                    isLoading={isLoading}
+                                    handleClick={() => handleClickUpdate(5)}
+                                    classes="bg-red-700 hover:bg-red-800 w-full "
+                                />
                             </div>
                         </div>
                     </div>
