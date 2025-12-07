@@ -4,22 +4,61 @@ import { useAppDispatch, useAppSelector } from "@/lib/hooks";
 import ModalState from "@/interfaces/states/ModalState";
 import { hide } from "@/redux/DisplayModal";
 
-const Modal = ({ title, children, handleClick }: ModalProps) => {
-    const modalState = useAppSelector(
+const Modal = ({
+    title,
+    children,
+    handleClick,
+    isOpen,
+    onClose,
+    modalType,
+    actionButtonText,
+    isLoading = false,
+}: ModalProps) => {
+    const reduxModalState = useAppSelector(
         (state: { displayModal: ModalState }) => state.displayModal
     );
     const dispatch = useAppDispatch();
 
+    // Handle both Redux-based and local state-based modals
+    const isVisible = isOpen !== undefined ? isOpen : reduxModalState.isVisible;
+    const type = modalType || reduxModalState.type;
+    const disable =
+        isLoading !== undefined ? isLoading : reduxModalState.disable;
+
     const handleClose = () => {
-        dispatch(hide());
+        if (onClose) {
+            onClose();
+        } else {
+            dispatch(hide());
+        }
     };
-    console.log(5);
+
     const getBtnStyles = () => {
-        switch (modalState.type) {
+        switch (type) {
             case "update":
                 return `bg-green-700  hover:bg-green-800 text-white`;
+
+            case "filter":
+                return `bg-green-700  hover:bg-green-800 text-white`;
+            case "delete":
             case "confirm":
                 return `bg-red-700  hover:bg-red-800 text-white`;
+            default:
+                return `bg-blue-700  hover:bg-blue-800 text-white`;
+        }
+    };
+
+    const getActionButtonText = () => {
+        if (actionButtonText) return actionButtonText;
+        switch (type) {
+            case "delete":
+                return "Confirm";
+            case "filter":
+                return "Reset";
+            case "update":
+                return "Update";
+            default:
+                return "Confirm";
         }
     };
 
@@ -28,12 +67,13 @@ const Modal = ({ title, children, handleClick }: ModalProps) => {
             onClick={handleClose}
             id="modalOverlay"
             className={`${
-                modalState.isVisible ? "flex" : "hidden"
-            } modal-overlay fixed inset-0 bg-semi-trans  items-center justify-center p-4 z-3000`}
+                isVisible ? "flex" : "hidden"
+            } modal-overlay fixed inset-0 bg-black/50 items-center justify-center p-4 z-3000`}
         >
             <div
                 id="modalContent"
                 className="modal-content bg-white rounded-2xl shadow-2xl max-w-md w-full mx-4 transform transition-all duration-200"
+                onClick={(e) => e.stopPropagation()}
             >
                 <div className="flex items-center justify-between p-6 border-b border-gray-200">
                     <h2 className="text-xl font-bold text-gray-900">{title}</h2>
@@ -66,15 +106,15 @@ const Modal = ({ title, children, handleClick }: ModalProps) => {
                         handleClick={handleClose}
                     />
                     <Button
-                        text={
-                            modalState.type === "confirm" ? "confirm" : "update"
-                        }
+                        text={getActionButtonText()}
                         type={
-                            modalState.type === "confirm" ? "button" : "submit"
+                            type === "confirm" || type === "delete"
+                                ? "button"
+                                : "submit"
                         }
                         classes={getBtnStyles()}
                         handleClick={handleClick}
-                        isLoading={modalState.disable}
+                        isLoading={disable}
                     />
                 </div>
             </div>

@@ -6,12 +6,14 @@ import { useRouter } from "next/navigation";
 import sendRequest from "@/functions/sendRequest";
 import { useAppDispatch } from "@/lib/hooks";
 import { display } from "@/redux/DisplayToast";
-import { Button } from "@/components";
+import { Button, Input, SelectInput } from "@/components";
 import Table from "@/components/Table";
 import ReactPaginate from "react-paginate";
 import Modal from "@/components/Modal";
 import { displayModal } from "@/redux/DisplayModal";
 import OrderState from "@/interfaces/states/OrderState";
+import Option from "@/interfaces/props/Option";
+import { useDebounce } from "@/hooks/useDebounce"; // Adjust path as needed
 
 const DeleteConfirmationModal = memo(
     ({ onConfirm }: { onConfirm: () => void }) => (
@@ -32,12 +34,36 @@ const GetOrders = () => {
     const abortController = useRef<AbortController | null>(null);
     const abortControllerForDelete = useRef<AbortController | null>(null);
 
+    const stateOptions: Option[] = [
+        { value: "pending", label: "Pending" },
+        { value: "processing", label: "Processing" },
+        { value: "shipped", label: "Shipped" },
+        { value: "delivered", label: "Delivered" },
+        { value: "cancelled", label: "Cancelled" },
+        { value: "refunding", label: "Refunding" },
+        { value: "refunded", label: "Refunded" },
+    ];
+
+    const [filters, setFilters] = useState({
+        date_of_delivery: "",
+        user_name: "",
+        state: "",
+    });
+
+    // Separate state for the input value (updates immediately)
+    const [userNameInput, setUserNameInput] = useState("");
+
+    const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
+
     const [orders, setOrders] = useState<OrderState[]>([
         {
             id: 0,
-            user_name: "",
+            user: {
+                name: "",
+            },
             total_amount: 0,
             state: "",
+            date_of_delivery: "",
             created_at: "",
         },
     ]);
@@ -60,14 +86,47 @@ const GetOrders = () => {
         }
     };
 
-    // const getSortedAdmins = (orders: AdminState[]) => {
-    //     const key = sortConfig.keyToSort as keyof AdminState;
-    //     if (sortConfig.direction === "asc") {
-    //         return orders.sort((a, b) => (a[key] > b[key] ? 1 : -1));
-    //     }
+    //MARK:Debounced user name update
+    const updateUserNameFilter = useCallback((value: string) => {
+        setFilters((prev) => ({
+            ...prev,
+            user_name: value,
+        }));
+    }, []);
 
-    //     return orders.sort((a, b) => (a[key] > b[key] ? -1 : 1));
-    // };
+    const { debouncedFn: debouncedUpdateUserName } = useDebounce<
+        (value: string) => void
+    >(updateUserNameFilter, { delay: 1000 });
+
+    //MARK:handleFilterChange
+    const handleFilterChange = (
+        e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
+        name: string
+    ) => {
+        const value = e.target.value;
+
+        if (name === "user_name") {
+            // Update input immediately for responsive UI
+            setUserNameInput(value);
+            // Update filter with debounce
+            debouncedUpdateUserName(value);
+        } else {
+            setFilters((prev) => ({
+                ...prev,
+                [name]: value,
+            }));
+        }
+    };
+
+    //MARK:handleResetFilters
+    const handleResetFilters = () => {
+        setUserNameInput("");
+        setFilters({
+            date_of_delivery: "",
+            user_name: "",
+            state: "",
+        });
+    };
 
     const [metaData, setMetaData] = useState<{
         totalPages: number;
@@ -76,15 +135,15 @@ const GetOrders = () => {
 
     //MARK:get orders
     useEffect(() => {
-        const url = `/admin-panel/order?keyToSort=${sortConfig.keyToSort}&direction=${sortConfig.direction}`;
+        const url = `/admin-panel/order/index?keyToSort=${sortConfig.keyToSort}&direction=${sortConfig.direction}`;
         const abortController = new AbortController();
         const token = localStorage.getItem("adminToken");
 
         const fetchData = async () => {
             const response = await sendRequest(
-                "get",
+                "post",
                 url,
-                null,
+                filters,
                 abortController,
                 token,
                 router
@@ -107,7 +166,7 @@ const GetOrders = () => {
 
         return () => abortController.abort();
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [dispatch, router, sortConfig]);
+    }, [dispatch, router, sortConfig, filters]);
 
     //MARK:actions
     const handleEdit = (id: number) => {
@@ -168,7 +227,7 @@ const GetOrders = () => {
     //MARK:handlePageChange
     const handlePageChange = ({ selected }: { selected: number }) => {
         const page = selected + 1;
-        const url = `/admin-panel/order?page=${page}&keyToSort=${sortConfig.keyToSort}&direction=${sortConfig.direction}`;
+        const url = `/admin-panel/order/index?page=${page}&keyToSort=${sortConfig.keyToSort}&direction=${sortConfig.direction}`;
         const token = localStorage.getItem("adminToken");
 
         if (abortController.current) {
@@ -178,9 +237,9 @@ const GetOrders = () => {
 
         const fetchData = async () => {
             const response = await sendRequest(
-                "get",
+                "post",
                 url,
-                null,
+                filters,
                 abortController.current,
                 token,
                 router
@@ -207,7 +266,8 @@ const GetOrders = () => {
             >
                 <td className="row_table">${order.total_amount}</td>
                 <td className="row_table">{order.state}</td>
-                <td className="row_table">{order.user_name}</td>
+                <td className="row_table">{order.user.name}</td>
+                <td className="row_table">{order.date_of_delivery}</td>
                 <td className="row_table">{order.created_at}</td>
                 <td className="row_table">
                     <Button
@@ -234,11 +294,73 @@ const GetOrders = () => {
             <DeleteConfirmationModal onConfirm={handleConfirm} />
 
             <Modal
-                title="delete order"
-                handleClick={handleConfirm}
+                title="Filter Orders"
+                isOpen={isFilterModalOpen}
+                onClose={() => setIsFilterModalOpen(false)}
+                handleClick={handleResetFilters}
+                modalType="filter"
             >
-                <p>Are you want to delete this order</p>
+                <div className="grid grid-cols-1 gap-4 mb-6">
+                    <div>
+                        <Input
+                            label="User Name"
+                            type="text"
+                            value={userNameInput}
+                            handleChange={(e) =>
+                                handleFilterChange(e, "user_name")
+                            }
+                            name="user_name"
+                            placeholder="Search by user name"
+                            classes="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                        />
+                    </div>
+                    <div>
+                        <SelectInput
+                            label="State"
+                            options={stateOptions}
+                            placeholder="Select a state"
+                            value={filters.state}
+                            handleChange={(e) => handleFilterChange(e, "state")}
+                            name="state"
+                        />
+                    </div>
+                    <div>
+                        <Input
+                            label="Date of Delivery"
+                            name="date_of_delivery"
+                            type="date"
+                            value={filters.date_of_delivery}
+                            handleChange={(e) =>
+                                handleFilterChange(e, "date_of_delivery")
+                            }
+                            classes="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                        />
+                    </div>
+                </div>
             </Modal>
+
+            {/* Filter Button */}
+            <div className="mb-4 flex justify-end">
+                <button
+                    onClick={() => setIsFilterModalOpen(true)}
+                    className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition flex items-center gap-2"
+                >
+                    <svg
+                        className="w-5 h-5"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                    >
+                        <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"
+                        />
+                    </svg>
+                    Filter
+                </button>
+            </div>
 
             <Table
                 title={"orders"}
@@ -247,6 +369,7 @@ const GetOrders = () => {
                     "total_amount",
                     "state",
                     "name",
+                    "date_of_delivery",
                     "created_at",
                     "action",
                 ]}

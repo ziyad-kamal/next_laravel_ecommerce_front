@@ -5,7 +5,7 @@ interface SelectInputProps {
     options: Option[];
     placeholder?: string;
     value?: string | number | undefined;
-    handleChange: (e: ChangeEvent<HTMLSelectElement>, name: string) => void;
+    handleChange?: (e: ChangeEvent<HTMLSelectElement>, name: string) => void;
     disabled?: boolean;
     error?: string;
     label?: string;

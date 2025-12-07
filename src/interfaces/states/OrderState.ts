@@ -1,8 +1,11 @@
 interface OrderState {
     id: number;
-    user_name: string;
+    user: {
+        name: string;
+    };
     total_amount: number;
     state: string;
+    date_of_delivery: string;
     created_at: string;
 }
 

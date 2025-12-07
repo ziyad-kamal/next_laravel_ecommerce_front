@@ -5,7 +5,7 @@ interface UseDebounceOptions {
     onCleanup?: () => void;
 }
 
-export function useDebounce<T extends (...args: unknown[]) => unknown>(
+export function useDebounce<T extends (...args: never[]) => unknown>(
     callback: T,
     options: UseDebounceOptions = {}
 ) {
@@ -37,10 +37,7 @@ export function useDebounce<T extends (...args: unknown[]) => unknown>(
             return new Promise<ReturnType<T>>((resolve) => {
                 timerRef.current = setTimeout(async () => {
                     try {
-                        const result = await callback(
-                            ...args,
-                            abortControllerRef.current
-                        );
+                        const result = await callback(...args);
                         resolve(result as ReturnType<T>);
                     } catch (error) {
                         if (

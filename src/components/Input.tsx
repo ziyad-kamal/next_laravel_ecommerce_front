@@ -36,7 +36,7 @@ const Input = ({
                 id={name}
                 autoComplete="true"
                 ref={inputRef}
-                onChange={(e) => handleChange(e, name)}
+                onChange={(e) => handleChange?.(e, name)}
                 value={value}
             />
             {error ? (

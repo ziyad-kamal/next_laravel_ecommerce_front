@@ -26,7 +26,7 @@ const SelectInput: React.FC<SelectInputProps> = ({
                 <select
                     name={name}
                     value={value}
-                    onChange={(e) => handleChange(e, name)}
+                    onChange={(e) => handleChange?.(e, name)}
                     disabled={disabled}
                     className={`
             w-full px-3 py-2 border rounded-lg shadow-sm appearance-none bg-white

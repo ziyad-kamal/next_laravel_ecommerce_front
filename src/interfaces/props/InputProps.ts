@@ -7,7 +7,7 @@ interface InputProps {
     type?: string;
     placeholder?: string;
     isRequired?: boolean;
-    handleChange: (e: ChangeEvent<HTMLInputElement>, name: string) => void;
+    handleChange?: (e: ChangeEvent<HTMLInputElement>, name: string) => void;
     inputRef?: RefObject<HTMLInputElement>;
     value?: string | number;
     error?: string;
