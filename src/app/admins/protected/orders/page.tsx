@@ -94,9 +94,8 @@ const GetOrders = () => {
         }));
     }, []);
 
-    const { debouncedFn: debouncedUpdateUserName } = useDebounce<
-        (value: string) => void
-    >(updateUserNameFilter, { delay: 1000 });
+    const { debouncedFn: debouncedUpdateUserName } =
+        useDebounce<(value: string) => void>(updateUserNameFilter);
 
     //MARK:handleFilterChange
     const handleFilterChange = (
@@ -106,9 +105,7 @@ const GetOrders = () => {
         const value = e.target.value;
 
         if (name === "user_name") {
-            // Update input immediately for responsive UI
             setUserNameInput(value);
-            // Update filter with debounce
             debouncedUpdateUserName(value);
         } else {
             setFilters((prev) => ({

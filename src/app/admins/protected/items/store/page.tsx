@@ -177,11 +177,11 @@ const StoreItem = () => {
 
     const { debouncedFn: debouncedCategorySearch } = useDebounce(
         handleCategorySearch,
-        { delay: 700 }
+        { delay: 1000 }
     );
     const { debouncedFn: debouncedBrandSearch } = useDebounce(
         handleBrandSearch,
-        { delay: 700 }
+        { delay: 1000 }
     );
 
     // Click outside effect
