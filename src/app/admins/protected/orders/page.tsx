@@ -13,7 +13,7 @@ import Modal from "@/components/Modal";
 import { displayModal } from "@/redux/DisplayModal";
 import OrderState from "@/interfaces/states/OrderState";
 import Option from "@/interfaces/props/Option";
-import { useDebounce } from "@/hooks/useDebounce"; // Adjust path as needed
+import { useDebounce } from "@/hooks/useDebounce";
 
 const DeleteConfirmationModal = memo(
     ({ onConfirm }: { onConfirm: () => void }) => (

@@ -19,7 +19,6 @@ const Modal = ({
     );
     const dispatch = useAppDispatch();
 
-    // Handle both Redux-based and local state-based modals
     const isVisible = isOpen !== undefined ? isOpen : reduxModalState.isVisible;
     const type = modalType || reduxModalState.type;
     const disable =
