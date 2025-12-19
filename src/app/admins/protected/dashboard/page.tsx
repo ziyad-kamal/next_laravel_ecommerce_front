@@ -8,8 +8,6 @@ import {
     TrendingDown,
 } from "lucide-react";
 import {
-    LineChart,
-    Line,
     BarChart,
     Bar,
     PieChart,
@@ -76,7 +74,7 @@ const Dashboard: React.FC = () => {
 
     const stats = [
         {
-            title: "Total Revenue",
+            title: "Total sales",
             value: "$45,231",
             change: 12.5,
             icon: <DollarSign className="w-6 h-6 text-white" />,
@@ -101,19 +99,19 @@ const Dashboard: React.FC = () => {
         },
     ];
 
-    const revenueData = [
-        { name: "Jan", revenue: 4200, orders: 240 },
-        { name: "Feb", revenue: 3800, orders: 198 },
-        { name: "Mar", revenue: 5100, orders: 310 },
-        { name: "Apr", revenue: 4600, orders: 270 },
-        { name: "May", revenue: 6200, orders: 380 },
-        { name: "Jun", revenue: 5800, orders: 350 },
-        { name: "Jul", revenue: 7200, orders: 420 },
-        { name: "Aug", revenue: 6800, orders: 390 },
-        { name: "Sep", revenue: 7800, orders: 450 },
-        { name: "Oct", revenue: 8400, orders: 480 },
-        { name: "Nov", revenue: 7600, orders: 440 },
-        { name: "Dec", revenue: 9200, orders: 520 },
+    const salesData = [
+        { name: "Jan", sales: 4200, orders: 240 },
+        { name: "Feb", sales: 3800, orders: 198 },
+        { name: "Mar", sales: 5100, orders: 310 },
+        { name: "Apr", sales: 4600, orders: 270 },
+        { name: "May", sales: 6200, orders: 380 },
+        { name: "Jun", sales: 5800, orders: 350 },
+        { name: "Jul", sales: 7200, orders: 420 },
+        { name: "Aug", sales: 6800, orders: 390 },
+        { name: "Sep", sales: 7800, orders: 450 },
+        { name: "Oct", sales: 8400, orders: 480 },
+        { name: "Nov", sales: 7600, orders: 440 },
+        { name: "Dec", sales: 9200, orders: 520 },
     ];
 
     const categoryData = [
@@ -122,15 +120,6 @@ const Dashboard: React.FC = () => {
         { name: "Home & Garden", value: 2800, color: "#EC4899" },
         { name: "Sports", value: 2100, color: "#10B981" },
         { name: "Books", value: 1400, color: "#F59E0B" },
-    ];
-
-    const salesData = [
-        { month: "Jan", sales: 65000 },
-        { month: "Feb", sales: 59000 },
-        { month: "Mar", sales: 80000 },
-        { month: "Apr", sales: 81000 },
-        { month: "May", sales: 95000 },
-        { month: "Jun", sales: 88000 },
     ];
 
     const trafficData = [
@@ -236,19 +225,19 @@ const Dashboard: React.FC = () => {
 
                 {/* Charts Row 1 */}
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-                    {/* Revenue & Orders Chart */}
+                    {/* sales & Orders Chart */}
                     <div className="bg-white rounded-xl shadow-lg p-6 border border-gray-100">
                         <h3 className="text-xl font-bold text-gray-900 mb-4">
-                            Revenue & Orders Overview
+                            sales & Orders Overview
                         </h3>
                         <ResponsiveContainer
                             width="100%"
                             height={300}
                         >
-                            <AreaChart data={revenueData}>
+                            <AreaChart data={salesData}>
                                 <defs>
                                     <linearGradient
-                                        id="colorRevenue"
+                                        id="colorSales"
                                         x1="0"
                                         y1="0"
                                         x2="0"
@@ -303,10 +292,10 @@ const Dashboard: React.FC = () => {
                                 <Legend />
                                 <Area
                                     type="monotone"
-                                    dataKey="revenue"
+                                    dataKey="sales"
                                     stroke="#3B82F6"
                                     fillOpacity={1}
-                                    fill="url(#colorRevenue)"
+                                    fill="url(#colorSales)"
                                 />
                                 <Area
                                     type="monotone"
@@ -358,45 +347,6 @@ const Dashboard: React.FC = () => {
 
                 {/* Charts Row 2 */}
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-                    {/* Monthly Sales */}
-                    <div className="bg-white rounded-xl shadow-lg p-6 border border-gray-100">
-                        <h3 className="text-xl font-bold text-gray-900 mb-4">
-                            Monthly Sales Trend
-                        </h3>
-                        <ResponsiveContainer
-                            width="100%"
-                            height={300}
-                        >
-                            <LineChart data={salesData}>
-                                <CartesianGrid
-                                    strokeDasharray="3 3"
-                                    stroke="#f0f0f0"
-                                />
-                                <XAxis
-                                    dataKey="month"
-                                    stroke="#6B7280"
-                                />
-                                <YAxis stroke="#6B7280" />
-                                <Tooltip
-                                    contentStyle={{
-                                        backgroundColor: "#fff",
-                                        border: "1px solid #e5e7eb",
-                                        borderRadius: "8px",
-                                    }}
-                                />
-                                <Legend />
-                                <Line
-                                    type="monotone"
-                                    dataKey="sales"
-                                    stroke="#10B981"
-                                    strokeWidth={3}
-                                    dot={{ fill: "#10B981", r: 5 }}
-                                    activeDot={{ r: 7 }}
-                                />
-                            </LineChart>
-                        </ResponsiveContainer>
-                    </div>
-
                     {/* Traffic & Conversions */}
                     <div className="bg-white rounded-xl shadow-lg p-6 border border-gray-100">
                         <h3 className="text-xl font-bold text-gray-900 mb-4">
