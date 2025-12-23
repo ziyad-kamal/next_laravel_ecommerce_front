@@ -266,14 +266,10 @@ const UpdateItem = ({ params }: { params: Promise<{ id: number }> }) => {
         [fetchBrands, setFilteredBrands]
     );
 
-    const { debouncedFn: debouncedCategorySearch } = useDebounce(
-        handleCategorySearch,
-        { delay: 700 }
-    );
-    const { debouncedFn: debouncedBrandSearch } = useDebounce(
-        handleBrandSearch,
-        { delay: 700 }
-    );
+    const { debouncedFn: debouncedCategorySearch } =
+        useDebounce(handleCategorySearch);
+    const { debouncedFn: debouncedBrandSearch } =
+        useDebounce(handleBrandSearch);
 
     // Click outside effect
     useEffect(() => {

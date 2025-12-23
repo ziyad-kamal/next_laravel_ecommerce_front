@@ -1,4 +1,6 @@
-import React, { useState } from "react";
+"use client";
+
+import React, { useEffect, useState } from "react";
 import {
     ShoppingCart,
     DollarSign,
@@ -22,21 +24,14 @@ import {
     Area,
     AreaChart,
 } from "recharts";
+import sendRequest from "@/functions/sendRequest";
+import { useRouter } from "next/navigation";
 
 interface StatCardProps {
     title: string;
     value: string;
     change: number;
     icon: React.ReactNode;
-}
-
-interface Order {
-    id: string;
-    customer: string;
-    product: string;
-    amount: string;
-    status: "completed" | "pending" | "processing";
-    date: string;
 }
 
 const StatCard: React.FC<StatCardProps> = ({ title, value, change, icon }) => {
@@ -71,122 +66,132 @@ const StatCard: React.FC<StatCardProps> = ({ title, value, change, icon }) => {
 
 const Dashboard: React.FC = () => {
     const [selectedPeriod, setSelectedPeriod] = useState("7days");
-
-    const stats = [
+    const router = useRouter();
+    const [stats, setStats] = useState([
         {
             title: "Total sales",
             value: "$45,231",
             change: 12.5,
             icon: <DollarSign className="w-6 h-6 text-white" />,
         },
-        {
-            title: "Orders",
-            value: "1,234",
-            change: 8.2,
-            icon: <ShoppingCart className="w-6 h-6 text-white" />,
-        },
-        {
-            title: "Customers",
-            value: "892",
-            change: -2.4,
-            icon: <Users className="w-6 h-6 text-white" />,
-        },
-        {
-            title: "Products",
-            value: "456",
-            change: 5.1,
-            icon: <Package className="w-6 h-6 text-white" />,
-        },
-    ];
-
-    const salesData = [
+    ]);
+    const [salesData, setSalesData] = useState([
         { name: "Jan", sales: 4200, orders: 240 },
         { name: "Feb", sales: 3800, orders: 198 },
-        { name: "Mar", sales: 5100, orders: 310 },
-        { name: "Apr", sales: 4600, orders: 270 },
-        { name: "May", sales: 6200, orders: 380 },
-        { name: "Jun", sales: 5800, orders: 350 },
-        { name: "Jul", sales: 7200, orders: 420 },
-        { name: "Aug", sales: 6800, orders: 390 },
-        { name: "Sep", sales: 7800, orders: 450 },
-        { name: "Oct", sales: 8400, orders: 480 },
-        { name: "Nov", sales: 7600, orders: 440 },
-        { name: "Dec", sales: 9200, orders: 520 },
-    ];
-
-    const categoryData = [
+    ]);
+    const [categoryData, setCategoryData] = useState([
         { name: "Electronics", value: 4500, color: "#3B82F6" },
-        { name: "Clothing", value: 3200, color: "#8B5CF6" },
-        { name: "Home & Garden", value: 2800, color: "#EC4899" },
-        { name: "Sports", value: 2100, color: "#10B981" },
-        { name: "Books", value: 1400, color: "#F59E0B" },
-    ];
-
-    const trafficData = [
+    ]);
+    const [trafficData, setTrafficData] = useState([
         { day: "Mon", visits: 4200, conversions: 320 },
-        { day: "Tue", visits: 3800, conversions: 280 },
-        { day: "Wed", visits: 5100, conversions: 410 },
-        { day: "Thu", visits: 4600, conversions: 360 },
-        { day: "Fri", visits: 6200, conversions: 520 },
-        { day: "Sat", visits: 7800, conversions: 680 },
-        { day: "Sun", visits: 7200, conversions: 620 },
-    ];
+    ]);
 
-    const recentOrders: Order[] = [
-        {
-            id: "#12345",
-            customer: "John Doe",
-            product: "Wireless Headphones",
-            amount: "$299",
-            status: "completed",
-            date: "2024-12-10",
-        },
-        {
-            id: "#12346",
-            customer: "Jane Smith",
-            product: "Smart Watch",
-            amount: "$399",
-            status: "processing",
-            date: "2024-12-10",
-        },
-        {
-            id: "#12347",
-            customer: "Bob Johnson",
-            product: "Laptop Stand",
-            amount: "$89",
-            status: "pending",
-            date: "2024-12-09",
-        },
-        {
-            id: "#12348",
-            customer: "Alice Brown",
-            product: "USB-C Hub",
-            amount: "$49",
-            status: "completed",
-            date: "2024-12-09",
-        },
-        {
-            id: "#12349",
-            customer: "Charlie Wilson",
-            product: "Keyboard",
-            amount: "$129",
-            status: "processing",
-            date: "2024-12-08",
-        },
-    ];
+    useEffect(() => {
+        const url = `/admin-panel/dashboard/index`;
+        const abortController = new AbortController();
+        const token = localStorage.getItem("adminToken");
+        const categoryColors = [
+            "#3B82F6",
+            "#8B5CF6",
+            "#EC4899",
+            "#10B981",
+            "#F59E0B",
+        ];
 
-    const getStatusColor = (status: string) => {
-        switch (status) {
-            case "completed":
-                return "bg-green-100 text-green-800";
-            case "processing":
-                return "bg-blue-100 text-blue-800";
-            case "pending":
-                return "bg-yellow-100 text-yellow-800";
-            default:
-                return "bg-gray-100 text-gray-800";
-        }
-    };
+        const fetchData = async () => {
+            const response = await sendRequest(
+                "post",
+                url,
+                { days: 300, months: 6 },
+                abortController,
+                token,
+                router
+            );
+
+            if (response && response.success) {
+                const categoriesWithColors = response.data.category_data.map(
+                    (category: object, index: number) => ({
+                        ...category,
+                        color: categoryColors[index % categoryColors.length],
+                    })
+                );
+
+                setStats(response.data.stats);
+                setSalesData(response.data.sales_data);
+                setCategoryData(categoriesWithColors);
+                setTrafficData(response.data.traffic_data);
+            }
+        };
+
+        fetchData();
+
+        return () => abortController.abort();
+    }, [router]);
+
+    // const stats = [
+    //     {
+    //         title: "Total sales",
+    //         value: "$45,231",
+    //         change: 12.5,
+    //         icon: <DollarSign className="w-6 h-6 text-white" />,
+    //     },
+    //     {
+    //         title: "Orders",
+    //         value: "1,234",
+    //         change: 8.2,
+    //         icon: <ShoppingCart className="w-6 h-6 text-white" />,
+    //     },
+    //     {
+    //         title: "Customers",
+    //         value: "892",
+    //         change: -2.4,
+    //         icon: <Users className="w-6 h-6 text-white" />,
+    //     },
+    //     {
+    //         title: "Products",
+    //         value: "456",
+    //         change: 5.1,
+    //         icon: <Package className="w-6 h-6 text-white" />,
+    //     },
+    // ];
+
+    // const salesData = [
+    //     { name: "Jan", sales: 4200, orders: 240 },
+    //     { name: "Feb", sales: 3800, orders: 198 },
+    //     { name: "Mar", sales: 5100, orders: 310 },
+    //     { name: "Apr", sales: 4600, orders: 270 },
+    //     { name: "May", sales: 6200, orders: 380 },
+    //     { name: "Jun", sales: 5800, orders: 350 },
+    //     { name: "Jul", sales: 7200, orders: 420 },
+    //     { name: "Aug", sales: 6800, orders: 390 },
+    //     { name: "Sep", sales: 7800, orders: 450 },
+    //     { name: "Oct", sales: 8400, orders: 480 },
+    //     { name: "Nov", sales: 7600, orders: 440 },
+    //     { name: "Dec", sales: 9200, orders: 520 },
+    // ];
+
+    // const trafficData = [
+    //     { day: "Mon", visits: 4200, conversions: 320 },
+    //     { day: "Tue", visits: 3800, conversions: 280 },
+    //     { day: "Wed", visits: 5100, conversions: 410 },
+    //     { day: "Thu", visits: 4600, conversions: 360 },
+    //     { day: "Fri", visits: 6200, conversions: 520 },
+    //     { day: "Sat", visits: 7800, conversions: 680 },
+    //     { day: "Sun", visits: 7200, conversions: 620 },
+    // ];
+
+    // const getStatusColor = (status: string) => {
+    //     switch (status) {
+    //         case "completed":
+    //             return "bg-green-100 text-green-800";
+    //         case "processing":
+    //             return "bg-blue-100 text-blue-800";
+    //         case "pending":
+    //             return "bg-yellow-100 text-yellow-800";
+    //         default:
+    //             return "bg-gray-100 text-gray-800";
+    //     }
+    // };
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 p-8">
@@ -420,7 +425,7 @@ const Dashboard: React.FC = () => {
                                     </th>
                                 </tr>
                             </thead>
-                            <tbody className="bg-white divide-y divide-gray-200">
+                            {/* <tbody className="bg-white divide-y divide-gray-200">
                                 {recentOrders.map((order) => (
                                     <tr
                                         key={order.id}
@@ -452,7 +457,7 @@ const Dashboard: React.FC = () => {
                                         </td>
                                     </tr>
                                 ))}
-                            </tbody>
+                            </tbody> */}
                         </table>
                     </div>
                 </div>
