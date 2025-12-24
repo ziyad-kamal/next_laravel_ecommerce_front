@@ -98,11 +98,18 @@ const Dashboard: React.FC = () => {
             "#F59E0B",
         ];
 
+        const statsIconMap: Record<string, React.ReactNode> = {
+            "Total sales": <DollarSign className="w-6 h-6 text-white" />,
+            Orders: <ShoppingCart className="w-6 h-6 text-white" />,
+            Users: <Users className="w-6 h-6 text-white" />,
+            Items: <Package className="w-6 h-6 text-white" />,
+        };
+
         const fetchData = async () => {
             const response = await sendRequest(
                 "post",
                 url,
-                { days: 300, months: 6 },
+                { months: 9 },
                 abortController,
                 token,
                 router
@@ -116,7 +123,14 @@ const Dashboard: React.FC = () => {
                     })
                 );
 
-                setStats(response.data.stats);
+                const statsWithIcons = response.data.stats.map(
+                    (stat: { title: string }) => ({
+                        ...stat,
+                        icon: statsIconMap[stat.title] || null,
+                    })
+                );
+
+                setStats(statsWithIcons);
                 setSalesData(response.data.sales_data);
                 setCategoryData(categoriesWithColors);
                 setTrafficData(response.data.traffic_data);
@@ -127,58 +141,6 @@ const Dashboard: React.FC = () => {
 
         return () => abortController.abort();
     }, [router]);
-
-    // const stats = [
-    //     {
-    //         title: "Total sales",
-    //         value: "$45,231",
-    //         change: 12.5,
-    //         icon: <DollarSign className="w-6 h-6 text-white" />,
-    //     },
-    //     {
-    //         title: "Orders",
-    //         value: "1,234",
-    //         change: 8.2,
-    //         icon: <ShoppingCart className="w-6 h-6 text-white" />,
-    //     },
-    //     {
-    //         title: "Customers",
-    //         value: "892",
-    //         change: -2.4,
-    //         icon: <Users className="w-6 h-6 text-white" />,
-    //     },
-    //     {
-    //         title: "Products",
-    //         value: "456",
-    //         change: 5.1,
-    //         icon: <Package className="w-6 h-6 text-white" />,
-    //     },
-    // ];
-
-    // const salesData = [
-    //     { name: "Jan", sales: 4200, orders: 240 },
-    //     { name: "Feb", sales: 3800, orders: 198 },
-    //     { name: "Mar", sales: 5100, orders: 310 },
-    //     { name: "Apr", sales: 4600, orders: 270 },
-    //     { name: "May", sales: 6200, orders: 380 },
-    //     { name: "Jun", sales: 5800, orders: 350 },
-    //     { name: "Jul", sales: 7200, orders: 420 },
-    //     { name: "Aug", sales: 6800, orders: 390 },
-    //     { name: "Sep", sales: 7800, orders: 450 },
-    //     { name: "Oct", sales: 8400, orders: 480 },
-    //     { name: "Nov", sales: 7600, orders: 440 },
-    //     { name: "Dec", sales: 9200, orders: 520 },
-    // ];
-
-    // const trafficData = [
-    //     { day: "Mon", visits: 4200, conversions: 320 },
-    //     { day: "Tue", visits: 3800, conversions: 280 },
-    //     { day: "Wed", visits: 5100, conversions: 410 },
-    //     { day: "Thu", visits: 4600, conversions: 360 },
-    //     { day: "Fri", visits: 6200, conversions: 520 },
-    //     { day: "Sat", visits: 7800, conversions: 680 },
-    //     { day: "Sun", visits: 7200, conversions: 620 },
-    // ];
 
     // const getStatusColor = (status: string) => {
     //     switch (status) {
