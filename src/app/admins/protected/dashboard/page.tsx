@@ -26,6 +26,7 @@ import {
 } from "recharts";
 import sendRequest from "@/functions/sendRequest";
 import { useRouter } from "next/navigation";
+import OrderDetailsState from "@/interfaces/states/OrderDetailsState";
 
 interface StatCardProps {
     title: string;
@@ -65,26 +66,27 @@ const StatCard: React.FC<StatCardProps> = ({ title, value, change, icon }) => {
 };
 
 const Dashboard: React.FC = () => {
-    const [selectedPeriod, setSelectedPeriod] = useState("7days");
+    const [selectedPeriod, setSelectedPeriod] = useState("6");
     const router = useRouter();
     const [stats, setStats] = useState([
         {
-            title: "Total sales",
-            value: "$45,231",
-            change: 12.5,
+            title: "",
+            value: "",
+            change: 0,
             icon: <DollarSign className="w-6 h-6 text-white" />,
         },
     ]);
     const [salesData, setSalesData] = useState([
-        { name: "Jan", sales: 4200, orders: 240 },
-        { name: "Feb", sales: 3800, orders: 198 },
+        { name: "", sales: 0, orders: 0 },
     ]);
     const [categoryData, setCategoryData] = useState([
-        { name: "Electronics", value: 4500, color: "#3B82F6" },
+        { name: "Electronics", value: 0, color: "" },
     ]);
     const [trafficData, setTrafficData] = useState([
-        { day: "Mon", visits: 4200, conversions: 320 },
+        { day: "", visits: 0, conversions: 0 },
     ]);
+
+    const [recentOrders, setRecentOrders] = useState<OrderDetailsState[]>([]);
 
     useEffect(() => {
         const url = `/admin-panel/dashboard/index`;
@@ -109,7 +111,7 @@ const Dashboard: React.FC = () => {
             const response = await sendRequest(
                 "post",
                 url,
-                { months: 9 },
+                { months: selectedPeriod },
                 abortController,
                 token,
                 router
@@ -134,26 +136,35 @@ const Dashboard: React.FC = () => {
                 setSalesData(response.data.sales_data);
                 setCategoryData(categoriesWithColors);
                 setTrafficData(response.data.traffic_data);
+                setRecentOrders(response.data.recent_orders);
             }
         };
 
         fetchData();
 
         return () => abortController.abort();
-    }, [router]);
+    }, [router, selectedPeriod]);
 
-    // const getStatusColor = (status: string) => {
-    //     switch (status) {
-    //         case "completed":
-    //             return "bg-green-100 text-green-800";
-    //         case "processing":
-    //             return "bg-blue-100 text-blue-800";
-    //         case "pending":
-    //             return "bg-yellow-100 text-yellow-800";
-    //         default:
-    //             return "bg-gray-100 text-gray-800";
-    //     }
-    // };
+    const getStatusColor = (status: string) => {
+        switch (status) {
+            case "delivered":
+                return "bg-green-100 text-green-800";
+            case "processing":
+                return "bg-blue-100 text-blue-600";
+            case "pending":
+                return "bg-yellow-100 text-yellow-800";
+            case "shipped":
+                return "bg-blue-300 text-blue-800";
+            case "canceled":
+                return "bg-red-100 text-red-800";
+            case "pendingToRefund":
+                return "bg-gray-100 text-gray-400";
+            case "refunding":
+                return "bg-gray-300 text-gray-600";
+            default:
+                return "bg-gray-500 text-gray-800";
+        }
+    };
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 p-8">
@@ -173,10 +184,10 @@ const Dashboard: React.FC = () => {
                         onChange={(e) => setSelectedPeriod(e.target.value)}
                         className="px-6 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white shadow-sm font-medium"
                     >
-                        <option value="7days">Last 7 Days</option>
-                        <option value="30days">Last 30 Days</option>
-                        <option value="90days">Last 90 Days</option>
-                        <option value="year">This Year</option>
+                        <option value="1">Last month</option>
+                        <option value="3">Last 3 month</option>
+                        <option value="6">Last 6 month</option>
+                        <option value="12">This Year</option>
                     </select>
                 </div>
 
@@ -371,23 +382,20 @@ const Dashboard: React.FC = () => {
                                         Order ID
                                     </th>
                                     <th className="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">
-                                        Customer
+                                        total amount
                                     </th>
                                     <th className="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">
-                                        Product
+                                        date of delivery
                                     </th>
                                     <th className="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">
-                                        Amount
+                                        payment method
                                     </th>
                                     <th className="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">
                                         Status
                                     </th>
-                                    <th className="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">
-                                        Date
-                                    </th>
                                 </tr>
                             </thead>
-                            {/* <tbody className="bg-white divide-y divide-gray-200">
+                            <tbody className="bg-white divide-y divide-gray-200">
                                 {recentOrders.map((order) => (
                                     <tr
                                         key={order.id}
@@ -397,29 +405,26 @@ const Dashboard: React.FC = () => {
                                             {order.id}
                                         </td>
                                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 font-medium">
-                                            {order.customer}
+                                            {order.total_amount}
                                         </td>
                                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
-                                            {order.product}
+                                            {order.date_of_delivery}
                                         </td>
                                         <td className="px-6 py-4 whitespace-nowrap text-sm font-bold text-gray-900">
-                                            {order.amount}
+                                            {order.method}
                                         </td>
                                         <td className="px-6 py-4 whitespace-nowrap">
                                             <span
                                                 className={`px-3 py-1 rounded-full text-xs font-bold ${getStatusColor(
-                                                    order.status
+                                                    order.state
                                                 )}`}
                                             >
-                                                {order.status}
+                                                {order.state}
                                             </span>
-                                        </td>
-                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
-                                            {order.date}
                                         </td>
                                     </tr>
                                 ))}
-                            </tbody> */}
+                            </tbody>
                         </table>
                     </div>
                 </div>

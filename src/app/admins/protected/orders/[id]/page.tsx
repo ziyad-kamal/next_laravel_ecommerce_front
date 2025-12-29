@@ -36,7 +36,6 @@ const OrderDetailsPage = ({ params }: { params: Promise<{ id: number }> }) => {
         id: 0,
         total_amount: 0,
         state: "",
-        quantity: 0,
         method: "",
         user: {
             name: "",
@@ -49,7 +48,7 @@ const OrderDetailsPage = ({ params }: { params: Promise<{ id: number }> }) => {
             },
         },
 
-        created_at: "",
+        date_of_delivery: "",
         items: [],
     });
 
@@ -238,7 +237,7 @@ const OrderDetailsPage = ({ params }: { params: Promise<{ id: number }> }) => {
                             </h1>
                             <p className="text-gray-600">
                                 <i className="far fa-clock mr-2"></i>
-                                {order.created_at}
+                                {order.date_of_delivery}
                             </p>
                         </div>
                     </div>
@@ -277,43 +276,49 @@ const OrderDetailsPage = ({ params }: { params: Promise<{ id: number }> }) => {
                                 Order Items
                             </h2>
                             <div className="space-y-4">
-                                {order.items.map((item) => (
-                                    <div
-                                        key={item.id}
-                                        className="flex items-center gap-4 pb-4 border-b last:border-b-0"
-                                    >
-                                        <div className="relative w-16 h-16 bg-gray-100 rounded-lg flex items-center justify-center flex-shrink-0 overflow-hidden">
-                                            {item.images && item.images[0] ? (
-                                                <Image
-                                                    src={item.images[0].path}
-                                                    alt={item.name}
-                                                    fill
-                                                    className="object-contain p-1"
-                                                    sizes="64px"
-                                                    unoptimized
-                                                />
-                                            ) : (
-                                                <i className="fas fa-image text-gray-400 text-2xl"></i>
-                                            )}
-                                        </div>
-                                        <div className="flex-1">
-                                            <h3 className="font-medium text-gray-900">
-                                                {item.name}
-                                            </h3>
-                                            <p className="text-sm text-gray-500">
-                                                usa: {item.price}
-                                            </p>
-                                        </div>
-                                        <div className="text-right">
-                                            <p className="text-sm text-gray-600">
+                                {order.items
+                                    ? order.items.map((item) => (
+                                          <div
+                                              key={item.id}
+                                              className="flex items-center gap-4 pb-4 border-b last:border-b-0"
+                                          >
+                                              <div className="relative w-16 h-16 bg-gray-100 rounded-lg flex items-center justify-center flex-shrink-0 overflow-hidden">
+                                                  {item.images &&
+                                                  item.images[0] ? (
+                                                      <Image
+                                                          src={
+                                                              item.images[0]
+                                                                  .path
+                                                          }
+                                                          alt={item.name}
+                                                          fill
+                                                          className="object-contain p-1"
+                                                          sizes="64px"
+                                                          unoptimized
+                                                      />
+                                                  ) : (
+                                                      <i className="fas fa-image text-gray-400 text-2xl"></i>
+                                                  )}
+                                              </div>
+                                              <div className="flex-1">
+                                                  <h3 className="font-medium text-gray-900">
+                                                      {item.name}
+                                                  </h3>
+                                                  <p className="text-sm text-gray-500">
+                                                      usa: {item.price}
+                                                  </p>
+                                              </div>
+                                              <div className="text-right">
+                                                  {/* <p className="text-sm text-gray-600">
                                                 Qty: {order.quantity}
                                             </p>
                                             <p className="font-semibold text-gray-900">
                                                 ${item.price * order.quantity}
-                                            </p>
-                                        </div>
-                                    </div>
-                                ))}
+                                            </p> */}
+                                              </div>
+                                          </div>
+                                      ))
+                                    : null}
                             </div>
 
                             {/* Order Summary */}
@@ -343,7 +348,11 @@ const OrderDetailsPage = ({ params }: { params: Promise<{ id: number }> }) => {
                                 </h2>
                                 {
                                     <div className="text-gray-700 space-y-1">
-                                        <p>{order.user.user_infos.address}</p>
+                                        <p>
+                                            {order.user?.user_infos
+                                                ? order.user.user_infos.address
+                                                : null}
+                                        </p>
                                     </div>
                                 }
                             </div>
@@ -362,7 +371,7 @@ const OrderDetailsPage = ({ params }: { params: Promise<{ id: number }> }) => {
                                     <div className="flex items-center gap-3 mb-4">
                                         <div>
                                             <h3 className="font-medium text-gray-900">
-                                                {order.user.name}
+                                                {order.user?.name}
                                             </h3>
                                             <button className="text-sm text-blue-600 hover:underline">
                                                 View Profile
@@ -376,7 +385,7 @@ const OrderDetailsPage = ({ params }: { params: Promise<{ id: number }> }) => {
                                                 className="text-primary-color"
                                             />
                                             <span className="text-sm">
-                                                {order.user.email}
+                                                {order.user?.email}
                                             </span>
                                         </div>
                                         <div className="flex items-center gap-3 text-gray-700">
@@ -385,7 +394,10 @@ const OrderDetailsPage = ({ params }: { params: Promise<{ id: number }> }) => {
                                                 className="text-primary-color"
                                             />
                                             <span className="text-sm">
-                                                {order.user.user_infos.phone}
+                                                {order.user?.user_infos
+                                                    ? order.user.user_infos
+                                                          .phone
+                                                    : null}
                                             </span>
                                         </div>
                                     </div>
@@ -413,7 +425,10 @@ const OrderDetailsPage = ({ params }: { params: Promise<{ id: number }> }) => {
                                             Card Type
                                         </span>
                                         <span className="font-medium">
-                                            {order.user.user_infos.card_type}
+                                            {order.user?.user_infos
+                                                ? order.user.user_infos
+                                                      .card_type
+                                                : null}
                                         </span>
                                     </div>
                                     <div className="flex justify-between">
@@ -422,9 +437,11 @@ const OrderDetailsPage = ({ params }: { params: Promise<{ id: number }> }) => {
                                         </span>
                                         <span className="font-medium">
                                             ••••{" "}
-                                            {order.user.user_infos.card_num.match(
-                                                /(\d{4})[^"]*"/
-                                            )?.[1] || "••••"}
+                                            {order.user?.user_infos
+                                                ? order.user.user_infos.card_num.match(
+                                                      /(\d{4})[^"]*"/
+                                                  )
+                                                : null?.[1] || "••••"}
                                         </span>
                                     </div>
                                 </div>

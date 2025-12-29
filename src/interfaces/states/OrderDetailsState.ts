@@ -1,7 +1,6 @@
 interface OrderDetailsState {
     id: number;
     total_amount: number;
-    quantity: number;
     method: string;
     user: {
         name: string;
@@ -12,11 +11,11 @@ interface OrderDetailsState {
             card_num: string;
             phone: number | null;
         };
-    };
+    } | null;
 
     state: string;
-    created_at: string;
-    items: {
+    date_of_delivery: string;
+    items?: {
         id: number;
         name: string;
         admin_name: string;
