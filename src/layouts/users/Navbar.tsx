@@ -2,23 +2,20 @@ import sendRequest from "@/functions/sendRequest";
 import { useAppDispatch, useAppSelector } from "@/lib/hooks";
 import { display } from "@/redux/DisplayToast";
 import {
-    faBars,
-    faBell,
-    faCartShopping,
-    faMagnifyingGlass,
-    faShoppingCart,
-    faUser,
-    faXmark,
-    faTrash,
-    faPlus,
-    faMinus,
-    faCheck,
-    faTimes,
-    faCog,
-    faSignOutAlt,
-    faChevronDown,
-} from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+    Menu,
+    Bell,
+    ShoppingCart,
+    Search,
+    User,
+    X,
+    Trash2,
+    Plus,
+    Minus,
+    Check,
+    Settings,
+    LogOut,
+    ChevronDown,
+} from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import React, { useState, useEffect, useRef } from "react";
@@ -289,10 +286,7 @@ const Navbar = () => {
                     <div className="hidden lg:flex flex-1 max-w-lg mx-8">
                         <div className="w-full">
                             <div className="relative">
-                                <FontAwesomeIcon
-                                    icon={faMagnifyingGlass}
-                                    className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4"
-                                />
+                                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
                                 <input
                                     type="text"
                                     value={searchQuery}
@@ -321,10 +315,7 @@ const Navbar = () => {
                                     }
                                     className="relative p-2 text-gray-300 hover:text-white transition-colors"
                                 >
-                                    <FontAwesomeIcon
-                                        icon={faBell}
-                                        className="w-5 h-5"
-                                    />
+                                    <Bell className="w-5 h-5" />
                                     {notificationCount > 0 && (
                                         <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
                                             {notificationCount}
@@ -403,12 +394,7 @@ const Navbar = () => {
                                                                             className="text-green-600 hover:text-green-800 p-1"
                                                                             title="Mark as read"
                                                                         >
-                                                                            <FontAwesomeIcon
-                                                                                icon={
-                                                                                    faCheck
-                                                                                }
-                                                                                className="w-3 h-3"
-                                                                            />
+                                                                            <Check className="w-3 h-3" />
                                                                         </button>
                                                                     )}
                                                                     <button
@@ -420,12 +406,7 @@ const Navbar = () => {
                                                                         className="text-red-600 hover:text-red-800 p-1"
                                                                         title="Delete"
                                                                     >
-                                                                        <FontAwesomeIcon
-                                                                            icon={
-                                                                                faTimes
-                                                                            }
-                                                                            className="w-3 h-3"
-                                                                        />
+                                                                        <X className="w-3 h-3" />
                                                                     </button>
                                                                 </div>
                                                             </div>
@@ -447,10 +428,7 @@ const Navbar = () => {
                                     onClick={() => setShowCart(!showCart)}
                                     className="relative p-2 text-gray-300 hover:text-white transition-colors"
                                 >
-                                    <FontAwesomeIcon
-                                        icon={faShoppingCart}
-                                        className="w-5 h-5"
-                                    />
+                                    <ShoppingCart className="w-5 h-5" />
                                     {cartCount > 0 && (
                                         <span className="absolute -top-1 -right-1 bg-blue-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
                                             {cartCount}
@@ -512,12 +490,7 @@ const Navbar = () => {
                                                                     }
                                                                     className="w-6 h-6 bg-gray-200 hover:bg-gray-300 rounded-full flex items-center justify-center"
                                                                 >
-                                                                    <FontAwesomeIcon
-                                                                        icon={
-                                                                            faMinus
-                                                                        }
-                                                                        className="w-2 h-2 text-gray-600"
-                                                                    />
+                                                                    <Minus className="w-2 h-2 text-gray-600" />
                                                                 </button>
                                                                 <span className="w-8 text-center font-medium text-gray-800">
                                                                     {
@@ -533,12 +506,7 @@ const Navbar = () => {
                                                                     }
                                                                     className="w-6 h-6 bg-gray-200 hover:bg-gray-300 rounded-full flex items-center justify-center"
                                                                 >
-                                                                    <FontAwesomeIcon
-                                                                        icon={
-                                                                            faPlus
-                                                                        }
-                                                                        className="w-2 h-2 text-gray-600"
-                                                                    />
+                                                                    <Plus className="w-2 h-2 text-gray-600" />
                                                                 </button>
                                                                 <button
                                                                     onClick={() =>
@@ -548,12 +516,7 @@ const Navbar = () => {
                                                                     }
                                                                     className="text-red-600 hover:text-red-800 p-1"
                                                                 >
-                                                                    <FontAwesomeIcon
-                                                                        icon={
-                                                                            faTrash
-                                                                        }
-                                                                        className="w-3 h-3"
-                                                                    />
+                                                                    <Trash2 className="w-3 h-3" />
                                                                 </button>
                                                             </div>
                                                         </div>
@@ -591,14 +554,8 @@ const Navbar = () => {
                                     }
                                     className="flex items-center space-x-1 p-2 text-gray-300 hover:text-white transition-colors"
                                 >
-                                    <FontAwesomeIcon
-                                        icon={faUser}
-                                        className="w-5 h-5"
-                                    />
-                                    <FontAwesomeIcon
-                                        icon={faChevronDown}
-                                        className="w-3 h-3"
-                                    />
+                                    <User className="w-5 h-5" />
+                                    <ChevronDown className="w-3 h-3" />
                                 </button>
 
                                 {/* User Menu Dropdown */}
@@ -609,10 +566,7 @@ const Navbar = () => {
                                                 onClick={handleSettings}
                                                 className="w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-200 flex items-center space-x-3 transition-colors"
                                             >
-                                                <FontAwesomeIcon
-                                                    icon={faCog}
-                                                    className="w-4 h-4 text-gray-500"
-                                                />
+                                                <Settings className="w-4 h-4 text-gray-500" />
                                                 <span>Settings</span>
                                             </button>
                                             <div className="border-t border-gray-100 my-1"></div>
@@ -620,10 +574,7 @@ const Navbar = () => {
                                                 onClick={handleLogout}
                                                 className="w-full text-left px-4 py-2 text-red-600 hover:bg-red-100 flex items-center space-x-3 transition-colors"
                                             >
-                                                <FontAwesomeIcon
-                                                    icon={faSignOutAlt}
-                                                    className="w-4 h-4 text-red-500"
-                                                />
+                                                <LogOut className="w-4 h-4 text-red-500" />
                                                 <span>Logout</span>
                                             </button>
                                         </div>
@@ -654,15 +605,9 @@ const Navbar = () => {
                             className="text-gray-300 hover:text-white p-2 transition-colors"
                         >
                             {isMenuOpen ? (
-                                <FontAwesomeIcon
-                                    icon={faXmark}
-                                    className="w-6 h-6"
-                                />
+                                <X className="w-6 h-6" />
                             ) : (
-                                <FontAwesomeIcon
-                                    icon={faBars}
-                                    className="w-6 h-6"
-                                />
+                                <Menu className="w-6 h-6" />
                             )}
                         </button>
                     </div>
@@ -676,10 +621,7 @@ const Navbar = () => {
                         {/* Mobile Search */}
                         <div className="px-3 py-2">
                             <div className="relative">
-                                <FontAwesomeIcon
-                                    icon={faMagnifyingGlass}
-                                    className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4"
-                                />
+                                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
                                 <input
                                     type="text"
                                     value={searchQuery}
@@ -719,20 +661,14 @@ const Navbar = () => {
                                     onClick={handleSettings}
                                     className="text-gray-300 hover:text-white block px-3 py-2 text-base font-medium transition-colors w-full text-left"
                                 >
-                                    <FontAwesomeIcon
-                                        icon={faCog}
-                                        className="w-4 h-4 mr-3"
-                                    />
+                                    <Settings className="w-4 h-4 mr-3 inline" />
                                     Settings
                                 </button>
                                 <button
                                     onClick={handleLogout}
                                     className="text-red-400 hover:text-red-300 block px-3 py-2 text-base font-medium transition-colors w-full text-left"
                                 >
-                                    <FontAwesomeIcon
-                                        icon={faSignOutAlt}
-                                        className="w-4 h-4 mr-3"
-                                    />
+                                    <LogOut className="w-4 h-4 mr-3 inline" />
                                     Logout
                                 </button>
                             </div>
@@ -741,10 +677,7 @@ const Navbar = () => {
                         {/* Mobile Icons */}
                         <div className="flex items-center space-x-4 px-3 py-2 border-t border-gray-800 mt-2">
                             <button className="relative p-2 cursor-pointer text-gray-300 hover:text-white transition-colors">
-                                <FontAwesomeIcon
-                                    icon={faBell}
-                                    className="w-5 h-5"
-                                />
+                                <Bell className="w-5 h-5" />
                                 {notificationCount > 0 && (
                                     <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
                                         {notificationCount}
@@ -752,10 +685,7 @@ const Navbar = () => {
                                 )}
                             </button>
                             <button className="relative cursor-pointer p-2 text-gray-300 hover:text-white transition-colors">
-                                <FontAwesomeIcon
-                                    icon={faCartShopping}
-                                    className="w-5 h-5"
-                                />
+                                <ShoppingCart className="w-5 h-5" />
                                 {cartCount > 0 && (
                                     <span className="absolute -top-1 -right-1 bg-blue-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
                                         {cartCount}

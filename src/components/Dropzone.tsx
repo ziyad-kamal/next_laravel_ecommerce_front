@@ -2,9 +2,7 @@ import Image from "next/image";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useDropzone, FileRejection } from "react-dropzone";
 import DropzoneProps from "@/interfaces/props/DropzoneProps";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faArrowUp } from "@fortawesome/free-solid-svg-icons";
-import { faXmark } from "@fortawesome/free-solid-svg-icons/faXmark";
+import { Upload, X } from "lucide-react";
 import Button from "./Button";
 import { useAppDispatch } from "@/lib/hooks";
 import { useRouter } from "next/navigation";
@@ -242,10 +240,7 @@ const Dropzone = <T extends object>({
             >
                 <input {...getInputProps()} />
                 <div className="flex  flex-col cursor-pointer items-center justify-center gap-4">
-                    <FontAwesomeIcon
-                        icon={faArrowUp}
-                        className="w-5 h-5 fill-current"
-                    />
+                    <Upload className="w-5 h-5" />
                     {isDragActive ? (
                         <p>Drop the files here ...</p>
                     ) : (
@@ -295,10 +290,7 @@ const Dropzone = <T extends object>({
                                         className="w-7 h-7 border cursor-pointer  bg-red-500 rounded-full flex justify-center items-center absolute -top-3 -right-3 hover:bg-red-600 transition-colors"
                                         onClick={() => removeFile(file)}
                                     >
-                                        <FontAwesomeIcon
-                                            icon={faXmark}
-                                            className="w-5 h-5  hover:fill-secondary-400 transition-colors"
-                                        />
+                                        <X className="w-5 h-5" />
                                     </button>
                                 </li>
                             ) : null
@@ -353,10 +345,7 @@ const Dropzone = <T extends object>({
                                                 removeFile(file.path)
                                             }
                                         >
-                                            <FontAwesomeIcon
-                                                icon={faXmark}
-                                                className="w-5 h-5  hover:fill-secondary-400 transition-colors"
-                                            />
+                                            <X className="w-5 h-5" />
                                         </button>
                                         <p className="mt-2 text-neutral-500 text-[12px] font-medium">
                                             {file.originalName}

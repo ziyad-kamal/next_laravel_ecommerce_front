@@ -1,11 +1,6 @@
-import {
-    faArrowDown,
-    faArrowUp,
-    faPlus,
-} from "@fortawesome/free-solid-svg-icons";
+import { ArrowDown, ArrowUp, Plus } from "lucide-react";
 import Button from "./Button";
 import TableProps from "@/interfaces/props/TableProps";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 export default function Table({
     title,
@@ -28,15 +23,9 @@ export default function Table({
                 {sortConfig.keyToSort === header &&
                 sortConfig.keyToSort !== "action" ? (
                     sortConfig.direction === "asc" ? (
-                        <FontAwesomeIcon
-                            icon={faArrowUp}
-                            className="mx-1"
-                        />
+                        <ArrowUp className="mx-1 inline w-4 h-4" />
                     ) : (
-                        <FontAwesomeIcon
-                            icon={faArrowDown}
-                            className="mx-1"
-                        />
+                        <ArrowDown className="mx-1 inline w-4 h-4" />
                     )
                 ) : null}
             </th>
@@ -59,7 +48,7 @@ export default function Table({
                     <Button
                         classes={"bg-indigo-600 hover:bg-indigo-700 text-white"}
                         text={`Add`}
-                        icon={faPlus}
+                        icon={Plus}
                         handleClick={handleBtnClick}
                     />
                 </div>

@@ -1,7 +1,7 @@
 "use client";
 
 import { memo, useCallback, useEffect, useRef, useState } from "react";
-import { faEdit, faTrash } from "@fortawesome/free-solid-svg-icons";
+import { Edit, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import sendRequest from "@/functions/sendRequest";
 import { useAppDispatch, useAppSelector } from "@/lib/hooks";
@@ -223,14 +223,14 @@ const GetCategories = () => {
                         classes={"bg-indigo-600 hover:bg-indigo-700 text-white"}
                         text={`Edit`}
                         type="button"
-                        icon={faEdit}
+                        icon={Edit}
                         handleClick={() => handleEdit(category.id)}
                     />
                     <Button
                         classes={"bg-red-600 hover:bg-red-700 text-white"}
                         text={`delete`}
                         type="button"
-                        icon={faTrash}
+                        icon={Trash2}
                         handleClick={() => handleDelete(category.id)}
                     />
                 </td>

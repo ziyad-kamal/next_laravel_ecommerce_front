@@ -4,7 +4,7 @@ const navbarLinks = (): { href: string; name: string }[] => {
         { href: "/admins/protected/brands", name: "brands" },
         { href: "/admins/protected/items", name: "items" },
         { href: "/admins/protected/users", name: "users" },
-        { href: "/admins/protected/home", name: "home" },
+        { href: "/admins/protected/dashboard", name: "home" },
     ];
 };
 

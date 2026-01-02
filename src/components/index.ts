@@ -6,6 +6,7 @@ import Dropdown from "./Dropdown";
 import Dropzone from "./Dropzone";
 import SelectInput from "./SelectInput";
 import Textarea from "./Textarea";
+import StatCard from "./StatCard";
 
 export {
     Button,
@@ -16,4 +17,5 @@ export {
     Dropzone,
     SelectInput,
     Textarea,
+    StatCard,
 };

@@ -1,14 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import {
-    ShoppingCart,
-    DollarSign,
-    Users,
-    Package,
-    TrendingUp,
-    TrendingDown,
-} from "lucide-react";
+import { ShoppingCart, DollarSign, Users, Package } from "lucide-react";
 import {
     BarChart,
     Bar,
@@ -27,43 +20,7 @@ import {
 import sendRequest from "@/functions/sendRequest";
 import { useRouter } from "next/navigation";
 import OrderDetailsState from "@/interfaces/states/OrderDetailsState";
-
-interface StatCardProps {
-    title: string;
-    value: string;
-    change: number;
-    icon: React.ReactNode;
-}
-
-const StatCard: React.FC<StatCardProps> = ({ title, value, change, icon }) => {
-    const isPositive = change >= 0;
-
-    return (
-        <div className="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition-shadow border border-gray-100">
-            <div className="flex items-center justify-between mb-4">
-                <div className="p-3 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg shadow-md">
-                    {icon}
-                </div>
-                <div
-                    className={`flex items-center text-sm font-bold ${
-                        isPositive ? "text-green-600" : "text-red-600"
-                    }`}
-                >
-                    {isPositive ? (
-                        <TrendingUp className="w-4 h-4 mr-1" />
-                    ) : (
-                        <TrendingDown className="w-4 h-4 mr-1" />
-                    )}
-                    {Math.abs(change)}%
-                </div>
-            </div>
-            <h3 className="text-gray-500 text-sm font-medium uppercase tracking-wide">
-                {title}
-            </h3>
-            <p className="text-3xl font-bold text-gray-900 mt-2">{value}</p>
-        </div>
-    );
-};
+import { StatCard } from "@/components";
 
 const Dashboard: React.FC = () => {
     const [selectedPeriod, setSelectedPeriod] = useState("6");
@@ -80,7 +37,7 @@ const Dashboard: React.FC = () => {
         { name: "", sales: 0, orders: 0 },
     ]);
     const [categoryData, setCategoryData] = useState([
-        { name: "Electronics", value: 0, color: "" },
+        { name: "", value: 0, color: "" },
     ]);
     const [trafficData, setTrafficData] = useState([
         { day: "", visits: 0, conversions: 0 },
@@ -121,7 +78,7 @@ const Dashboard: React.FC = () => {
                 const categoriesWithColors = response.data.category_data.map(
                     (category: object, index: number) => ({
                         ...category,
-                        color: categoryColors[index % categoryColors.length],
+                        color: categoryColors[index],
                     })
                 );
 
@@ -253,7 +210,7 @@ const Dashboard: React.FC = () => {
                                 </defs>
                                 <CartesianGrid
                                     strokeDasharray="3 3"
-                                    stroke="#f0f0f0"
+                                    stroke="#aaa"
                                 />
                                 <XAxis
                                     dataKey="name"
@@ -303,7 +260,7 @@ const Dashboard: React.FC = () => {
                                     labelLine={false}
                                     label={({ name, percent = 0 }) =>
                                         `${name}: ${(percent * 100).toFixed(
-                                            0
+                                            1
                                         )}%`
                                     }
                                     outerRadius={100}
@@ -337,7 +294,7 @@ const Dashboard: React.FC = () => {
                             <BarChart data={trafficData}>
                                 <CartesianGrid
                                     strokeDasharray="3 3"
-                                    stroke="#f0f0f0"
+                                    stroke="#aaa"
                                 />
                                 <XAxis
                                     dataKey="day"
@@ -356,11 +313,13 @@ const Dashboard: React.FC = () => {
                                     dataKey="visits"
                                     fill="#3B82F6"
                                     radius={[8, 8, 0, 0]}
+                                    barSize={30}
                                 />
                                 <Bar
                                     dataKey="conversions"
                                     fill="#EC4899"
                                     radius={[8, 8, 0, 0]}
+                                    barSize={30}
                                 />
                             </BarChart>
                         </ResponsiveContainer>

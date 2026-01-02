@@ -1,5 +1,4 @@
 import ButtonProps from "@/interfaces/props/ButtonProps";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { memo } from "react";
 
 const Button = ({
@@ -7,7 +6,7 @@ const Button = ({
     text,
     classes = "bg-green-700  hover:bg-green-800 text-white",
     type = "submit",
-    icon,
+    icon: Icon,
     isLoading = false,
 }: ButtonProps) => {
     return (
@@ -19,12 +18,7 @@ const Button = ({
                 onClick={handleClick}
                 disabled={isLoading}
             >
-                {icon && (
-                    <FontAwesomeIcon
-                        className="text-white mx-1"
-                        icon={icon}
-                    />
-                )}
+                {Icon && <Icon className="text-white mx-1 w-4 h-4" />}
 
                 {isLoading ? (
                     <div className="flex text-white items-center">

@@ -1,13 +1,7 @@
 import { useAppDispatch, useAppSelector } from "@/lib/hooks";
 import ToastState from "@/interfaces/states/ToastState";
 import { hide } from "@/redux/DisplayToast";
-import {
-    faCircleCheck,
-    faCircleExclamation,
-    faCircleXmark,
-    faXmark,
-} from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { CheckCircle, AlertCircle, XCircle, X } from "lucide-react";
 import { useEffect, useState, useRef } from "react";
 
 const Toast = () => {
@@ -67,24 +61,15 @@ const Toast = () => {
         switch (toastState.type) {
             case "success":
                 return (
-                    <FontAwesomeIcon
-                        icon={faCircleCheck}
-                        className="text-green-500 flex-shrink-0"
-                    />
+                    <CheckCircle className="text-green-500 flex-shrink-0 w-5 h-5" />
                 );
             case "error":
                 return (
-                    <FontAwesomeIcon
-                        icon={faCircleXmark}
-                        className="text-red-500 flex-shrink-0"
-                    />
+                    <XCircle className="text-red-500 flex-shrink-0 w-5 h-5" />
                 );
             case "warning":
                 return (
-                    <FontAwesomeIcon
-                        icon={faCircleExclamation}
-                        className="text-yellow-500 flex-shrink-0"
-                    />
+                    <AlertCircle className="text-yellow-500 flex-shrink-0 w-5 h-5" />
                 );
         }
     };
@@ -110,7 +95,7 @@ const Toast = () => {
                     onClick={handleClose}
                     className="text-gray-400 hover:text-gray-600 p-1"
                 >
-                    <FontAwesomeIcon icon={faXmark} />
+                    <X className="w-4 h-4" />
                 </button>
             </div>
         </div>

@@ -6,8 +6,7 @@ import Option from "@/interfaces/props/Option";
 import OrderDetailsState from "@/interfaces/states/OrderDetailsState";
 import { useAppDispatch } from "@/lib/hooks";
 import { display } from "@/redux/DisplayToast";
-import { faEnvelope, faPhone } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { Mail, Phone } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import React, { ChangeEvent, useEffect, useRef, useState } from "react";
@@ -380,19 +379,13 @@ const OrderDetailsPage = ({ params }: { params: Promise<{ id: number }> }) => {
                                     </div>
                                     <div className="space-y-3">
                                         <div className="flex items-center gap-3 text-gray-700">
-                                            <FontAwesomeIcon
-                                                icon={faEnvelope}
-                                                className="text-primary-color"
-                                            />
+                                            <Mail className="text-primary-color w-5 h-5" />
                                             <span className="text-sm">
                                                 {order.user?.email}
                                             </span>
                                         </div>
                                         <div className="flex items-center gap-3 text-gray-700">
-                                            <FontAwesomeIcon
-                                                icon={faPhone}
-                                                className="text-primary-color"
-                                            />
+                                            <Phone className="text-primary-color w-5 h-5" />
                                             <span className="text-sm">
                                                 {order.user?.user_infos
                                                     ? order.user.user_infos

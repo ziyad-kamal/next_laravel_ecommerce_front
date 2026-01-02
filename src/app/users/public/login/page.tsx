@@ -1,14 +1,7 @@
 "use client";
 
 import { ChangeEvent, FormEvent, useState } from "react";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-    faArrowRight,
-    faEnvelope,
-    faEye,
-    faEyeSlash,
-    faLock,
-} from "@fortawesome/free-solid-svg-icons";
+import { ArrowRight, Mail, Eye, EyeOff, Lock } from "lucide-react";
 import { Button, Card, Input } from "@/components";
 import sendRequest from "@/functions/sendRequest";
 import { useAppDispatch } from "@/lib/hooks";
@@ -88,10 +81,7 @@ const LoginPage = () => {
                 <Card>
                     <div className="text-center mb-8">
                         <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-2xl mb-4 shadow-lg">
-                            <FontAwesomeIcon
-                                icon={faLock}
-                                className="w-8 h-8 text-white text-2xl"
-                            />
+                            <Lock className="w-8 h-8 text-white" />
                         </div>
                         <h1 className="text-3xl font-bold text-gray-900 mb-2">
                             Welcome Back
@@ -159,10 +149,7 @@ const LoginPage = () => {
                             </label>
                             <div className="relative">
                                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                    <FontAwesomeIcon
-                                        icon={faEnvelope}
-                                        className="h-5 w-5 text-indigo-700"
-                                    />
+                                    <Mail className="h-5 w-5 text-indigo-700" />
                                 </div>
                                 <Input
                                     name="email"
@@ -186,10 +173,7 @@ const LoginPage = () => {
                             </label>
                             <div className="relative">
                                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                    <FontAwesomeIcon
-                                        icon={faLock}
-                                        className="h-5 w-5 text-indigo-700"
-                                    />
+                                    <Lock className="h-5 w-5 text-indigo-700" />
                                 </div>
                                 <Input
                                     name="password"
@@ -208,15 +192,9 @@ const LoginPage = () => {
                                     className="absolute inset-y-0 right-0 pr-3 flex items-center"
                                 >
                                     {showPassword ? (
-                                        <FontAwesomeIcon
-                                            icon={faEyeSlash}
-                                            className="h-5 w-5 text-gray-400 hover:text-gray-600 transition-colors"
-                                        />
+                                        <EyeOff className="h-5 w-5 text-gray-400 hover:text-gray-600 transition-colors" />
                                     ) : (
-                                        <FontAwesomeIcon
-                                            icon={faEye}
-                                            className="h-5 w-5 text-gray-400 hover:text-gray-600 transition-colors"
-                                        />
+                                        <Eye className="h-5 w-5 text-gray-400 hover:text-gray-600 transition-colors" />
                                     )}
                                 </button>
                             </div>
@@ -262,10 +240,7 @@ const LoginPage = () => {
                             ) : (
                                 <div className="flex text-white items-center">
                                     Sign in
-                                    <FontAwesomeIcon
-                                        icon={faArrowRight}
-                                        className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform"
-                                    />
+                                    <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
                                 </div>
                             )}
                         </Button>
