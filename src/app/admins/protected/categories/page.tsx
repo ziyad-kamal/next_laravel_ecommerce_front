@@ -3,6 +3,7 @@
 import { memo, useCallback, useEffect, useRef, useState } from "react";
 import { Edit, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import sendRequest from "@/functions/sendRequest";
 import { useAppDispatch, useAppSelector } from "@/lib/hooks";
 import { display } from "@/redux/DisplayToast";
@@ -16,12 +17,18 @@ import CategoryState from "@/interfaces/states/CategoryState";
 import Image from "next/image";
 
 const DeleteConfirmationModal = memo(
-    ({ onConfirm }: { onConfirm: () => void }) => (
+    ({
+        onConfirm,
+        t,
+    }: {
+        onConfirm: () => void;
+        t: ReturnType<typeof useTranslations>;
+    }) => (
         <Modal
-            title="delete user"
+            title={t("modal.deleteCategory")}
             handleClick={onConfirm}
         >
-            <p>Are you want to delete this user</p>
+            <p>{t("modal.confirmDeleteCategory")}</p>
         </Modal>
     )
 );
@@ -30,6 +37,9 @@ DeleteConfirmationModal.displayName = "DeleteConfirmationModal";
 const GetCategories = () => {
     const router = useRouter();
     const dispatch = useAppDispatch();
+    const t = useTranslations("categories");
+    const tTable = useTranslations("table");
+    const tButtons = useTranslations("buttons");
     const id = useRef<number>(0);
     const localeState = useAppSelector(
         (state: { setLocale: LocaleState }) => state.setLocale
@@ -221,14 +231,14 @@ const GetCategories = () => {
                 <td className="row_table">
                     <Button
                         classes={"bg-indigo-600 hover:bg-indigo-700 text-white"}
-                        text={`Edit`}
+                        text={tButtons("edit")}
                         type="button"
                         icon={Edit}
                         handleClick={() => handleEdit(category.id)}
                     />
                     <Button
                         classes={"bg-red-600 hover:bg-red-700 text-white"}
-                        text={`delete`}
+                        text={tButtons("delete")}
                         type="button"
                         icon={Trash2}
                         handleClick={() => handleDelete(category.id)}
@@ -240,17 +250,20 @@ const GetCategories = () => {
 
     return (
         <>
-            <DeleteConfirmationModal onConfirm={handleConfirm} />
+            <DeleteConfirmationModal
+                onConfirm={handleConfirm}
+                t={t}
+            />
 
             <Table
-                title={"categories"}
+                title={t("title")}
                 classes={"bg-white"}
                 tableHeaders={[
-                    "name",
-                    "language",
-                    "image",
-                    "created_at",
-                    "action",
+                    tTable("name"),
+                    tTable("language"),
+                    tTable("image"),
+                    tTable("createdAt"),
+                    tTable("action"),
                 ]}
                 handleBtnClick={() => handleAdd()}
                 sortConfig={sortConfig}
@@ -265,8 +278,8 @@ const GetCategories = () => {
                     pageCount={metaData.totalPages}
                     onPageChange={handlePageChange}
                     pageRangeDisplayed={6}
-                    previousLabel={"Previous"}
-                    nextLabel={"Next"}
+                    previousLabel={tTable("previous")}
+                    nextLabel={tTable("next")}
                     containerClassName="inline-flex flex justify-center -space-x-px text-sm my-5"
                     pageClassName="flex items-center justify-center cursor-pointer"
                     pageLinkClassName="flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700"

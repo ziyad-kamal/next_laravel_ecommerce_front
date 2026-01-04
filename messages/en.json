@@ -1,14 +1,265 @@
 {
     "tabTittles": {
-        "home": "en home"
+        "home": "Home"
     },
-
+    "home": {
+        "title": "Welcome to Our E-Commerce Store",
+        "subtitle": "Discover amazing products and great deals"
+    },
     "navbar": {
-        "home": "home",
-        "categories": "categories",
-        "brands": "brands",
-
-        "items": "items",
-        "users": "users"
+        "home": "Home",
+        "categories": "Categories",
+        "brands": "Brands",
+        "items": "Items",
+        "users": "Users",
+        "dashboard": "Dashboard",
+        "admins": "Admins",
+        "orders": "Orders",
+        "search": "Search",
+        "notifications": "Notifications",
+        "cart": "Cart",
+        "logout": "Logout",
+        "language": "Language",
+        "profile": "Profile"
+    },
+    "state": {
+        "CATEGORIES": "الأقسام",
+        "BRANDS": "الماركات",
+        "ITEMS": "المنتجات",
+        "USERS": "المستخدمون",
+        "ADMINS": "المسؤولون",
+        "ORDERS": "الطلبات"
+    },
+    "login": {
+        "title": "Welcome Back",
+        "subtitle": "Sign in to your account to continue",
+        "email": "Email Address",
+        "password": "Password",
+        "rememberMe": "Remember me",
+        "forgotPassword": "Forgot password?",
+        "signIn": "Sign in",
+        "signingIn": "Signing in...",
+        "noAccount": "Do not have an account?",
+        "signUpFree": "Sign up for free",
+        "termsOfService": "Terms of Service",
+        "privacyPolicy": "Privacy Policy",
+        "bySigningIn": "By signing in, you agree to our",
+        "and": "and"
+    },
+    "signup": {
+        "title": "Create New Account",
+        "name": "Full Name",
+        "email": "Email Address",
+        "password": "Password",
+        "confirmPassword": "Confirm Your Password",
+        "confirmPasswordPlaceholder": "Enter your password again",
+        "signUp": "Sign up",
+        "signingUp": "Signing up...",
+        "bySigningUp": "By signing up, you agree to our",
+        "alreadyHaveAccount": "Already have an account?",
+        "signInNow": "Sign in now"
+    },
+    "dashboard": {
+        "title": "E-commerce Dashboard",
+        "subtitle": "Track your business performance and analytics",
+        "totalSales": "Total sales",
+        "orders": "Orders",
+        "users": "Users",
+        "items": "Items",
+        "lastMonth": "Last month",
+        "last3Months": "Last 3 months",
+        "last6Months": "Last 6 months",
+        "thisYear": "This Year",
+        "salesAndOrdersOverview": "Sales & Orders Overview",
+        "salesByCategory": "Sales by Category",
+        "weeklyTrafficAndConversions": "Weekly Traffic & Conversions",
+        "recentOrders": "Recent Orders",
+        "orderStatus": "Order Status",
+        "delivered": "Delivered",
+        "processing": "Processing",
+        "pending": "Pending",
+        "shipped": "Shipped",
+        "canceled": "Canceled",
+        "refunding": "Refunding",
+        "pendingToRefund": "Pending to Refund"
+    },
+    "table": {
+        "action": "Action",
+        "edit": "Edit",
+        "delete": "Delete",
+        "previous": "Previous",
+        "next": "Next",
+        "name": "Name",
+        "email": "Email",
+        "language": "Language",
+        "image": "Image",
+        "condition": "Condition",
+        "approval": "Approval",
+        "price": "Price",
+        "createdAt": "Created At",
+        "totalAmount": "Total Amount",
+        "state": "State",
+        "dateOfDelivery": "Date of Delivery",
+        "paymentMethod": "Payment Method",
+        "orderId": "Order ID",
+        "status": "Status"
+    },
+    "modal": {
+        "deleteConfirmation": "Delete Confirmation",
+        "deleteUser": "Delete User",
+        "deleteBrand": "Delete Brand",
+        "deleteCategory": "Delete Category",
+        "deleteItem": "Delete Item",
+        "deleteOrder": "Delete Order",
+        "deleteAdmin": "Delete Admin",
+        "confirmDeleteUser": "Are you sure you want to delete this user?",
+        "confirmDeleteBrand": "Are you sure you want to delete this brand?",
+        "confirmDeleteCategory": "Are you sure you want to delete this category?",
+        "confirmDeleteItem": "Are you sure you want to delete this item?",
+        "confirmDeleteOrder": "Are you sure you want to delete this order?",
+        "confirmDeleteAdmin": "Are you sure you want to delete this admin?"
+    },
+    "brands": {
+        "title": "Brands",
+        "brandName": "Brand Name",
+        "createdAt": "Created At",
+        "addBrand": "Add Brand",
+        "editBrand": "Edit Brand",
+        "deleteBrand": "Delete Brand",
+        "modal": {
+            "deleteItem": "Delete Brand",
+            "confirmDeleteItem": "Are you sure you want to delete this brand?"
+        }
+    },
+    "categories": {
+        "title": "Categories",
+        "categoryName": "Category Name",
+        "image": "Image",
+        "createdAt": "Created At",
+        "addCategory": "Add Category",
+        "editCategory": "Edit Category",
+        "deleteCategory": "Delete Category",
+        "modal": {
+            "deleteItem": "Delete Category",
+            "confirmDeleteItem": "Are you sure you want to delete this category?"
+        }
+    },
+    "items": {
+        "title": "Items",
+        "itemName": "Item Name",
+        "price": "Price",
+        "condition": "Condition",
+        "description": "Description",
+        "category": "Category",
+        "brand": "Brand",
+        "images": "Images",
+        "createdAt": "Created At",
+        "addItem": "Add Item",
+        "editItem": "Edit Item",
+        "deleteItem": "Delete Item",
+        "selectCategory": "Select Category",
+        "selectBrand": "Select Brand",
+        "pickACategory": "Pick a category",
+        "pickABrand": "Pick a brand",
+        "modal": {
+            "deleteItem": "Delete Item",
+            "confirmDeleteItem": "Are you sure you want to delete this item?"
+        }
+    },
+    "orders": {
+        "title": "Orders",
+        "orderId": "Order ID",
+        "customer": "Customer",
+        "total": "Total",
+        "status": "Status",
+        "date": "Date",
+        "orderDetails": "Order Details",
+        "orderStatus": "Order Status",
+        "orderItems": "Order Items",
+        "updateState": "Update State",
+        "processToRefund": "Process to Refund",
+        "cancel": "Cancel",
+        "state": "State",
+        "selectState": "Select a state",
+        "userName": "User Name",
+        "searchByUserName": "Search by user name",
+        "dateOfDelivery": "Date of Delivery",
+        "filter": "Filter",
+        "modal": {
+            "deleteItem": "Delete Order",
+            "confirmDeleteItem": "Are you sure you want to delete this order?"
+        }
+    },
+    "users": {
+        "title": "Users",
+        "name": "Name",
+        "email": "Email",
+        "createdAt": "Created At",
+        "addUser": "Add User",
+        "editUser": "Edit User",
+        "deleteUser": "Delete User",
+        "confirmPassword": "Confirm the Password",
+        "passwordPlaceholder": "Enter your password again",
+        "modal": {
+            "deleteItem": "Delete User",
+            "confirmDeleteItem": "Are you sure you want to delete this user?"
+        }
+    },
+    "admins": {
+        "title": "Admins",
+        "name": "Name",
+        "email": "Email",
+        "createdAt": "Created At",
+        "addAdmin": "Add Admin",
+        "editAdmin": "Edit Admin",
+        "deleteAdmin": "Delete Admin",
+        "confirmPassword": "Confirm your password",
+        "passwordPlaceholder": "Enter your password again",
+        "modal": {
+            "deleteItem": "Delete Admin",
+            "confirmDeleteItem": "Are you sure you want to delete this admin?"
+        }
+    },
+    "buttons": {
+        "add": "Add",
+        "update": "Update",
+        "delete": "Delete",
+        "edit": "Edit",
+        "cancel": "Cancel",
+        "save": "Save",
+        "submit": "Submit",
+        "login": "Login",
+        "signup": "Sign Up"
+    },
+    "messages": {
+        "success": "Success",
+        "error": "Error",
+        "warning": "Warning",
+        "info": "Info",
+        "loading": "Loading..."
+    },
+    "notifications": {
+        "orderShipped": "Order Shipped",
+        "orderShippedMessage": "Your order #12345 has been shipped and is on its way!",
+        "newPromotion": "New Promotion",
+        "promotionMessage": "Get 20% off on all electronics. Limited time offer!",
+        "accountSecurity": "Account Security",
+        "securityMessage": "Your password was changed successfully."
+    },
+    "cart": {
+        "title": "Shopping Cart",
+        "empty": "Your cart is empty",
+        "continueShipping": "Continue Shopping",
+        "checkout": "Checkout",
+        "subtotal": "Subtotal",
+        "shipping": "Shipping",
+        "tax": "Tax",
+        "total": "Total"
+    },
+    "errors": {
+        "fieldRequired": "This field is required",
+        "invalidEmail": "Please enter a valid email",
+        "passwordMismatch": "Passwords do not match",
+        "somethingWentWrong": "Something went wrong"
     }
 }

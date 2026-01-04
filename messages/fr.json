@@ -1,12 +1,244 @@
 {
     "tabTittles": {
-        "home": "fr home"
+        "home": "Accueil"
     },
-
+    "home": {
+        "title": "Bienvenue dans notre magasin en ligne",
+        "subtitle": "Découvrez des produits fantastiques et des offres formidables"
+    },
     "navbar": {
-        "categories": "catégories",
-        "brands": "marques",
-        "home": "page d'accueil",
-        "items": "produits"
+        "home": "Accueil",
+        "categories": "Catégories",
+        "brands": "Marques",
+        "items": "Produits",
+        "users": "Utilisateurs",
+        "dashboard": "Tableau de bord",
+        "admins": "Administrateurs",
+        "orders": "Commandes",
+        "search": "Rechercher",
+        "notifications": "Notifications",
+        "cart": "Panier",
+        "logout": "Déconnexion",
+        "language": "Langue",
+        "profile": "Profil"
+    },
+    "login": {
+        "title": "Bienvenue",
+        "subtitle": "Connectez-vous à votre compte pour continuer",
+        "email": "Adresse e-mail",
+        "password": "Mot de passe",
+        "rememberMe": "Se souvenir de moi",
+        "forgotPassword": "Mot de passe oublié?",
+        "signIn": "Se connecter",
+        "signingIn": "Connexion en cours...",
+        "noAccount": "Vous n'avez pas de compte?",
+        "signUpFree": "S'inscrire gratuitement",
+        "termsOfService": "Conditions d'utilisation",
+        "privacyPolicy": "Politique de confidentialité",
+        "bySigningIn": "En vous connectant, vous acceptez nos",
+        "and": "et"
+    },
+    "signup": {
+        "title": "Créer un nouveau compte",
+        "name": "Nom complet",
+        "email": "Adresse e-mail",
+        "password": "Mot de passe",
+        "confirmPassword": "Confirmer le mot de passe",
+        "confirmPasswordPlaceholder": "Entrez votre mot de passe à nouveau",
+        "signUp": "S'inscrire",
+        "signingUp": "Inscription en cours...",
+        "bySigningUp": "En vous inscrivant, vous acceptez nos",
+        "alreadyHaveAccount": "Vous avez déjà un compte?",
+        "signInNow": "Connectez-vous maintenant"
+    },
+    "dashboard": {
+        "title": "Tableau de bord e-commerce",
+        "subtitle": "Suivez les performances et les analyses de votre entreprise",
+        "totalSales": "Ventes totales",
+        "orders": "Commandes",
+        "users": "Utilisateurs",
+        "items": "Produits",
+        "lastMonth": "Le mois dernier",
+        "last3Months": "Les 3 derniers mois",
+        "last6Months": "Les 6 derniers mois",
+        "thisYear": "Cette année",
+        "salesAndOrdersOverview": "Aperçu des ventes et commandes",
+        "salesByCategory": "Ventes par catégorie",
+        "weeklyTrafficAndConversions": "Trafic hebdomadaire et conversions",
+        "recentOrders": "Commandes récentes",
+        "orderStatus": "Statut de la commande",
+        "delivered": "Livré",
+        "processing": "En traitement",
+        "pending": "En attente",
+        "shipped": "Expédié",
+        "canceled": "Annulé",
+        "refunding": "Remboursement",
+        "pendingToRefund": "En attente de remboursement"
+    },
+    "table": {
+        "action": "Action",
+        "edit": "Modifier",
+        "delete": "Supprimer",
+        "previous": "Précédent",
+        "next": "Suivant",
+        "name": "Nom",
+        "email": "Email",
+        "language": "Langue",
+        "image": "Image",
+        "condition": "Condition",
+        "approval": "Approbation",
+        "price": "Prix",
+        "createdAt": "Créé le",
+        "totalAmount": "Montant total",
+        "state": "État",
+        "dateOfDelivery": "Date de livraison",
+        "paymentMethod": "Méthode de paiement",
+        "orderId": "N° de commande",
+        "status": "Statut"
+    },
+    "modal": {
+        "deleteConfirmation": "Confirmation de suppression",
+        "deleteUser": "Supprimer l'utilisateur",
+        "deleteBrand": "Supprimer la marque",
+        "deleteCategory": "Supprimer la catégorie",
+        "deleteItem": "Supprimer le produit",
+        "deleteOrder": "Supprimer la commande",
+        "deleteAdmin": "Supprimer l'administrateur",
+        "confirmDeleteUser": "Êtes-vous sûr de vouloir supprimer cet utilisateur?",
+        "confirmDeleteBrand": "Êtes-vous sûr de vouloir supprimer cette marque?",
+        "confirmDeleteCategory": "Êtes-vous sûr de vouloir supprimer cette catégorie?",
+        "confirmDeleteItem": "Êtes-vous sûr de vouloir supprimer ce produit?",
+        "confirmDeleteOrder": "Êtes-vous sûr de vouloir supprimer cette commande?",
+        "confirmDeleteAdmin": "Êtes-vous sûr de vouloir supprimer cet administrateur?"
+    },
+    "brands": {
+        "title": "Marques",
+        "brandName": "Nom de la marque",
+        "createdAt": "Créé le",
+        "addBrand": "Ajouter une marque",
+        "editBrand": "Modifier la marque",
+        "deleteBrand": "Supprimer la marque",
+        "modal": {
+            "deleteItem": "Supprimer la marque",
+            "confirmDeleteItem": "Êtes-vous sûr de vouloir supprimer cette marque?"
+        }
+    },
+    "categories": {
+        "title": "Catégories",
+        "categoryName": "Nom de la catégorie",
+        "image": "Image",
+        "createdAt": "Créé le",
+        "addCategory": "Ajouter une catégorie",
+        "editCategory": "Modifier la catégorie",
+        "deleteCategory": "Supprimer la catégorie",
+        "modal": {
+            "deleteItem": "Supprimer la catégorie",
+            "confirmDeleteItem": "Êtes-vous sûr de vouloir supprimer cette catégorie?"
+        }
+    },
+    "state": {
+        "CATEGORIES": "الأقسام",
+        "BRANDS": "الماركات",
+        "ITEMS": "المنتجات",
+        "USERS": "المستخدمون",
+        "ADMINS": "المسؤولون",
+        "ORDERS": "الطلبات"
+    },
+    "items": {
+        "title": "Produits",
+        "itemName": "Nom du produit",
+        "price": "Prix",
+        "condition": "État",
+        "description": "Description",
+        "category": "Catégorie",
+        "brand": "Marque",
+        "images": "Images",
+        "createdAt": "Créé le",
+        "addItem": "Ajouter un produit",
+        "editItem": "Modifier le produit",
+        "deleteItem": "Supprimer le produit",
+        "selectCategory": "Sélectionner une catégorie",
+        "selectBrand": "Sélectionner une marque",
+        "pickACategory": "Choisir une catégorie",
+        "pickABrand": "Choisir une marque"
+    },
+    "orders": {
+        "title": "Commandes",
+        "orderId": "Numéro de commande",
+        "customer": "Client",
+        "total": "Total",
+        "status": "Statut",
+        "date": "Date",
+        "orderDetails": "Détails de la commande",
+        "orderStatus": "Statut de la commande",
+        "orderItems": "Articles de la commande",
+        "updateState": "Mettre à jour le statut",
+        "processToRefund": "Traiter le remboursement",
+        "cancel": "Annuler",
+        "state": "Statut",
+        "pickState": "Choisir un statut"
+    },
+    "users": {
+        "title": "Utilisateurs",
+        "name": "Nom",
+        "email": "E-mail",
+        "createdAt": "Créé le",
+        "addUser": "Ajouter un utilisateur",
+        "editUser": "Modifier l'utilisateur",
+        "deleteUser": "Supprimer l'utilisateur",
+        "confirmPassword": "Confirmer le mot de passe",
+        "passwordPlaceholder": "Entrez votre mot de passe à nouveau"
+    },
+    "admins": {
+        "title": "Administrateurs",
+        "name": "Nom",
+        "email": "E-mail",
+        "createdAt": "Créé le",
+        "addAdmin": "Ajouter un administrateur",
+        "editAdmin": "Modifier l'administrateur",
+        "deleteAdmin": "Supprimer l'administrateur",
+        "confirmPassword": "Confirmer votre mot de passe",
+        "passwordPlaceholder": "Entrez votre mot de passe à nouveau"
+    },
+    "buttons": {
+        "add": "Ajouter",
+        "update": "Mettre à jour",
+        "delete": "Supprimer",
+        "cancel": "Annuler",
+        "save": "Enregistrer",
+        "submit": "Soumettre",
+        "login": "Connexion",
+        "signup": "S'inscrire"
+    },
+    "messages": {
+        "success": "Succès",
+        "error": "Erreur",
+        "warning": "Avertissement",
+        "info": "Information",
+        "loading": "Chargement..."
+    },
+    "notifications": {
+        "orderShipped": "Commande expédiée",
+        "orderShippedMessage": "Votre commande #12345 a été expédiée et est en route!",
+        "newPromotion": "Nouvelle promotion",
+        "promotionMessage": "Obtenez 20% de réduction sur tous les produits électroniques. Offre à durée limitée!",
+        "accountSecurity": "Sécurité du compte",
+        "securityMessage": "Votre mot de passe a été modifié avec succès."
+    },
+    "cart": {
+        "title": "Panier d'achat",
+        "empty": "Votre panier est vide",
+        "continueShipping": "Continuer les achats",
+        "checkout": "Procéder au paiement",
+        "subtotal": "Sous-total",
+        "shipping": "Livraison",
+        "tax": "Taxe",
+        "total": "Total"
+    },
+    "errors": {
+        "fieldRequired": "Ce champ est obligatoire",
+        "invalidEmail": "Veuillez entrer une adresse e-mail valide",
+        "passwordMismatch": "Les mots de passe ne correspondent pas",
+        "somethingWentWrong": "Quelque chose s'est mal passé"
     }
 }

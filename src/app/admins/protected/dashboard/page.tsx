@@ -21,10 +21,14 @@ import sendRequest from "@/functions/sendRequest";
 import { useRouter } from "next/navigation";
 import OrderDetailsState from "@/interfaces/states/OrderDetailsState";
 import { StatCard } from "@/components";
+import { useTranslations } from "next-intl";
 
 const Dashboard: React.FC = () => {
     const [selectedPeriod, setSelectedPeriod] = useState("6");
     const router = useRouter();
+    const t = useTranslations("dashboard");
+
+    const tTable = useTranslations("table");
     const [stats, setStats] = useState([
         {
             title: "",
@@ -130,21 +134,19 @@ const Dashboard: React.FC = () => {
                 <div className="mb-8 flex items-center justify-between">
                     <div>
                         <h1 className="text-4xl font-bold text-gray-900 mb-2">
-                            E-commerce Dashboard
+                            {t("title")}
                         </h1>
-                        <p className="text-gray-600">
-                            Track your business performance and analytics
-                        </p>
+                        <p className="text-gray-600">{t("subtitle")}</p>
                     </div>
                     <select
                         value={selectedPeriod}
                         onChange={(e) => setSelectedPeriod(e.target.value)}
                         className="px-6 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white shadow-sm font-medium"
                     >
-                        <option value="1">Last month</option>
-                        <option value="3">Last 3 month</option>
-                        <option value="6">Last 6 month</option>
-                        <option value="12">This Year</option>
+                        <option value="1">{t("lastMonth")}</option>
+                        <option value="3">{t("last3Months")}</option>
+                        <option value="6">{t("last6Months")}</option>
+                        <option value="12">{t("thisYear")}</option>
                     </select>
                 </div>
 
@@ -163,7 +165,7 @@ const Dashboard: React.FC = () => {
                     {/* sales & Orders Chart */}
                     <div className="bg-white rounded-xl shadow-lg p-6 border border-gray-100">
                         <h3 className="text-xl font-bold text-gray-900 mb-4">
-                            sales & Orders Overview
+                            {t("salesAndOrdersOverview")}
                         </h3>
                         <ResponsiveContainer
                             width="100%"
@@ -246,7 +248,7 @@ const Dashboard: React.FC = () => {
                     {/* Category Distribution */}
                     <div className="bg-white rounded-xl shadow-lg p-6 border border-gray-100">
                         <h3 className="text-xl font-bold text-gray-900 mb-4">
-                            Sales by Category
+                            {t("salesByCategory")}
                         </h3>
                         <ResponsiveContainer
                             width="100%"
@@ -285,7 +287,7 @@ const Dashboard: React.FC = () => {
                     {/* Traffic & Conversions */}
                     <div className="bg-white rounded-xl shadow-lg p-6 border border-gray-100">
                         <h3 className="text-xl font-bold text-gray-900 mb-4">
-                            Weekly Traffic & Conversions
+                            {t("weeklyTrafficAndConversions")}
                         </h3>
                         <ResponsiveContainer
                             width="100%"
@@ -330,7 +332,7 @@ const Dashboard: React.FC = () => {
                 <div className="bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden">
                     <div className="p-6 border-b border-gray-200">
                         <h3 className="text-xl font-bold text-gray-900">
-                            Recent Orders
+                            {t("recentOrders")}
                         </h3>
                     </div>
                     <div className="overflow-x-auto">
@@ -338,19 +340,19 @@ const Dashboard: React.FC = () => {
                             <thead className="bg-gray-50">
                                 <tr>
                                     <th className="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">
-                                        Order ID
+                                        {tTable("orderId")}
                                     </th>
                                     <th className="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">
-                                        total amount
+                                        {tTable("totalAmount")}
                                     </th>
                                     <th className="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">
-                                        date of delivery
+                                        {tTable("dateOfDelivery")}
                                     </th>
                                     <th className="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">
-                                        payment method
+                                        {tTable("paymentMethod")}
                                     </th>
                                     <th className="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">
-                                        Status
+                                        {tTable("status")}
                                     </th>
                                 </tr>
                             </thead>

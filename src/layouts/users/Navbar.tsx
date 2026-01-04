@@ -21,6 +21,7 @@ import { useRouter } from "next/navigation";
 import React, { useState, useEffect, useRef } from "react";
 import TokenState from "../../interfaces/states/TokenState";
 import { userTokenRemove, userTokenSet } from "@/redux/SetToken";
+import { useTranslations } from "next-intl";
 
 const Navbar = () => {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -90,6 +91,8 @@ const Navbar = () => {
     const notificationRef = useRef<HTMLDivElement>(null);
     const cartRef = useRef<HTMLDivElement>(null);
     const userMenuRef = useRef<HTMLDivElement>(null);
+    const t = useTranslations("navbar");
+    const tCart = useTranslations("cart");
 
     // Calculate counts
     const notificationCount = notifications.filter((n) => !n.isRead).length;
@@ -200,11 +203,14 @@ const Navbar = () => {
         abortControllerForSubmit = new AbortController();
 
         const logout = async () => {
+            const token = localStorage.getItem("adminToken");
+
             const response = await sendRequest(
                 "post",
                 url,
                 null,
-                abortControllerForSubmit
+                abortControllerForSubmit,
+                token
             );
 
             if (response && response.success) {
@@ -261,17 +267,18 @@ const Navbar = () => {
                     {/* Desktop Navigation */}
                     <div className="hidden lg:block">
                         <div className="ml-10 flex items-baseline space-x-8">
+                            <a href="#">{t("home")}</a>
                             <a
                                 href="#"
-                                className="text-gray-300  hover:text-white px-3 py-2 text-sm font-bold transition-colors"
+                                className="text-gray-300 hover:text-white px-3 py-2 text-sm font-bold transition-colors"
                             >
-                                Home
+                                {t("items")}
                             </a>
                             <a
                                 href="#"
                                 className="text-gray-300 hover:text-white px-3 py-2 text-sm font-bold transition-colors"
                             >
-                                Products
+                                {t("categories")}
                             </a>
                             <a
                                 href="#"
@@ -293,7 +300,7 @@ const Navbar = () => {
                                     onChange={(e) =>
                                         setSearchQuery(e.target.value)
                                     }
-                                    placeholder="Search"
+                                    placeholder={t("search")}
                                     className="w-full bg-gray-700 text-white placeholder-gray-400 pl-10 pr-4 py-2 rounded-lg border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                                 />
                             </div>
@@ -329,7 +336,7 @@ const Navbar = () => {
                                         <div className="p-4 border-b border-gray-200">
                                             <div className="flex items-center justify-between">
                                                 <h3 className="text-lg font-semibold text-gray-800">
-                                                    Notifications
+                                                    {t("notifications")}
                                                 </h3>
                                                 {notificationCount > 0 && (
                                                     <button
@@ -442,7 +449,7 @@ const Navbar = () => {
                                         <div className="p-4 border-b border-gray-200">
                                             <div className="flex items-center justify-between">
                                                 <h3 className="text-lg font-semibold text-gray-800">
-                                                    Shopping Cart
+                                                    {tCart("title")}
                                                 </h3>
                                                 {cartItems.length > 0 && (
                                                     <button
@@ -457,7 +464,7 @@ const Navbar = () => {
                                         <div className="max-h-96 overflow-y-auto">
                                             {cartItems.length === 0 ? (
                                                 <div className="p-4 text-gray-500 text-center">
-                                                    Your cart is empty
+                                                    {tCart("empty")}
                                                 </div>
                                             ) : (
                                                 cartItems.map((item) => (
@@ -528,14 +535,14 @@ const Navbar = () => {
                                             <div className="p-4 border-t border-gray-200">
                                                 <div className="flex items-center justify-between mb-3">
                                                     <span className="font-semibold text-gray-800">
-                                                        Total:
+                                                        {tCart("total")}:
                                                     </span>
                                                     <span className="font-bold text-lg text-blue-600">
                                                         ${cartTotal.toFixed(2)}
                                                     </span>
                                                 </div>
                                                 <button className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-lg font-medium transition-colors">
-                                                    Checkout
+                                                    {tCart("checkout")}
                                                 </button>
                                             </div>
                                         )}
@@ -567,7 +574,7 @@ const Navbar = () => {
                                                 className="w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-200 flex items-center space-x-3 transition-colors"
                                             >
                                                 <Settings className="w-4 h-4 text-gray-500" />
-                                                <span>Settings</span>
+                                                <span>{t("profile")}</span>
                                             </button>
                                             <div className="border-t border-gray-100 my-1"></div>
                                             <button
@@ -575,7 +582,7 @@ const Navbar = () => {
                                                 className="w-full text-left px-4 py-2 text-red-600 hover:bg-red-100 flex items-center space-x-3 transition-colors"
                                             >
                                                 <LogOut className="w-4 h-4 text-red-500" />
-                                                <span>Logout</span>
+                                                <span>{t("logout")}</span>
                                             </button>
                                         </div>
                                     </div>

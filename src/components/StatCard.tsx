@@ -1,8 +1,10 @@
 import StatCardProps from "@/interfaces/props/StatCardProps";
 import { TrendingDown, TrendingUp } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 const StatCard: React.FC<StatCardProps> = ({ title, value, change, icon }) => {
     const isPositive = change >= 0;
+    const tState = useTranslations("state");
 
     return (
         <div className="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition-shadow border border-gray-100">
@@ -24,7 +26,7 @@ const StatCard: React.FC<StatCardProps> = ({ title, value, change, icon }) => {
                 </div>
             </div>
             <h3 className="text-gray-500 text-sm font-medium uppercase tracking-wide">
-                {title}
+                {tState(title)}
             </h3>
             <p className="text-3xl font-bold text-gray-900 mt-2">{value}</p>
         </div>

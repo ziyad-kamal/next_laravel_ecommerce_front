@@ -97,6 +97,7 @@ const Navbar = () => {
     const userMenuRef = useRef<HTMLDivElement>(null);
     const userLangRef = useRef<HTMLDivElement>(null);
     const t = useTranslations("navbar");
+    const tCart = useTranslations("cart");
 
     // Calculate counts
     const notificationCount = notifications.filter((n) => !n.isRead).length;
@@ -346,7 +347,7 @@ const Navbar = () => {
                                     onChange={(e) =>
                                         setSearchQuery(e.target.value)
                                     }
-                                    placeholder="Search"
+                                    placeholder={t("search")}
                                     className="w-full bg-gray-700 text-white placeholder-gray-400 pl-10 pr-4 py-2 rounded-lg border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                                 />
                             </div>
@@ -379,7 +380,7 @@ const Navbar = () => {
                                     <div className="p-4 border-b border-gray-200">
                                         <div className="flex items-center justify-between">
                                             <h3 className="text-lg font-semibold text-gray-800">
-                                                Notifications
+                                                {t("notifications")}
                                             </h3>
                                             {notificationCount > 0 && (
                                                 <button
@@ -490,7 +491,7 @@ const Navbar = () => {
                                     <div className="p-4 border-b border-gray-200">
                                         <div className="flex items-center justify-between">
                                             <h3 className="text-lg font-semibold text-gray-800">
-                                                Shopping Cart
+                                                {tCart("title")}
                                             </h3>
                                             {cartItems.length > 0 && (
                                                 <button
@@ -505,7 +506,7 @@ const Navbar = () => {
                                     <div className="max-h-96 overflow-y-auto">
                                         {cartItems.length === 0 ? (
                                             <div className="p-4 text-gray-500 text-center">
-                                                Your cart is empty
+                                                {tCart("empty")}
                                             </div>
                                         ) : (
                                             cartItems.map((item) => (
@@ -573,14 +574,14 @@ const Navbar = () => {
                                         <div className="p-4 border-t border-gray-200">
                                             <div className="flex items-center justify-between mb-3">
                                                 <span className="font-semibold text-gray-800">
-                                                    Total:
+                                                    {tCart("total")}:
                                                 </span>
                                                 <span className="font-bold text-lg text-blue-600">
                                                     ${cartTotal.toFixed(2)}
                                                 </span>
                                             </div>
                                             <button className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-lg font-medium transition-colors">
-                                                Checkout
+                                                {tCart("checkout")}
                                             </button>
                                         </div>
                                     )}
@@ -610,7 +611,7 @@ const Navbar = () => {
                                             className="w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-200 flex items-center space-x-3 transition-colors"
                                         >
                                             <Settings className="w-4 h-4 text-gray-500" />
-                                            <span>Settings</span>
+                                            <span>{t("profile")}</span>
                                         </button>
                                         <div className="border-t border-gray-100 my-1"></div>
                                         <button
@@ -618,7 +619,7 @@ const Navbar = () => {
                                             className="w-full text-left px-4 py-2 text-red-600 hover:bg-red-100 flex items-center space-x-3 transition-colors"
                                         >
                                             <LogOut className="w-4 h-4 text-red-500" />
-                                            <span>Logout</span>
+                                            <span>{t("logout")}</span>
                                         </button>
                                     </div>
                                 </div>
@@ -634,7 +635,7 @@ const Navbar = () => {
                                 onClick={() => setShowUserLang(!showUserLang)}
                                 className="flex items-center space-x-1 p-2 text-gray-300 hover:text-white transition-colors"
                             >
-                                Languages
+                                {t("language")}
                                 <ChevronDown className="w-3 h-3 mx-1" />
                             </button>
 
@@ -707,7 +708,7 @@ const Navbar = () => {
                                 href={navbarLink.href}
                                 className="text-gray-300 hover:text-white block px-3 py-2 text-base font-medium transition-colors"
                             >
-                                {navbarLink.name}
+                                {t(navbarLink.name)}
                             </a>
                         ))}
 
@@ -719,14 +720,14 @@ const Navbar = () => {
                                 className="text-gray-300 hover:text-white block px-3 py-2 text-base font-medium transition-colors w-full text-left"
                             >
                                 <Settings className="w-4 h-4 mr-3 inline" />
-                                Settings
+                                {t("profile")}
                             </button>
                             <button
                                 onClick={handleLogout}
                                 className="text-red-400 hover:text-red-300 block px-3 py-2 text-base font-medium transition-colors w-full text-left"
                             >
                                 <LogOut className="w-4 h-4 mr-3 inline" />
-                                Logout
+                                {t("logout")}
                             </button>
                         </div>
 
@@ -745,7 +746,7 @@ const Navbar = () => {
                                 href="#"
                                 className="text-gray-300 cursor-pointer hover:text-white block px-3 py-2 text-base font-medium transition-colors"
                             >
-                                language
+                                {t("language")}
                             </a>
                         </div>
                     </div>

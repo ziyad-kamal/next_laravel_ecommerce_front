@@ -3,6 +3,7 @@
 import { memo, useCallback, useEffect, useRef, useState } from "react";
 import { Edit, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import sendRequest from "@/functions/sendRequest";
 import { useAppDispatch } from "@/lib/hooks";
 import { display } from "@/redux/DisplayToast";
@@ -16,12 +17,18 @@ import Option from "@/interfaces/props/Option";
 import { useDebounce } from "@/hooks/useDebounce";
 
 const DeleteConfirmationModal = memo(
-    ({ onConfirm }: { onConfirm: () => void }) => (
+    ({
+        onConfirm,
+        t,
+    }: {
+        onConfirm: () => void;
+        t: ReturnType<typeof useTranslations>;
+    }) => (
         <Modal
-            title="delete order"
+            title={t("modal.deleteOrder")}
             handleClick={onConfirm}
         >
-            <p>Are you want to delete this order</p>
+            <p>{t("modal.confirmDeleteOrder")}</p>
         </Modal>
     )
 );
@@ -30,6 +37,9 @@ DeleteConfirmationModal.displayName = "DeleteConfirmationModal";
 const GetOrders = () => {
     const router = useRouter();
     const dispatch = useAppDispatch();
+    const t = useTranslations("orders");
+    const tTable = useTranslations("table");
+    const tButtons = useTranslations("buttons");
     const id = useRef<number>(0);
     const abortController = useRef<AbortController | null>(null);
     const abortControllerForDelete = useRef<AbortController | null>(null);
@@ -288,7 +298,10 @@ const GetOrders = () => {
 
     return (
         <>
-            <DeleteConfirmationModal onConfirm={handleConfirm} />
+            <DeleteConfirmationModal
+                onConfirm={handleConfirm}
+                t={t}
+            />
 
             <Modal
                 title="Filter Orders"
@@ -300,22 +313,22 @@ const GetOrders = () => {
                 <div className="grid grid-cols-1 gap-4 mb-6">
                     <div>
                         <Input
-                            label="User Name"
+                            label={t("userName")}
                             type="text"
                             value={userNameInput}
                             handleChange={(e) =>
                                 handleFilterChange(e, "user_name")
                             }
                             name="user_name"
-                            placeholder="Search by user name"
+                            placeholder={t("searchByUserName")}
                             classes="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
                         />
                     </div>
                     <div>
                         <SelectInput
-                            label="State"
+                            label={t("state")}
                             options={stateOptions}
-                            placeholder="Select a state"
+                            placeholder={t("selectState")}
                             value={filters.state}
                             handleChange={(e) => handleFilterChange(e, "state")}
                             name="state"
@@ -323,7 +336,7 @@ const GetOrders = () => {
                     </div>
                     <div>
                         <Input
-                            label="Date of Delivery"
+                            label={t("dateOfDelivery")}
                             name="date_of_delivery"
                             type="date"
                             value={filters.date_of_delivery}
@@ -336,7 +349,6 @@ const GetOrders = () => {
                 </div>
             </Modal>
 
-            {/* Filter Button */}
             <div className="mb-4 flex justify-end">
                 <button
                     onClick={() => setIsFilterModalOpen(true)}
@@ -355,20 +367,20 @@ const GetOrders = () => {
                             d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"
                         />
                     </svg>
-                    Filter
+                    {t("filter")}
                 </button>
             </div>
 
             <Table
-                title={"orders"}
+                title={t("title")}
                 classes={"bg-white"}
                 tableHeaders={[
-                    "total_amount",
-                    "state",
-                    "name",
-                    "date_of_delivery",
-                    "created_at",
-                    "action",
+                    tTable("totalAmount"),
+                    tTable("state"),
+                    tTable("name"),
+                    tTable("dateOfDelivery"),
+                    tTable("createdAt"),
+                    tTable("action"),
                 ]}
                 handleBtnClick={() => handleAdd()}
                 sortConfig={sortConfig}
@@ -383,8 +395,8 @@ const GetOrders = () => {
                     pageCount={metaData.totalPages}
                     onPageChange={handlePageChange}
                     pageRangeDisplayed={6}
-                    previousLabel={"Previous"}
-                    nextLabel={"Next"}
+                    previousLabel={tTable("previous")}
+                    nextLabel={tTable("next")}
                     containerClassName="inline-flex flex justify-center -space-x-px text-sm my-5"
                     pageClassName="flex items-center justify-center cursor-pointer"
                     pageLinkClassName="flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700"

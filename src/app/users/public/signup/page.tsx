@@ -7,6 +7,7 @@ import sendRequest from "@/functions/sendRequest";
 import { useAppDispatch } from "@/lib/hooks";
 import { display } from "@/redux/DisplayToast";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 
 const initialInputs: {
     email: string;
@@ -24,6 +25,7 @@ const SignupPage = () => {
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const router = useRouter();
     const dispatch = useAppDispatch();
+    const t = useTranslations("signup");
 
     const handleInputChange = (
         e: ChangeEvent<HTMLInputElement>,
@@ -84,7 +86,7 @@ const SignupPage = () => {
                         <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-2xl mb-4 shadow-lg">
                             <User className="w-8 h-8 text-white" />
                         </div>
-                        <h1 className="text-3xl font-bold text-gray-900 mb-2">
+                        <h1 {t("title")}l font-bold text-gray-900 mb-2">
                             create new account
                         </h1>
                     </div>
@@ -142,7 +144,7 @@ const SignupPage = () => {
                                 htmlFor="name"
                                 className="block text-sm font-medium text-gray-700"
                             >
-                                name
+                                {t("name")}
                             </label>
                             <div className="relative">
                                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -165,7 +167,7 @@ const SignupPage = () => {
                                 htmlFor="email"
                                 className="block text-sm font-medium text-gray-700"
                             >
-                                Email Address
+                                {t("email")}
                             </label>
                             <div className="relative">
                                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -189,7 +191,7 @@ const SignupPage = () => {
                                 htmlFor="password"
                                 className="block text-sm font-medium text-gray-700"
                             >
-                                Password
+                                {t("password")}
                             </label>
                             <div className="relative">
                                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -225,7 +227,7 @@ const SignupPage = () => {
                                 htmlFor="password_confirmation"
                                 className="block text-sm font-medium text-gray-700"
                             >
-                                confirm your password
+                                {t("confirmPassword")}
                             </label>
                             <div className="relative">
                                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -239,7 +241,7 @@ const SignupPage = () => {
                                         border-gray-300 
                                         focus:ring-indigo-500 
                                         bg-white/50 "
-                                    placeholder="enter your password again"
+                                    placeholder={t("confirmPasswordPlaceholder")}
                                 />
                                 <button
                                     type="button"
@@ -265,11 +267,11 @@ const SignupPage = () => {
                             {isLoading ? (
                                 <div className="flex items-center">
                                     <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                                    Signing in...
+                                    {t("signingUp")}
                                 </div>
                             ) : (
                                 <div className="flex items-center">
-                                    Sign in
+                                    {t("signUp")}
                                     <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
                                 </div>
                             )}
@@ -280,19 +282,19 @@ const SignupPage = () => {
                 {/* Footer */}
                 <div className="mt-8 text-center">
                     <p className="text-xs text-gray-500">
-                        By signing up, you agree to our{" "}
+                        {t("bySigningUp")}{" "}
                         <a
                             href="#"
                             className="text-indigo-600 hover:text-indigo-500"
                         >
-                            Terms of Service
+                            {t("termsOfService")}
                         </a>{" "}
-                        and{" "}
+                        {t("and")}{" "}
                         <a
                             href="#"
                             className="text-indigo-600 hover:text-indigo-500"
                         >
-                            Privacy Policy
+                            {t("privacyPolicy")}
                         </a>
                     </p>
                 </div>

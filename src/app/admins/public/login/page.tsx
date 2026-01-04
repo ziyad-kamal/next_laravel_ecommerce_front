@@ -8,6 +8,7 @@ import { useAppDispatch } from "@/lib/hooks";
 import { display } from "@/redux/DisplayToast";
 import { useRouter } from "next/navigation";
 import { adminTokenSet } from "@/redux/SetToken";
+import { useTranslations } from "next-intl";
 
 const initialInputs: { email: string; password: string; rememberMe: boolean } =
     {
@@ -22,6 +23,7 @@ const LoginPage = () => {
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const router = useRouter();
     const dispatch = useAppDispatch();
+    const t = useTranslations("login");
 
     const handleInputChange = (
         e: ChangeEvent<HTMLInputElement>,
@@ -87,11 +89,9 @@ const LoginPage = () => {
                             <Lock className="w-8 h-8 text-white" />
                         </div>
                         <h1 className="text-3xl font-bold text-gray-900 mb-2">
-                            Admin login
+                            {t("title")}
                         </h1>
-                        <p className="text-gray-600">
-                            Sign in to your account to continue
-                        </p>
+                        <p className="text-gray-600">{t("subtitle")}</p>
                     </div>
 
                     {/* Login form */}
@@ -105,7 +105,7 @@ const LoginPage = () => {
                                 htmlFor="email"
                                 className="block text-sm font-medium text-gray-700"
                             >
-                                Email Address
+                                {t("email")}
                             </label>
                             <div className="relative">
                                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -129,7 +129,7 @@ const LoginPage = () => {
                                 htmlFor="password"
                                 className="block text-sm font-medium text-gray-700"
                             >
-                                Password
+                                {t("password")}
                             </label>
                             <div className="relative">
                                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -164,7 +164,7 @@ const LoginPage = () => {
                         <Button
                             isLoading={isLoading}
                             classes="bg-indigo-700 hover:bg-indigo-800 w-full flex justify-center"
-                            text="login"
+                            text={t("signIn")}
                         ></Button>
                     </form>
                 </Card>

@@ -3,6 +3,7 @@
 import { memo, useCallback, useEffect, useRef, useState } from "react";
 import { Edit, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import sendRequest from "@/functions/sendRequest";
 import { useAppDispatch } from "@/lib/hooks";
 import { display } from "@/redux/DisplayToast";
@@ -14,12 +15,18 @@ import Modal from "@/components/Modal";
 import { displayModal } from "@/redux/DisplayModal";
 
 const DeleteConfirmationModal = memo(
-    ({ onConfirm }: { onConfirm: () => void }) => (
+    ({
+        onConfirm,
+        t,
+    }: {
+        onConfirm: () => void;
+        t: ReturnType<typeof useTranslations>;
+    }) => (
         <Modal
-            title="delete user"
+            title={t("modal.deleteAdmin")}
             handleClick={onConfirm}
         >
-            <p>Are you want to delete this user</p>
+            <p>{t("modal.confirmDeleteAdmin")}</p>
         </Modal>
     )
 );
@@ -28,6 +35,9 @@ DeleteConfirmationModal.displayName = "DeleteConfirmationModal";
 const GetAdmins = () => {
     const router = useRouter();
     const dispatch = useAppDispatch();
+    const t = useTranslations("admins");
+    const tTable = useTranslations("table");
+    const tButtons = useTranslations("buttons");
     const id = useRef<number>(0);
     const abortController = useRef<AbortController | null>(null);
     const abortControllerForDelete = useRef<AbortController | null>(null);
@@ -211,14 +221,14 @@ const GetAdmins = () => {
                 <td className="row_table">
                     <Button
                         classes={"bg-indigo-600 hover:bg-indigo-700 text-white"}
-                        text={`Edit`}
+                        text={tButtons("edit")}
                         type="button"
                         icon={Edit}
                         handleClick={() => handleEdit(admin.id)}
                     />
                     <Button
                         classes={"bg-red-600 hover:bg-red-700 text-white"}
-                        text={`delete`}
+                        text={tButtons("delete")}
                         type="button"
                         icon={Trash2}
                         handleClick={() => handleDelete(admin.id)}
@@ -230,19 +240,20 @@ const GetAdmins = () => {
 
     return (
         <>
-            <DeleteConfirmationModal onConfirm={handleConfirm} />
-
-            <Modal
-                title="delete admin"
-                handleClick={handleConfirm}
-            >
-                <p>Are you want to delete this admin</p>
-            </Modal>
+            <DeleteConfirmationModal
+                onConfirm={handleConfirm}
+                t={t}
+            />
 
             <Table
-                title={"admins"}
+                title={t("title")}
                 classes={"bg-white"}
-                tableHeaders={["name", "email", "created_at", "action"]}
+                tableHeaders={[
+                    tTable("name"),
+                    tTable("email"),
+                    tTable("createdAt"),
+                    tTable("action"),
+                ]}
                 handleBtnClick={() => handleAdd()}
                 sortConfig={sortConfig}
                 handleHeaderClick={handleHeaderClick}
@@ -256,8 +267,8 @@ const GetAdmins = () => {
                     pageCount={metaData.totalPages}
                     onPageChange={handlePageChange}
                     pageRangeDisplayed={6}
-                    previousLabel={"Previous"}
-                    nextLabel={"Next"}
+                    previousLabel={tTable("previous")}
+                    nextLabel={tTable("next")}
                     containerClassName="inline-flex flex justify-center -space-x-px text-sm my-5"
                     pageClassName="flex items-center justify-center cursor-pointer"
                     pageLinkClassName="flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700"

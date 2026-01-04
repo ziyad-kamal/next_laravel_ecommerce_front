@@ -1,12 +1,245 @@
 {
     "tabTittles": {
-        "home": "ar home"
+        "home": "الرئيسية"
     },
-
+    "home": {
+        "title": "مرحبا بك في متجرنا الإلكتروني",
+        "subtitle": "اكتشف المنتجات الرائعة والعروض الرائعة"
+    },
     "navbar": {
-        "categories": "الاقسام",
+        "home": "الرئيسية",
+        "categories": "الأقسام",
         "brands": "الماركات",
-        "home": "الصفحة الرئيسية",
-        "items": "المنتجات"
+        "items": "المنتجات",
+        "users": "المستخدمون",
+        "dashboard": "لوحة التحكم",
+        "admins": "المسؤولون",
+        "orders": "الطلبات",
+        "search": "بحث",
+        "notifications": "الإشعارات",
+        "cart": "السلة",
+        "logout": "تسجيل الخروج",
+        "language": "اللغة",
+        "profile": "الملف الشخصي"
+    },
+    "state": {
+        "Categories": "الأقسام",
+        "Brands": "الماركات",
+        "Items": "المنتجات",
+        "Users": "المستخدمون",
+        "Admins": "المسؤولون",
+        "Orders": "الطلبات",
+        "Total sales": "مجموع المبيعات"
+    },
+    "login": {
+        "title": "مرحبا بعودتك",
+        "subtitle": "سجل الدخول إلى حسابك للمتابعة",
+        "email": "عنوان البريد الإلكتروني",
+        "password": "كلمة المرور",
+        "rememberMe": "تذكرني",
+        "forgotPassword": "هل نسيت كلمة المرور؟",
+        "signIn": "تسجيل الدخول",
+        "signingIn": "جاري التسجيل...",
+        "noAccount": "ليس لديك حساب؟",
+        "signUpFree": "اشترك مجانا",
+        "termsOfService": "شروط الخدمة",
+        "privacyPolicy": "سياسة الخصوصية",
+        "bySigningIn": "بتسجيل دخولك، فإنك توافق على",
+        "and": "و"
+    },
+    "signup": {
+        "title": "إنشاء حساب جديد",
+        "name": "الاسم الكامل",
+        "email": "عنوان البريد الإلكتروني",
+        "password": "كلمة المرور",
+        "confirmPassword": "تأكيد كلمة المرور",
+        "confirmPasswordPlaceholder": "أدخل كلمة المرور مرة أخرى",
+        "signUp": "اشترك",
+        "signingUp": "جاري الاشتراك...",
+        "bySigningUp": "بالاشتراك، فإنك توافق على",
+        "alreadyHaveAccount": "هل لديك حساب بالفعل؟",
+        "signInNow": "سجل الدخول الآن"
+    },
+    "dashboard": {
+        "title": "لوحة تحكم التجارة الإلكترونية",
+        "subtitle": "تتبع أداء عملك والتحليلات",
+        "totalSales": "إجمالي المبيعات",
+        "orders": "الطلبات",
+        "users": "المستخدمون",
+        "items": "المنتجات",
+        "lastMonth": "الشهر الماضي",
+        "last3Months": "آخر 3 أشهر",
+        "last6Months": "آخر 6 أشهر",
+        "thisYear": "هذا العام",
+        "salesAndOrdersOverview": "نظرة عامة على المبيعات والطلبات",
+        "salesByCategory": "المبيعات حسب الفئة",
+        "weeklyTrafficAndConversions": "حركة المرور الأسبوعية والتحويلات",
+        "recentOrders": "الطلبات الأخيرة",
+        "orderStatus": "حالة الطلب",
+        "delivered": "تم التسليم",
+        "processing": "قيد المعالجة",
+        "pending": "قيد الانتظار",
+        "shipped": "تم الشحن",
+        "canceled": "ملغى",
+        "refunding": "استرجاع",
+        "pendingToRefund": "قيد الانتظار للاسترجاع"
+    },
+    "table": {
+        "action": "الإجراء",
+        "edit": "تعديل",
+        "delete": "حذف",
+        "previous": "السابق",
+        "next": "التالي",
+        "name": "الاسم",
+        "email": "البريد الإلكتروني",
+        "language": "اللغة",
+        "image": "صورة",
+        "condition": "الحالة",
+        "approval": "الموافقة",
+        "price": "السعر",
+        "createdAt": "تاريخ الإنشاء",
+        "totalAmount": "المبلغ الإجمالي",
+        "state": "الحالة",
+        "dateOfDelivery": "تاريخ التسليم",
+        "paymentMethod": "طريقة الدفع",
+        "orderId": "رقم الطلب",
+        "status": "الحالة"
+    },
+    "modal": {
+        "deleteConfirmation": "تأكيد الحذف",
+        "deleteUser": "حذف المستخدم",
+        "deleteBrand": "حذف الماركة",
+        "deleteCategory": "حذف الفئة",
+        "deleteItem": "حذف المنتج",
+        "deleteOrder": "حذف الطلب",
+        "deleteAdmin": "حذف المسؤول",
+        "confirmDeleteUser": "هل أنت متأكد أنك تريد حذف هذا المستخدم؟",
+        "confirmDeleteBrand": "هل أنت متأكد أنك تريد حذف هذه الماركة؟",
+        "confirmDeleteCategory": "هل أنت متأكد أنك تريد حذف هذه الفئة؟",
+        "confirmDeleteItem": "هل أنت متأكد أنك تريد حذف هذا المنتج؟",
+        "confirmDeleteOrder": "هل أنت متأكد أنك تريد حذف هذا الطلب؟",
+        "confirmDeleteAdmin": "هل أنت متأكد أنك تريد حذف هذا المسؤول؟"
+    },
+    "brands": {
+        "title": "الماركات",
+        "brandName": "اسم الماركة",
+        "createdAt": "تم الإنشاء في",
+        "addBrand": "إضافة ماركة",
+        "editBrand": "تعديل الماركة",
+        "deleteBrand": "حذف الماركة",
+        "modal": {
+            "deleteItem": "حذف الماركة",
+            "confirmDeleteItem": "هل أنت متأكد أنك تريد حذف هذه الماركة؟"
+        }
+    },
+    "categories": {
+        "title": "الأقسام",
+        "categoryName": "اسم القسم",
+        "image": "صورة",
+        "createdAt": "تم الإنشاء في",
+        "addCategory": "إضافة قسم",
+        "editCategory": "تعديل القسم",
+        "deleteCategory": "حذف الفئة",
+        "modal": {
+            "deleteItem": "حذف الفئة",
+            "confirmDeleteItem": "هل أنت متأكد أنك تريد حذف هذه الفئة؟"
+        }
+    },
+    "items": {
+        "title": "المنتجات",
+        "itemName": "اسم المنتج",
+        "price": "السعر",
+        "condition": "الحالة",
+        "description": "الوصف",
+        "category": "القسم",
+        "brand": "الماركة",
+        "images": "الصور",
+        "createdAt": "تم الإنشاء في",
+        "addItem": "إضافة منتج",
+        "editItem": "تعديل المنتج",
+        "deleteItem": "حذف المنتج",
+        "selectCategory": "اختر قسم",
+        "selectBrand": "اختر ماركة",
+        "pickACategory": "اختر قسم",
+        "pickABrand": "اختر ماركة"
+    },
+    "orders": {
+        "title": "الطلبات",
+        "orderId": "رقم الطلب",
+        "customer": "العميل",
+        "total": "الإجمالي",
+        "status": "الحالة",
+        "date": "التاريخ",
+        "orderDetails": "تفاصيل الطلب",
+        "orderStatus": "حالة الطلب",
+        "orderItems": "عناصر الطلب",
+        "updateState": "تحديث الحالة",
+        "processToRefund": "معالجة استرجاع",
+        "cancel": "إلغاء",
+        "state": "الحالة",
+        "pickState": "اختر حالة"
+    },
+    "users": {
+        "title": "المستخدمون",
+        "name": "الاسم",
+        "email": "البريد الإلكتروني",
+        "createdAt": "تم الإنشاء في",
+        "addUser": "إضافة مستخدم",
+        "editUser": "تعديل المستخدم",
+        "deleteUser": "حذف المستخدم",
+        "confirmPassword": "تأكيد كلمة المرور",
+        "passwordPlaceholder": "أدخل كلمة المرور مرة أخرى"
+    },
+    "admins": {
+        "title": "المسؤولون",
+        "name": "الاسم",
+        "email": "البريد الإلكتروني",
+        "createdAt": "تم الإنشاء في",
+        "addAdmin": "إضافة مسؤول",
+        "editAdmin": "تعديل المسؤول",
+        "deleteAdmin": "حذف المسؤول",
+        "confirmPassword": "تأكيد كلمة المرور",
+        "passwordPlaceholder": "أدخل كلمة المرور مرة أخرى"
+    },
+    "buttons": {
+        "add": "إضافة",
+        "update": "تحديث",
+        "delete": "حذف",
+        "cancel": "إلغاء",
+        "save": "حفظ",
+        "submit": "إرسال",
+        "login": "دخول",
+        "signup": "اشترك"
+    },
+    "messages": {
+        "success": "نجاح",
+        "error": "خطأ",
+        "warning": "تحذير",
+        "info": "معلومات",
+        "loading": "جاري التحميل..."
+    },
+    "notifications": {
+        "orderShipped": "تم شحن الطلب",
+        "orderShippedMessage": "تم شحن طلبك #12345 وهو في الطريق!",
+        "newPromotion": "عرض ترويجي جديد",
+        "promotionMessage": "احصل على خصم 20٪ على جميع المنتجات الإلكترونية. عرض محدود الوقت!",
+        "accountSecurity": "أمان الحساب",
+        "securityMessage": "تم تغيير كلمة المرور الخاصة بك بنجاح."
+    },
+    "cart": {
+        "title": "سلة التسوق",
+        "empty": "سلتك فارغة",
+        "continueShipping": "متابعة التسوق",
+        "checkout": "دفع",
+        "subtotal": "المجموع الفرعي",
+        "shipping": "الشحن",
+        "tax": "الضريبة",
+        "total": "الإجمالي"
+    },
+    "errors": {
+        "fieldRequired": "هذا الحقل مطلوب",
+        "invalidEmail": "يرجى إدخال بريد إلكتروني صحيح",
+        "passwordMismatch": "كلمات المرور غير متطابقة",
+        "somethingWentWrong": "حدث خطأ ما"
     }
 }
