@@ -22,11 +22,16 @@ import { useRouter } from "next/navigation";
 import OrderDetailsState from "@/interfaces/states/OrderDetailsState";
 import { StatCard } from "@/components";
 import { useTranslations } from "next-intl";
+import { useAppSelector } from "@/lib/hooks";
+import LocaleState from "@/interfaces/states/LocaleState";
 
 const Dashboard: React.FC = () => {
     const [selectedPeriod, setSelectedPeriod] = useState("6");
     const router = useRouter();
     const t = useTranslations("dashboard");
+    const localeState = useAppSelector(
+        (state: { setLocale: LocaleState }) => state.setLocale
+    );
 
     const tTable = useTranslations("table");
     const [stats, setStats] = useState([
@@ -104,7 +109,7 @@ const Dashboard: React.FC = () => {
         fetchData();
 
         return () => abortController.abort();
-    }, [router, selectedPeriod]);
+    }, [router, selectedPeriod, localeState]);
 
     const getStatusColor = (status: string) => {
         switch (status) {
