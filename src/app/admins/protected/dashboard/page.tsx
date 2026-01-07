@@ -32,11 +32,12 @@ const Dashboard: React.FC = () => {
     const localeState = useAppSelector(
         (state: { setLocale: LocaleState }) => state.setLocale
     );
+    const isRTL = localeState.locale === "ar" ? true : false; // Adjust based on your RTL languages
 
     const tTable = useTranslations("table");
     const [stats, setStats] = useState([
         {
-            title: "",
+            title: "Total sales",
             value: "",
             change: 0,
             icon: <DollarSign className="w-6 h-6 text-white" />,
@@ -257,20 +258,52 @@ const Dashboard: React.FC = () => {
                         </h3>
                         <ResponsiveContainer
                             width="100%"
-                            height={300}
+                            height={400}
                         >
                             <PieChart>
                                 <Pie
                                     data={categoryData}
                                     cx="50%"
                                     cy="50%"
-                                    labelLine={false}
-                                    label={({ name, percent = 0 }) =>
-                                        `${name}: ${(percent * 100).toFixed(
-                                            1
-                                        )}%`
-                                    }
-                                    outerRadius={100}
+                                    label={({
+                                        cx,
+                                        cy,
+                                        midAngle = 0,
+                                        outerRadius,
+                                        name,
+                                        percent = 0,
+                                        fill,
+                                    }) => {
+                                        const RADIAN = Math.PI / 180;
+                                        const radius =
+                                            outerRadius + (isRTL ? 75 : 25);
+                                        const x =
+                                            cx +
+                                            radius *
+                                                Math.cos(-midAngle * RADIAN);
+                                        const y =
+                                            cy +
+                                            radius *
+                                                Math.sin(-midAngle * RADIAN);
+
+                                        return (
+                                            <text
+                                                x={x}
+                                                y={y}
+                                                textAnchor={
+                                                    x > cx ? "start" : "end"
+                                                }
+                                                dominantBaseline="central"
+                                                fill={fill}
+                                                className="text-[12px] font-medium"
+                                            >
+                                                {`${name}: ${(
+                                                    percent * 100
+                                                ).toFixed(1)}%`}
+                                            </text>
+                                        );
+                                    }}
+                                    outerRadius={isRTL ? 70 : 100}
                                     fill="#8884d8"
                                     dataKey="value"
                                 >
@@ -344,19 +377,19 @@ const Dashboard: React.FC = () => {
                         <table className="w-full">
                             <thead className="bg-gray-50">
                                 <tr>
-                                    <th className="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">
+                                    <th className="px-6 py-4 text-start text-xs font-bold text-gray-600 uppercase tracking-wider">
                                         {tTable("orderId")}
                                     </th>
-                                    <th className="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">
+                                    <th className="px-6 py-4 text-start text-xs font-bold text-gray-600 uppercase tracking-wider">
                                         {tTable("totalAmount")}
                                     </th>
-                                    <th className="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">
+                                    <th className="px-6 py-4 text-start text-xs font-bold text-gray-600 uppercase tracking-wider">
                                         {tTable("dateOfDelivery")}
                                     </th>
-                                    <th className="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">
+                                    <th className="px-6 py-4 text-start text-xs font-bold text-gray-600 uppercase tracking-wider">
                                         {tTable("paymentMethod")}
                                     </th>
-                                    <th className="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">
+                                    <th className="px-6 py-4 text-start text-xs font-bold text-gray-600 uppercase tracking-wider">
                                         {tTable("status")}
                                     </th>
                                 </tr>

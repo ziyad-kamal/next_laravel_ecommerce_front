@@ -23,12 +23,14 @@
         "profile": "Profile"
     },
     "state": {
-        "CATEGORIES": "الأقسام",
-        "BRANDS": "الماركات",
-        "ITEMS": "المنتجات",
-        "USERS": "المستخدمون",
-        "ADMINS": "المسؤولون",
-        "ORDERS": "الطلبات"
+        "categories": "Categories",
+        "brands": "Brands",
+        "items": "Items",
+        "users": "Users",
+        "dashboard": "Dashboard",
+        "admins": "Admins",
+        "orders": "Orders",
+        "Total sales": "Total sales"
     },
     "login": {
         "title": "Welcome Back",

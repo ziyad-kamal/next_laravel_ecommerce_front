@@ -137,12 +137,14 @@
         }
     },
     "state": {
-        "CATEGORIES": "الأقسام",
-        "BRANDS": "الماركات",
-        "ITEMS": "المنتجات",
-        "USERS": "المستخدمون",
-        "ADMINS": "المسؤولون",
-        "ORDERS": "الطلبات"
+        "categories": "Catégories",
+        "brands": "Brands",
+        "items": "produits",
+        "users": "Utilisateurs",
+        "dashboard": "Dashboard",
+        "admins": "Admins",
+        "orders": "Commandes",
+        "Total sales": "Total sales"
     },
     "items": {
         "title": "Produits",

@@ -170,8 +170,8 @@ const SignupPage = () => {
                                 {t("email")}
                             </label>
                             <div className="relative">
-                                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                    <Mail className="h-5 w-5 text-indigo-700" />
+                                <div className="absolute inset-y-0 inset-start-0 ps-3 flex items-center pointer-events-none">
+                                    <Mail className="h-5 w-5 text-indigo-700 flex-shrink-0" />
                                 </div>
                                 <Input
                                     name="email"
