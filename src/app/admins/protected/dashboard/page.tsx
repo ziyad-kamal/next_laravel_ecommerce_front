@@ -99,10 +99,23 @@ const Dashboard: React.FC = () => {
                     })
                 );
 
+                const salesWithTranslation = response.data.sales_data.map(
+                    (sale: { name: string }) => ({
+                        ...sale,
+                        name: t(sale.name),
+                    })
+                );
+
+                const trafficDataWithTranslation =
+                    response.data.traffic_data.map((day: { day: string }) => ({
+                        ...day,
+                        day: t(day.day),
+                    }));
+
                 setStats(statsWithIcons);
-                setSalesData(response.data.sales_data);
+                setSalesData(salesWithTranslation);
                 setCategoryData(categoriesWithColors);
-                setTrafficData(response.data.traffic_data);
+                setTrafficData(trafficDataWithTranslation);
                 setRecentOrders(response.data.recent_orders);
             }
         };
@@ -110,7 +123,7 @@ const Dashboard: React.FC = () => {
         fetchData();
 
         return () => abortController.abort();
-    }, [router, selectedPeriod, localeState]);
+    }, [router, selectedPeriod, localeState, t]);
 
     const getStatusColor = (status: string) => {
         switch (status) {
@@ -147,7 +160,7 @@ const Dashboard: React.FC = () => {
                     <select
                         value={selectedPeriod}
                         onChange={(e) => setSelectedPeriod(e.target.value)}
-                        className="px-6 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white shadow-sm font-medium"
+                        className="px-5 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white shadow-sm font-medium"
                     >
                         <option value="1">{t("lastMonth")}</option>
                         <option value="3">{t("last3Months")}</option>
@@ -177,7 +190,15 @@ const Dashboard: React.FC = () => {
                             width="100%"
                             height={300}
                         >
-                            <AreaChart data={salesData}>
+                            <AreaChart
+                                data={salesData}
+                                margin={{
+                                    top: 10,
+                                    right: isRTL ? 10 : 30,
+                                    left: isRTL ? 30 : 10,
+                                    bottom: 5,
+                                }}
+                            >
                                 <defs>
                                     <linearGradient
                                         id="colorSales"
@@ -223,8 +244,14 @@ const Dashboard: React.FC = () => {
                                 <XAxis
                                     dataKey="name"
                                     stroke="#6B7280"
+                                    reversed={isRTL}
                                 />
-                                <YAxis stroke="#6B7280" />
+                                <YAxis
+                                    stroke="#6B7280"
+                                    orientation={isRTL ? "right" : "left"}
+                                    yAxisId="left"
+                                    dx={isRTL ? 50 : 0}
+                                />
                                 <Tooltip
                                     contentStyle={{
                                         backgroundColor: "#fff",
@@ -239,6 +266,8 @@ const Dashboard: React.FC = () => {
                                     stroke="#3B82F6"
                                     fillOpacity={1}
                                     fill="url(#colorSales)"
+                                    name={t("sales")}
+                                    yAxisId="left"
                                 />
                                 <Area
                                     type="monotone"
@@ -246,6 +275,8 @@ const Dashboard: React.FC = () => {
                                     stroke="#8B5CF6"
                                     fillOpacity={1}
                                     fill="url(#colorOrders)"
+                                    name={t("orders")}
+                                    yAxisId="left"
                                 />
                             </AreaChart>
                         </ResponsiveContainer>
@@ -303,7 +334,7 @@ const Dashboard: React.FC = () => {
                                             </text>
                                         );
                                     }}
-                                    outerRadius={isRTL ? 70 : 100}
+                                    outerRadius={100}
                                     fill="#8884d8"
                                     dataKey="value"
                                 >
@@ -339,8 +370,13 @@ const Dashboard: React.FC = () => {
                                 <XAxis
                                     dataKey="day"
                                     stroke="#6B7280"
+                                    reversed={isRTL}
                                 />
-                                <YAxis stroke="#6B7280" />
+                                <YAxis
+                                    stroke="#6B7280"
+                                    orientation={isRTL ? "right" : "left"}
+                                    dx={isRTL ? 30 : 0}
+                                />
                                 <Tooltip
                                     contentStyle={{
                                         backgroundColor: "#fff",
@@ -354,12 +390,14 @@ const Dashboard: React.FC = () => {
                                     fill="#3B82F6"
                                     radius={[8, 8, 0, 0]}
                                     barSize={30}
+                                    name={t("visits")}
                                 />
                                 <Bar
-                                    dataKey="conversions"
+                                    dataKey="signup"
                                     fill="#EC4899"
                                     radius={[8, 8, 0, 0]}
                                     barSize={30}
+                                    name={t("signup")}
                                 />
                             </BarChart>
                         </ResponsiveContainer>
@@ -410,7 +448,7 @@ const Dashboard: React.FC = () => {
                                             {order.date_of_delivery}
                                         </td>
                                         <td className="px-6 py-4 whitespace-nowrap text-sm font-bold text-gray-900">
-                                            {order.method}
+                                            {t(order.method)}
                                         </td>
                                         <td className="px-6 py-4 whitespace-nowrap">
                                             <span
@@ -418,7 +456,7 @@ const Dashboard: React.FC = () => {
                                                     order.state
                                                 )}`}
                                             >
-                                                {order.state}
+                                                {t(order.state)}
                                             </span>
                                         </td>
                                     </tr>

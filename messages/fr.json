@@ -73,7 +73,27 @@
         "shipped": "Expédié",
         "canceled": "Annulé",
         "refunding": "Remboursement",
-        "pendingToRefund": "En attente de remboursement"
+        "pendingToRefund": "En attente de remboursement",
+        "Jan": "Janv",
+        "Feb": "Févr",
+        "Mar": "Mars",
+        "Apr": "Avr",
+        "May": "Mai",
+        "Jun": "Juin",
+        "Jul": "Juil",
+        "Aug": "Août",
+        "Sep": "Sept",
+        "Oct": "Oct",
+        "Nov": "Nov",
+        "Dec": "Déc",
+
+        "Monday": "Lundi",
+        "Tuesday": "Mardi",
+        "Wednesday": "Mercredi",
+        "Thursday": "Jeudi",
+        "Friday": "Vendredi",
+        "Saturday": "Samedi",
+        "Sunday": "Dimanche"
     },
     "table": {
         "action": "Action",
