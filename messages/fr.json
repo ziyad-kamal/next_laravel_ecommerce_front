@@ -20,7 +20,16 @@
         "cart": "Panier",
         "logout": "Déconnexion",
         "language": "Langue",
-        "profile": "Profil"
+        "profile": "Profil",
+        "management": "Gestion",
+        "users_list": "Utilisateurs",
+        "add_user": "Ajouter un utilisateur",
+        "admins_list": "Administrateurs",
+        "add_admin": "Ajouter un administrateur",
+        "categories_list": "Catégories",
+        "add_category": "Ajouter une catégorie",
+        "brands_list": "Marques",
+        "add_brand": "Ajouter une marque"
     },
     "login": {
         "title": "Bienvenue",
@@ -51,6 +60,7 @@
         "alreadyHaveAccount": "Vous avez déjà un compte?",
         "signInNow": "Connectez-vous maintenant"
     },
+
     "dashboard": {
         "title": "Tableau de bord e-commerce",
         "subtitle": "Suivez les performances et les analyses de votre entreprise",
@@ -74,6 +84,12 @@
         "canceled": "Annulé",
         "refunding": "Remboursement",
         "pendingToRefund": "En attente de remboursement",
+        "visits": "visits",
+        "signup": "signup",
+        "online": "online",
+        "cash": "cash",
+
+        "sales": "sales",
         "Jan": "Janv",
         "Feb": "Févr",
         "Mar": "Mars",
@@ -159,11 +175,13 @@
     "state": {
         "categories": "Catégories",
         "brands": "Brands",
-        "items": "produits",
-        "users": "Utilisateurs",
+        "Items": "produits",
+        "Users": "Utilisateurs",
         "dashboard": "Dashboard",
         "admins": "Admins",
-        "orders": "Commandes",
+        "Orders": "Commandes",
+        "title": "title",
+
         "Total sales": "Total sales"
     },
     "items": {

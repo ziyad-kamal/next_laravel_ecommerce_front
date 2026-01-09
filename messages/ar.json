@@ -20,7 +20,16 @@
         "cart": "السلة",
         "logout": "تسجيل الخروج",
         "language": "اللغة",
-        "profile": "الملف الشخصي"
+        "profile": "الملف الشخصي",
+        "management": "الإدارة",
+        "users_list": "المستخدمون",
+        "add_user": "إضافة مستخدم",
+        "admins_list": "المسؤولون",
+        "add_admin": "إضافة مسؤول",
+        "categories_list": "الأقسام",
+        "add_category": "إضافة قسم",
+        "brands_list": "الماركات",
+        "add_brand": "إضافة ماركة"
     },
     "state": {
         "Categories": "الأقسام",
@@ -100,13 +109,13 @@
         "Oct": "أكتوبر",
         "Nov": "نوفمبر",
         "Dec": "ديسمبر",
-         "Monday": "الاثنين",
-  "Tuesday": "الثلاثاء",
-  "Wednesday": "الأربعاء",
-  "Thursday": "الخميس",
-  "Friday": "الجمعة",
-  "Saturday": "السبت",
-  "Sunday": "الأحد"
+        "Monday": "الاثنين",
+        "Tuesday": "الثلاثاء",
+        "Wednesday": "الأربعاء",
+        "Thursday": "الخميس",
+        "Friday": "الجمعة",
+        "Saturday": "السبت",
+        "Sunday": "الأحد"
     },
     "table": {
         "action": "الإجراء",

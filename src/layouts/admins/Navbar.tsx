@@ -6,12 +6,8 @@ import {
     Menu,
     Bell,
     Search,
-    ShoppingCart,
     User,
     X,
-    Trash2,
-    Plus,
-    Minus,
     Check,
     Settings,
     LogOut,
@@ -29,9 +25,9 @@ const Navbar = () => {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [searchQuery, setSearchQuery] = useState("");
     const [showNotifications, setShowNotifications] = useState(false);
-    const [showCart, setShowCart] = useState(false);
     const [showUserMenu, setShowUserMenu] = useState(false);
     const [showUserLang, setShowUserLang] = useState(false);
+    const [openDropdown, setOpenDropdown] = useState<string | null>(null);
 
     const router = useRouter();
     const dispatch = useAppDispatch();
@@ -67,48 +63,13 @@ const Navbar = () => {
         },
     ]);
 
-    // Cart state
-    const [cartItems, setCartItems] = useState([
-        {
-            id: 1,
-            name: "Wireless Bluetooth Headphones",
-            price: 79.99,
-            quantity: 1,
-            image: "https://via.placeholder.com/60x60/4F46E5/FFFFFF?text=HP",
-        },
-        {
-            id: 2,
-            name: "Smart Watch Series 5",
-            price: 199.99,
-            quantity: 2,
-            image: "https://via.placeholder.com/60x60/059669/FFFFFF?text=SW",
-        },
-        {
-            id: 3,
-            name: "USB-C Cable",
-            price: 12.99,
-            quantity: 1,
-            image: "https://via.placeholder.com/60x60/DC2626/FFFFFF?text=CB",
-        },
-    ]);
-
     const notificationRef = useRef<HTMLDivElement>(null);
-    const cartRef = useRef<HTMLDivElement>(null);
     const userMenuRef = useRef<HTMLDivElement>(null);
     const userLangRef = useRef<HTMLDivElement>(null);
     const t = useTranslations("navbar");
-    const tCart = useTranslations("cart");
 
     // Calculate counts
     const notificationCount = notifications.filter((n) => !n.isRead).length;
-    const cartCount = cartItems.reduce(
-        (total, item) => total + item.quantity,
-        0
-    );
-    const cartTotal = cartItems.reduce(
-        (total, item) => total + item.price * item.quantity,
-        0
-    );
 
     // Close dropdowns when clicking outside
     useEffect(() => {
@@ -118,12 +79,6 @@ const Navbar = () => {
                 !notificationRef.current.contains(event.target as Node)
             ) {
                 setShowNotifications(false);
-            }
-            if (
-                cartRef.current &&
-                !cartRef.current.contains(event.target as Node)
-            ) {
-                setShowCart(false);
             }
             if (
                 userMenuRef.current &&
@@ -140,7 +95,7 @@ const Navbar = () => {
             }
         };
 
-        const storedToken = localStorage.getItem("token");
+        const storedToken = localStorage.getItem("adminsToken");
         if (storedToken) {
             dispatch(userTokenSet());
         }
@@ -191,27 +146,6 @@ const Navbar = () => {
         setNotifications((prev) =>
             prev.filter((notification) => notification.id !== id)
         );
-    };
-
-    // Cart functions
-    const updateQuantity = (id: number, change: number) => {
-        setCartItems((prev) =>
-            prev.map((item) => {
-                if (item.id === id) {
-                    const newQuantity = Math.max(1, item.quantity + change);
-                    return { ...item, quantity: newQuantity };
-                }
-                return item;
-            })
-        );
-    };
-
-    const removeFromCart = (id: number) => {
-        setCartItems((prev) => prev.filter((item) => item.id !== id));
-    };
-
-    const clearCart = () => {
-        setCartItems([]);
     };
 
     // User menu functions
@@ -323,21 +257,67 @@ const Navbar = () => {
                         </div>
                     </div>
                     {/* Desktop Navigation */}
-                    <div className="hidden lg:block">
-                        <div className="ml-10 flex items-baseline space-x-8">
+                    <div className="hidden clg:block">
+                        <div className="ml-5 flex items-baseline space-x-8">
                             {navbarLinks().map((navbarLink, i) => (
-                                <a
+                                <div
                                     key={i}
-                                    className="text-gray-300 hover:text-white px-3 py-2 text-sm font-bold transition-colors"
-                                    href={navbarLink.href}
+                                    className="relative group"
                                 >
-                                    {t(navbarLink.name)}
-                                </a>
+                                    {navbarLink.submenu ? (
+                                        <>
+                                            <button
+                                                className="text-gray-300 hover:text-white px-3 py-2 text-sm font-bold transition-colors flex items-center space-x-1"
+                                                onClick={() =>
+                                                    setOpenDropdown(
+                                                        openDropdown ===
+                                                            navbarLink.name
+                                                            ? null
+                                                            : navbarLink.name
+                                                    )
+                                                }
+                                            >
+                                                <span>
+                                                    {t(navbarLink.name)}
+                                                </span>
+                                                <ChevronDown className="w-4 h-4 transform group-hover:rotate-180 transition-transform" />
+                                            </button>
+
+                                            {/* Dropdown Menu */}
+                                            <div className="absolute left-0 mt-0 w-48 bg-white rounded-lg shadow-lg border border-gray-200 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
+                                                <div className="py-2">
+                                                    {navbarLink.submenu.map(
+                                                        (subItem, j) => (
+                                                            <a
+                                                                key={j}
+                                                                href={
+                                                                    subItem.href
+                                                                }
+                                                                className="block px-4 py-2 text-gray-700 hover:bg-gray-100 transition-colors text-sm"
+                                                            >
+                                                                {t(
+                                                                    subItem.name
+                                                                )}
+                                                            </a>
+                                                        )
+                                                    )}
+                                                </div>
+                                            </div>
+                                        </>
+                                    ) : (
+                                        <a
+                                            className="text-gray-300 hover:text-white px-3 py-2 text-sm font-bold transition-colors"
+                                            href={navbarLink.href}
+                                        >
+                                            {t(navbarLink.name)}
+                                        </a>
+                                    )}
+                                </div>
                             ))}
                         </div>
                     </div>
                     {/* Search Bar */}
-                    <div className="hidden lg:flex flex-1 max-w-lg mx-8">
+                    <div className="hidden clg:flex flex-1 max-w-lg mx-8">
                         <div className="w-full">
                             <div className="relative">
                                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
@@ -354,7 +334,7 @@ const Navbar = () => {
                         </div>
                     </div>
                     {/* Right side icons */}
-                    <div className="hidden lg:flex items-center space-x-4">
+                    <div className="hidden clg:flex items-center space-x-4">
                         {/* Notifications */}
                         <div
                             className="relative"
@@ -468,127 +448,6 @@ const Navbar = () => {
                             )}
                         </div>
 
-                        {/* Shopping Cart */}
-                        <div
-                            className="relative"
-                            ref={cartRef}
-                        >
-                            <button
-                                onClick={() => setShowCart(!showCart)}
-                                className="relative p-2 text-gray-300 hover:text-white transition-colors"
-                            >
-                                <ShoppingCart className="w-5 h-5" />
-                                {cartCount > 0 && (
-                                    <span className="absolute -top-1 -right-1 bg-blue-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
-                                        {cartCount}
-                                    </span>
-                                )}
-                            </button>
-
-                            {/* Cart Dropdown */}
-                            {showCart && (
-                                <div className="absolute right-0 mt-2 w-96 bg-white rounded-lg shadow-lg border border-gray-200 z-50">
-                                    <div className="p-4 border-b border-gray-200">
-                                        <div className="flex items-center justify-between">
-                                            <h3 className="text-lg font-semibold text-gray-800">
-                                                {tCart("title")}
-                                            </h3>
-                                            {cartItems.length > 0 && (
-                                                <button
-                                                    onClick={clearCart}
-                                                    className="text-sm text-red-600 hover:text-red-800"
-                                                >
-                                                    Clear All
-                                                </button>
-                                            )}
-                                        </div>
-                                    </div>
-                                    <div className="max-h-96 overflow-y-auto">
-                                        {cartItems.length === 0 ? (
-                                            <div className="p-4 text-gray-500 text-center">
-                                                {tCart("empty")}
-                                            </div>
-                                        ) : (
-                                            cartItems.map((item) => (
-                                                <div
-                                                    key={item.id}
-                                                    className="p-4 border-b border-gray-100 hover:bg-gray-200 cursor-pointer"
-                                                >
-                                                    <div className="flex items-center space-x-3">
-                                                        {/* <Image
-                                                            src={item.image}
-                                                            alt={item.name}
-                                                            className="w-12 h-12 object-cover rounded"
-                                                        /> */}
-                                                        <div className="flex-1">
-                                                            <h4 className="font-medium text-gray-800 text-sm">
-                                                                {item.name}
-                                                            </h4>
-                                                            <p className="text-blue-600 font-semibold">
-                                                                ${item.price}
-                                                            </p>
-                                                        </div>
-                                                        <div className="flex items-center space-x-2">
-                                                            <button
-                                                                onClick={() =>
-                                                                    updateQuantity(
-                                                                        item.id,
-                                                                        -1
-                                                                    )
-                                                                }
-                                                                className="w-6 h-6 bg-gray-200 hover:bg-gray-300 rounded-full flex items-center justify-center"
-                                                            >
-                                                                <Minus className="w-2 h-2 text-gray-600" />
-                                                            </button>
-                                                            <span className="w-8 text-center font-medium text-gray-800">
-                                                                {item.quantity}
-                                                            </span>
-                                                            <button
-                                                                onClick={() =>
-                                                                    updateQuantity(
-                                                                        item.id,
-                                                                        1
-                                                                    )
-                                                                }
-                                                                className="w-6 h-6 bg-gray-200 hover:bg-gray-300 rounded-full flex items-center justify-center"
-                                                            >
-                                                                <Plus className="w-2 h-2 text-gray-600" />
-                                                            </button>
-                                                            <button
-                                                                onClick={() =>
-                                                                    removeFromCart(
-                                                                        item.id
-                                                                    )
-                                                                }
-                                                                className="text-red-600 hover:text-red-800 p-1"
-                                                            >
-                                                                <Trash2 className="w-3 h-3" />
-                                                            </button>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            ))
-                                        )}
-                                    </div>
-                                    {cartItems.length > 0 && (
-                                        <div className="p-4 border-t border-gray-200">
-                                            <div className="flex items-center justify-between mb-3">
-                                                <span className="font-semibold text-gray-800">
-                                                    {tCart("total")}:
-                                                </span>
-                                                <span className="font-bold text-lg text-blue-600">
-                                                    ${cartTotal.toFixed(2)}
-                                                </span>
-                                            </div>
-                                            <button className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-lg font-medium transition-colors">
-                                                {tCart("checkout")}
-                                            </button>
-                                        </div>
-                                    )}
-                                </div>
-                            )}
-                        </div>
-
                         {/* User Account */}
                         <div
                             className="relative"
@@ -666,7 +525,7 @@ const Navbar = () => {
                     </div>
 
                     {/* Mobile menu button */}
-                    <div className="lg:hidden">
+                    <div className="clg:hidden">
                         <button
                             onClick={toggleMenu}
                             className="text-gray-300 hover:text-white p-2 transition-colors"
@@ -683,7 +542,7 @@ const Navbar = () => {
 
             {/* Mobile Menu */}
             {isMenuOpen && (
-                <div className="lg:hidden bg-gray-900 border-t border-gray-800">
+                <div className="clg:hidden bg-gray-900 border-t border-gray-800">
                     <div className="px-2 pt-2 pb-3 space-y-1">
                         {/* Mobile Search */}
                         <div className="px-3 py-2">
@@ -703,13 +562,55 @@ const Navbar = () => {
 
                         {/* Mobile Navigation Links */}
                         {navbarLinks().map((navbarLink, i) => (
-                            <a
-                                key={i}
-                                href={navbarLink.href}
-                                className="text-gray-300 hover:text-white block px-3 py-2 text-base font-medium transition-colors"
-                            >
-                                {t(navbarLink.name)}
-                            </a>
+                            <div key={i}>
+                                {navbarLink.submenu ? (
+                                    <>
+                                        <button
+                                            onClick={() =>
+                                                setOpenDropdown(
+                                                    openDropdown ===
+                                                        navbarLink.name
+                                                        ? null
+                                                        : navbarLink.name
+                                                )
+                                            }
+                                            className="text-gray-300 hover:text-white w-full text-left px-3 py-2 text-base font-medium transition-colors flex items-center justify-between"
+                                        >
+                                            <span>{t(navbarLink.name)}</span>
+                                            <ChevronDown
+                                                className={`w-4 h-4 transform transition-transform ${
+                                                    openDropdown ===
+                                                    navbarLink.name
+                                                        ? "rotate-180"
+                                                        : ""
+                                                }`}
+                                            />
+                                        </button>
+                                        {openDropdown === navbarLink.name && (
+                                            <div className="pl-4 bg-gray-800">
+                                                {navbarLink.submenu.map(
+                                                    (subItem, j) => (
+                                                        <a
+                                                            key={j}
+                                                            href={subItem.href}
+                                                            className="text-gray-400 hover:text-white block px-3 py-2 text-sm font-medium transition-colors"
+                                                        >
+                                                            {t(subItem.name)}
+                                                        </a>
+                                                    )
+                                                )}
+                                            </div>
+                                        )}
+                                    </>
+                                ) : (
+                                    <a
+                                        href={navbarLink.href}
+                                        className="text-gray-300 hover:text-white block px-3 py-2 text-base font-medium transition-colors"
+                                    >
+                                        {t(navbarLink.name)}
+                                    </a>
+                                )}
+                            </div>
                         ))}
 
                         {/* Mobile User Menu */}
