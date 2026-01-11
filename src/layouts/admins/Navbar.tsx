@@ -67,6 +67,7 @@ const Navbar = () => {
     const userMenuRef = useRef<HTMLDivElement>(null);
     const userLangRef = useRef<HTMLDivElement>(null);
     const t = useTranslations("navbar");
+    const tLanguage = useTranslations("language");
 
     // Calculate counts
     const notificationCount = notifications.filter((n) => !n.isRead).length;
@@ -515,7 +516,7 @@ const Navbar = () => {
                                                         : ""
                                                 } hover:bg-gray-200 flex items-center space-x-3 transition-colors `}
                                             >
-                                                {lang.name}
+                                                {tLanguage(lang.name)}
                                             </button>
                                         ))}
                                     </div>

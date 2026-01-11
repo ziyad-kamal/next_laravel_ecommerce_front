@@ -111,13 +111,13 @@
         "Oct": "Oct",
         "Nov": "Nov",
         "Dec": "Dec",
-        "Monday": "Monday",
-        "Tuesday": "Tuesday",
-        "Wednesday": "Wednesday",
-        "Thursday": "Thursday",
+        "Monday": "Mon",
+        "Tuesday": "Tues",
+        "Wednesday": "Wed",
+        "Thursday": "Thur",
         "Friday": "Friday",
-        "Saturday": "Saturday",
-        "Sunday": "Sunday"
+        "Saturday": "Sat",
+        "Sunday": "Sun"
     },
     "table": {
         "action": "Action",
@@ -297,5 +297,10 @@
         "invalidEmail": "Please enter a valid email",
         "passwordMismatch": "Passwords do not match",
         "somethingWentWrong": "Something went wrong"
+    },
+    "language": {
+        "arabic": "arabic",
+        "english": "english",
+        "french": "french"
     }
 }

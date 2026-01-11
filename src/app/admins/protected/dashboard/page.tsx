@@ -181,21 +181,22 @@ const Dashboard: React.FC = () => {
 
                 {/* Charts Row 1 */}
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-                    {/* sales & Orders Chart */}
-                    <div className="bg-white rounded-xl shadow-lg p-6 border border-gray-100">
-                        <h3 className="text-xl font-bold text-gray-900 mb-4">
+                    {/* Sales & Orders Chart */}
+                    <div className="bg-white rounded-xl shadow-lg p-4 sm:p-6 border border-gray-100">
+                        <h3 className="text-lg sm:text-xl font-bold text-gray-900 mb-4">
                             {t("salesAndOrdersOverview")}
                         </h3>
                         <ResponsiveContainer
                             width="100%"
-                            height={300}
+                            height={250}
+                            minHeight={200}
                         >
                             <AreaChart
                                 data={salesData}
                                 margin={{
                                     top: 10,
-                                    right: isRTL ? 10 : 30,
-                                    left: isRTL ? 30 : 10,
+                                    right: isRTL ? 5 : 20,
+                                    left: isRTL ? 20 : 5,
                                     bottom: 5,
                                 }}
                             >
@@ -245,21 +246,29 @@ const Dashboard: React.FC = () => {
                                     dataKey="name"
                                     stroke="#6B7280"
                                     reversed={isRTL}
+                                    tick={{ fontSize: 12 }}
+                                    interval="preserveStartEnd"
                                 />
                                 <YAxis
                                     stroke="#6B7280"
                                     orientation={isRTL ? "right" : "left"}
                                     yAxisId="left"
                                     dx={isRTL ? 50 : 0}
+                                    tick={{ fontSize: 12 }}
+                                    width={60}
                                 />
                                 <Tooltip
                                     contentStyle={{
                                         backgroundColor: "#fff",
                                         border: "1px solid #e5e7eb",
                                         borderRadius: "8px",
+                                        fontSize: "12px",
                                     }}
                                 />
-                                <Legend />
+                                <Legend
+                                    wrapperStyle={{ fontSize: "12px" }}
+                                    iconSize={12}
+                                />
                                 <Area
                                     type="monotone"
                                     dataKey="sales"
@@ -283,13 +292,14 @@ const Dashboard: React.FC = () => {
                     </div>
 
                     {/* Category Distribution */}
-                    <div className="bg-white rounded-xl shadow-lg p-6 border border-gray-100">
-                        <h3 className="text-xl font-bold text-gray-900 mb-4">
+                    <div className="bg-white rounded-xl shadow-lg p-4 sm:p-6 border border-gray-100">
+                        <h3 className="text-lg sm:text-xl font-bold text-gray-900 mb-4">
                             {t("salesByCategory")}
                         </h3>
                         <ResponsiveContainer
                             width="100%"
-                            height={400}
+                            height={350}
+                            minHeight={300}
                         >
                             <PieChart>
                                 <Pie
@@ -307,7 +317,7 @@ const Dashboard: React.FC = () => {
                                     }) => {
                                         const RADIAN = Math.PI / 180;
                                         const radius =
-                                            outerRadius + (isRTL ? 75 : 25);
+                                            outerRadius + (isRTL ? 60 : 20);
                                         const x =
                                             cx +
                                             radius *
@@ -326,7 +336,7 @@ const Dashboard: React.FC = () => {
                                                 }
                                                 dominantBaseline="central"
                                                 fill={fill}
-                                                className="text-[12px] font-medium"
+                                                className="text-[10px] sm:text-[12px] font-medium"
                                             >
                                                 {`${name}: ${(
                                                     percent * 100
@@ -334,7 +344,7 @@ const Dashboard: React.FC = () => {
                                             </text>
                                         );
                                     }}
-                                    outerRadius={100}
+                                    outerRadius={80}
                                     fill="#8884d8"
                                     dataKey="value"
                                 >
@@ -345,7 +355,11 @@ const Dashboard: React.FC = () => {
                                         />
                                     ))}
                                 </Pie>
-                                <Tooltip />
+                                <Tooltip
+                                    contentStyle={{
+                                        fontSize: "12px",
+                                    }}
+                                />
                             </PieChart>
                         </ResponsiveContainer>
                     </div>
@@ -354,15 +368,24 @@ const Dashboard: React.FC = () => {
                 {/* Charts Row 2 */}
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
                     {/* Traffic & Conversions */}
-                    <div className="bg-white rounded-xl shadow-lg p-6 border border-gray-100">
-                        <h3 className="text-xl font-bold text-gray-900 mb-4">
+                    <div className="bg-white rounded-xl shadow-lg p-4 sm:p-6 border border-gray-100">
+                        <h3 className="text-lg sm:text-xl font-bold text-gray-900 mb-4">
                             {t("weeklyTrafficAndConversions")}
                         </h3>
                         <ResponsiveContainer
                             width="100%"
-                            height={300}
+                            height={250}
+                            minHeight={200}
                         >
-                            <BarChart data={trafficData}>
+                            <BarChart
+                                data={trafficData}
+                                margin={{
+                                    top: 10,
+                                    right: isRTL ? 5 : 20,
+                                    left: isRTL ? 20 : 5,
+                                    bottom: 5,
+                                }}
+                            >
                                 <CartesianGrid
                                     strokeDasharray="3 3"
                                     stroke="#aaa"
@@ -371,32 +394,40 @@ const Dashboard: React.FC = () => {
                                     dataKey="day"
                                     stroke="#6B7280"
                                     reversed={isRTL}
+                                    tick={{ fontSize: 12 }}
+                                    interval="preserveStartEnd"
                                 />
                                 <YAxis
                                     stroke="#6B7280"
                                     orientation={isRTL ? "right" : "left"}
                                     dx={isRTL ? 30 : 0}
+                                    tick={{ fontSize: 12 }}
+                                    width={50}
                                 />
                                 <Tooltip
                                     contentStyle={{
                                         backgroundColor: "#fff",
                                         border: "1px solid #e5e7eb",
                                         borderRadius: "8px",
+                                        fontSize: "12px",
                                     }}
                                 />
-                                <Legend />
+                                <Legend
+                                    wrapperStyle={{ fontSize: "12px" }}
+                                    iconSize={12}
+                                />
                                 <Bar
                                     dataKey="visits"
                                     fill="#3B82F6"
                                     radius={[8, 8, 0, 0]}
-                                    barSize={30}
+                                    barSize={25}
                                     name={t("visits")}
                                 />
                                 <Bar
                                     dataKey="signup"
                                     fill="#EC4899"
                                     radius={[8, 8, 0, 0]}
-                                    barSize={30}
+                                    barSize={25}
                                     name={t("signup")}
                                 />
                             </BarChart>

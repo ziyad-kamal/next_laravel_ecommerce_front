@@ -109,13 +109,13 @@
         "Oct": "أكتوبر",
         "Nov": "نوفمبر",
         "Dec": "ديسمبر",
-        "Monday": "الاثنين",
-        "Tuesday": "الثلاثاء",
-        "Wednesday": "الأربعاء",
-        "Thursday": "الخميس",
-        "Friday": "الجمعة",
-        "Saturday": "السبت",
-        "Sunday": "الأحد"
+        "Monday": "اثنين",
+        "Tuesday": "ثلاثاء",
+        "Wednesday": "أربعاء",
+        "Thursday": "خميس",
+        "Friday": "جمعة",
+        "Saturday": "سبت",
+        "Sunday": "أحد"
     },
     "table": {
         "action": "الإجراء",
@@ -210,7 +210,12 @@
         "processToRefund": "معالجة استرجاع",
         "cancel": "إلغاء",
         "state": "الحالة",
-        "pickState": "اختر حالة"
+        "pickState": "اختر حالة",
+        "userName": "اسم المستخدم",
+        "searchByUserName": "البحث باسم المستخدم",
+        "dateOfDelivery": "تاريخ التسليم",
+        "filter": "تصفية",
+        "selectState": "اختار الحالة"
     },
     "users": {
         "title": "المستخدمون",
@@ -242,7 +247,8 @@
         "save": "حفظ",
         "submit": "إرسال",
         "login": "دخول",
-        "signup": "اشترك"
+        "signup": "اشترك",
+        "edit": "تعديل"
     },
     "messages": {
         "success": "نجاح",
@@ -274,5 +280,10 @@
         "invalidEmail": "يرجى إدخال بريد إلكتروني صحيح",
         "passwordMismatch": "كلمات المرور غير متطابقة",
         "somethingWentWrong": "حدث خطأ ما"
+    },
+    "language": {
+        "arabic": "العربية",
+        "english": "الانجليزية",
+        "french": "الفرنسية"
     }
 }

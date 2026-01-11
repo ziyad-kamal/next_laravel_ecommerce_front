@@ -1,6 +1,7 @@
 import { ArrowDown, ArrowUp, Plus } from "lucide-react";
 import Button from "./Button";
 import TableProps from "@/interfaces/props/TableProps";
+import { useTranslations } from "next-intl";
 
 export default function Table({
     title,
@@ -11,11 +12,13 @@ export default function Table({
     sortConfig,
     handleHeaderClick,
 }: TableProps) {
+    const tButton = useTranslations("buttons");
+
     const headersList = tableHeaders.map((header, i) => {
         return (
             <th
                 key={i}
-                className="text-left cursor-pointer py-3 px-3 text-sm font-medium text-gray-900"
+                className="text-start cursor-pointer py-3 px-3 text-sm font-medium text-gray-900"
                 onClick={() => handleHeaderClick(header)}
             >
                 {header}
@@ -47,7 +50,7 @@ export default function Table({
 
                     <Button
                         classes={"bg-indigo-600 hover:bg-indigo-700 text-white"}
-                        text={`Add`}
+                        text={tButton(`add`)}
                         icon={Plus}
                         handleClick={handleBtnClick}
                     />

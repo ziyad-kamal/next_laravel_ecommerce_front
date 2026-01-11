@@ -280,5 +280,10 @@
         "invalidEmail": "Veuillez entrer une adresse e-mail valide",
         "passwordMismatch": "Les mots de passe ne correspondent pas",
         "somethingWentWrong": "Quelque chose s'est mal passé"
+    },
+    "language": {
+        "arabic": "arabic",
+        "english": "english",
+        "french": "french"
     }
 }

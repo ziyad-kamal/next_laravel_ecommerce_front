@@ -5,7 +5,7 @@ import { Edit, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import sendRequest from "@/functions/sendRequest";
-import { useAppDispatch } from "@/lib/hooks";
+import { useAppDispatch, useAppSelector } from "@/lib/hooks";
 import { display } from "@/redux/DisplayToast";
 import { Button, Input, SelectInput } from "@/components";
 import Table from "@/components/Table";
@@ -15,6 +15,8 @@ import { displayModal } from "@/redux/DisplayModal";
 import OrderState from "@/interfaces/states/OrderState";
 import Option from "@/interfaces/props/Option";
 import { useDebounce } from "@/hooks/useDebounce";
+import LocaleState from "@/interfaces/states/LocaleState";
+import formatDate from "@/functions/transDate";
 
 const DeleteConfirmationModal = memo(
     ({
@@ -25,10 +27,10 @@ const DeleteConfirmationModal = memo(
         t: ReturnType<typeof useTranslations>;
     }) => (
         <Modal
-            title={t("modal.deleteOrder")}
+            title={t("deleteOrder")}
             handleClick={onConfirm}
         >
-            <p>{t("modal.confirmDeleteOrder")}</p>
+            <p>{t("confirmDeleteOrder")}</p>
         </Modal>
     )
 );
@@ -38,8 +40,14 @@ const GetOrders = () => {
     const router = useRouter();
     const dispatch = useAppDispatch();
     const t = useTranslations("orders");
+    const tModal = useTranslations("modal");
+    const tButton = useTranslations("buttons");
+    const { locale } = useAppSelector(
+        (state: { setLocale: LocaleState }) => state.setLocale
+    );
     const tTable = useTranslations("table");
-    const tButtons = useTranslations("buttons");
+    const tD = useTranslations("dashboard");
+
     const id = useRef<number>(0);
     const abortController = useRef<AbortController | null>(null);
     const abortControllerForDelete = useRef<AbortController | null>(null);
@@ -72,7 +80,7 @@ const GetOrders = () => {
                 name: "",
             },
             total_amount: 0,
-            state: "",
+            state: "pending",
             date_of_delivery: "",
             created_at: "",
         },
@@ -173,7 +181,7 @@ const GetOrders = () => {
 
         return () => abortController.abort();
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [dispatch, router, sortConfig, filters]);
+    }, [dispatch, router, sortConfig, filters, locale]);
 
     //MARK:actions
     const handleEdit = (id: number) => {
@@ -272,21 +280,23 @@ const GetOrders = () => {
                 className="hover:bg-gray-200"
             >
                 <td className="row_table">${order.total_amount}</td>
-                <td className="row_table">{order.state}</td>
+                <td className="row_table">{tD(order.state)}</td>
                 <td className="row_table">{order.user.name}</td>
-                <td className="row_table">{order.date_of_delivery}</td>
+                <td className="row_table">
+                    {formatDate(order.date_of_delivery, locale)}
+                </td>
                 <td className="row_table">{order.created_at}</td>
                 <td className="row_table">
                     <Button
                         classes={"bg-indigo-600 hover:bg-indigo-700 text-white"}
-                        text={`Edit`}
+                        text={tButton("edit")}
                         type="button"
                         icon={Edit}
                         handleClick={() => handleEdit(order.id)}
                     />
                     <Button
                         classes={"bg-red-600 hover:bg-red-700 text-white"}
-                        text={`delete`}
+                        text={tButton("delete")}
                         type="button"
                         icon={Trash2}
                         handleClick={() => handleDelete(order.id)}
@@ -300,7 +310,7 @@ const GetOrders = () => {
         <>
             <DeleteConfirmationModal
                 onConfirm={handleConfirm}
-                t={t}
+                t={tModal}
             />
 
             <Modal
