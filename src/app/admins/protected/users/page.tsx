@@ -23,10 +23,10 @@ const DeleteConfirmationModal = memo(
         t: ReturnType<typeof useTranslations>;
     }) => (
         <Modal
-            title={t("modal.deleteUser")}
+            title={t("deleteUser")}
             handleClick={onConfirm}
         >
-            <p>{t("modal.confirmDeleteUser")}</p>
+            <p>{t("confirmDeleteUser")}</p>
         </Modal>
     )
 );
@@ -36,6 +36,8 @@ const GetUsers = () => {
     const router = useRouter();
     const dispatch = useAppDispatch();
     const t = useTranslations("users");
+    const tModal = useTranslations("modal");
+
     const tTable = useTranslations("table");
     const tButtons = useTranslations("buttons");
     const id = useRef<number>(0);
@@ -232,7 +234,7 @@ const GetUsers = () => {
         <>
             <DeleteConfirmationModal
                 onConfirm={handleConfirm}
-                t={t}
+                t={tModal}
             />
 
             <Table

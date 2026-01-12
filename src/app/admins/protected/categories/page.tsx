@@ -25,10 +25,10 @@ const DeleteConfirmationModal = memo(
         t: ReturnType<typeof useTranslations>;
     }) => (
         <Modal
-            title={t("modal.deleteCategory")}
+            title={t("deleteCategory")}
             handleClick={onConfirm}
         >
-            <p>{t("modal.confirmDeleteCategory")}</p>
+            <p>{t("confirmDeleteCategory")}</p>
         </Modal>
     )
 );
@@ -39,6 +39,8 @@ const GetCategories = () => {
     const dispatch = useAppDispatch();
     const t = useTranslations("categories");
     const tTable = useTranslations("table");
+    const tModal = useTranslations("modal");
+
     const tButtons = useTranslations("buttons");
     const id = useRef<number>(0);
     const localeState = useAppSelector(
@@ -215,7 +217,7 @@ const GetCategories = () => {
 
                 <td className="row_table">{category.trans_lang}</td>
                 <td className="row_table">
-                    {category.image && (
+                    {/* {category.image && (
                         <Image
                             priority={metaData.currentPage === 1}
                             alt="loading"
@@ -225,7 +227,7 @@ const GetCategories = () => {
                             sizes="100vw"
                             style={{ width: "100px", height: "auto" }}
                         />
-                    )}
+                    )} */}
                 </td>
                 <td className="row_table">{category.created_at}</td>
                 <td className="row_table">
@@ -252,7 +254,7 @@ const GetCategories = () => {
         <>
             <DeleteConfirmationModal
                 onConfirm={handleConfirm}
-                t={t}
+                t={tModal}
             />
 
             <Table

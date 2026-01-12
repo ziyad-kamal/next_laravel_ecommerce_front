@@ -16,12 +16,18 @@ import { displayModal } from "@/redux/DisplayModal";
 import LocaleState from "@/interfaces/states/LocaleState";
 
 const DeleteConfirmationModal = memo(
-    ({ onConfirm, t }: { onConfirm: () => void; t: ReturnType<typeof useTranslations> }) => (
+    ({
+        onConfirm,
+        t,
+    }: {
+        onConfirm: () => void;
+        t: ReturnType<typeof useTranslations>;
+    }) => (
         <Modal
-            title={t("modal.deleteBrand")}
+            title={t("deleteBrand")}
             handleClick={onConfirm}
         >
-            <p>{t("modal.confirmDeleteBrand")}</p>
+            <p>{t("confirmDeleteBrand")}</p>
         </Modal>
     )
 );
@@ -32,6 +38,8 @@ const GetBrands = () => {
     const dispatch = useAppDispatch();
     const t = useTranslations("brands");
     const tTable = useTranslations("table");
+    const tModal = useTranslations("modal");
+
     const tButtons = useTranslations("buttons");
     const id = useRef<number>(0);
     const localeState = useAppSelector(
@@ -231,7 +239,7 @@ const GetBrands = () => {
         <>
             <DeleteConfirmationModal
                 onConfirm={handleConfirm}
-                t={t}
+                t={tModal}
             />
 
             <Table

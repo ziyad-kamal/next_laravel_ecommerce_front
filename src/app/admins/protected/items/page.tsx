@@ -14,6 +14,7 @@ import Modal from "@/components/Modal";
 import { displayModal } from "@/redux/DisplayModal";
 import LocaleState from "@/interfaces/states/LocaleState";
 import ItemState from "@/interfaces/states/ItemState";
+import formatDate from "@/functions/transDate";
 
 const DeleteConfirmationModal = memo(
     ({
@@ -24,10 +25,10 @@ const DeleteConfirmationModal = memo(
         t: ReturnType<typeof useTranslations>;
     }) => (
         <Modal
-            title={t("modal.deleteItem")}
+            title={t("deleteItem")}
             handleClick={onConfirm}
         >
-            <p>{t("modal.confirmDeleteItem")}</p>
+            <p>{t("confirmDeleteItem")}</p>
         </Modal>
     )
 );
@@ -37,6 +38,10 @@ const GetItems = () => {
     const router = useRouter();
     const dispatch = useAppDispatch();
     const t = useTranslations("items");
+    const tModal = useTranslations("modal");
+    const { locale } = useAppSelector(
+        (state: { setLocale: LocaleState }) => state.setLocale
+    );
     const tTable = useTranslations("table");
     const tButtons = useTranslations("buttons");
     const id = useRef<number>(0);
@@ -219,7 +224,9 @@ const GetItems = () => {
 
                 <td className="row_table">{item.price}</td>
 
-                <td className="row_table">{item.created_at}</td>
+                <td className="row_table">
+                    {formatDate(item.created_at, locale)}
+                </td>
                 <td className="row_table">
                     <Button
                         classes={"bg-indigo-600 hover:bg-indigo-700 text-white"}
@@ -244,7 +251,7 @@ const GetItems = () => {
         <>
             <DeleteConfirmationModal
                 onConfirm={handleConfirm}
-                t={t}
+                t={tModal}
             />
 
             <Table
