@@ -20,6 +20,7 @@ import { useTranslations } from "next-intl";
 import { setLocale } from "@/redux/setLocale";
 import LocaleState from "@/interfaces/states/LocaleState";
 import { navbarLinks, languages } from "@/constants";
+import { getEcho } from "@/lib/echo";
 
 const Navbar = () => {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -36,32 +37,16 @@ const Navbar = () => {
     );
 
     // Notifications state
-    const [notifications, setNotifications] = useState([
-        {
-            id: 1,
-            title: "Order Shipped",
-            message: "Your order #12345 has been shipped and is on its way!",
-            time: "2 minutes ago",
-            isRead: false,
-            type: "success",
-        },
-        {
-            id: 2,
-            title: "New Promotion",
-            message: "Get 20% off on all electronics. Limited time offer!",
-            time: "1 hour ago",
-            isRead: false,
-            type: "promotion",
-        },
-        {
-            id: 3,
-            title: "Account Security",
-            message: "Your password was changed successfully.",
-            time: "3 hours ago",
-            isRead: true,
-            type: "security",
-        },
-    ]);
+    const [notifications, setNotifications] = useState<
+        Array<{
+            id: number;
+            title: string;
+            message: string;
+            created_at: string;
+            is_read: boolean;
+            type: string;
+        }>
+    >([]);
 
     const notificationRef = useRef<HTMLDivElement>(null);
     const userMenuRef = useRef<HTMLDivElement>(null);
@@ -70,7 +55,7 @@ const Navbar = () => {
     const tLanguage = useTranslations("language");
 
     // Calculate counts
-    const notificationCount = notifications.filter((n) => !n.isRead).length;
+    const notificationCount = notifications.filter((n) => !n.is_read).length;
 
     // Close dropdowns when clicking outside
     useEffect(() => {
@@ -96,7 +81,7 @@ const Navbar = () => {
             }
         };
 
-        const storedToken = localStorage.getItem("adminsToken");
+        const storedToken = localStorage.getItem("adminToken");
         if (storedToken) {
             dispatch(userTokenSet());
         }
@@ -116,6 +101,30 @@ const Navbar = () => {
         return () =>
             document.removeEventListener("mousedown", handleClickOutside);
     }, [dispatch, router]);
+
+    useEffect(() => {
+        const storedToken = localStorage.getItem("adminToken");
+        const echo = getEcho(storedToken);
+
+        const channel = echo.private(`App.Models.Admin.${1}`);
+        channel.notification((notification: unknown) => {
+            setNotifications((prevNotification) => [
+                ...prevNotification,
+                notification as {
+                    id: number;
+                    title: string;
+                    message: string;
+                    created_at: string;
+                    is_read: boolean;
+                    type: string;
+                },
+            ]);
+        });
+
+        return () => {
+            channel.stopListening(".notification");
+        };
+    }, []);
 
     const toggleMenu = () => {
         setIsMenuOpen(!isMenuOpen);
@@ -398,7 +407,7 @@ const Navbar = () => {
                                                                             notification.title
                                                                         }
                                                                     </h4>
-                                                                    {!notification.isRead && (
+                                                                    {!notification.is_read && (
                                                                         <span className="w-2 h-2 bg-blue-500 rounded-full"></span>
                                                                     )}
                                                                 </div>
@@ -409,12 +418,12 @@ const Navbar = () => {
                                                                 </p>
                                                                 <p className="text-xs text-gray-400 mt-1">
                                                                     {
-                                                                        notification.time
+                                                                        notification.created_at
                                                                     }
                                                                 </p>
                                                             </div>
                                                             <div className="flex items-center space-x-1 ml-2">
-                                                                {!notification.isRead && (
+                                                                {!notification.is_read && (
                                                                     <button
                                                                         onClick={() =>
                                                                             markAsRead(
