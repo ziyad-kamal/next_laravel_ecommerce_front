@@ -33,7 +33,7 @@ const Navbar = () => {
     const router = useRouter();
     const dispatch = useAppDispatch();
     const localeState = useAppSelector(
-        (state: { setLocale: LocaleState }) => state.setLocale
+        (state: { setLocale: LocaleState }) => state.setLocale,
     );
 
     // Notifications state
@@ -41,6 +41,7 @@ const Navbar = () => {
         Array<{
             id: number;
             title: string;
+            notification_id: number;
             message: string;
             created_at: string;
             is_read: boolean;
@@ -105,13 +106,13 @@ const Navbar = () => {
     useEffect(() => {
         const storedToken = localStorage.getItem("adminToken");
         const echo = getEcho(storedToken);
-
         const channel = echo.private(`App.Models.Admin.${1}`);
         channel.notification((notification: unknown) => {
             setNotifications((prevNotification) => [
                 ...prevNotification,
                 notification as {
                     id: number;
+                    notification_id: number;
                     title: string;
                     message: string;
                     created_at: string;
@@ -121,10 +122,35 @@ const Navbar = () => {
             ]);
         });
 
+        const url = `/admin-panel/notifications/index`;
+        const abortController = new AbortController();
+
+        const fetchData = async () => {
+            const response = await sendRequest(
+                "get",
+                url,
+                null,
+                abortController,
+                storedToken,
+                router,
+            );
+
+            if (response && response.success) {
+                setNotifications(response.data.data);
+            } else if (response) {
+                dispatch(
+                    display({ type: "error", message: response.msg.text }),
+                );
+            }
+        };
+
+        fetchData();
+
         return () => {
             channel.stopListening(".notification");
+            abortController.abort();
         };
-    }, []);
+    }, [dispatch, router]);
 
     const toggleMenu = () => {
         setIsMenuOpen(!isMenuOpen);
@@ -137,25 +163,68 @@ const Navbar = () => {
 
     // Notification functions
     const markAsRead = (id: number) => {
-        setNotifications((prev) =>
-            prev.map((notification) =>
-                notification.id === id
-                    ? { ...notification, isRead: true }
-                    : notification
-            )
-        );
+        const storedToken = localStorage.getItem("adminToken");
+        const url = `/admin-panel/notifications/update?_method=put`;
+        const abortController = new AbortController();
+
+        const updateData = async () => {
+            const response = await sendRequest(
+                "post",
+                url,
+                { notif_id: id },
+                abortController,
+                storedToken,
+                router,
+            );
+
+            if (response && response.success) {
+                setNotifications((prev) =>
+                    prev.map((notification) =>
+                        notification.notification_id === id
+                            ? { ...notification, is_read: true }
+                            : notification,
+                    ),
+                );
+            } else if (response) {
+                dispatch(
+                    display({ type: "error", message: response.msg.text }),
+                );
+            }
+        };
+
+        updateData();
     };
 
     const markAllAsRead = () => {
-        setNotifications((prev) =>
-            prev.map((notification) => ({ ...notification, isRead: true }))
-        );
-    };
+        const storedToken = localStorage.getItem("adminToken");
+        const url = `/admin-panel/notifications/update/all?_method=put`;
+        const abortController = new AbortController();
 
-    const deleteNotification = (id: number) => {
-        setNotifications((prev) =>
-            prev.filter((notification) => notification.id !== id)
-        );
+        const updateData = async () => {
+            const response = await sendRequest(
+                "post",
+                url,
+                null,
+                abortController,
+                storedToken,
+                router,
+            );
+
+            if (response && response.success) {
+                setNotifications((prev) =>
+                    prev.map((notification) => ({
+                        ...notification,
+                        is_read: true,
+                    })),
+                );
+            } else if (response) {
+                dispatch(
+                    display({ type: "error", message: response.msg.text }),
+                );
+            }
+        };
+
+        updateData();
     };
 
     // User menu functions
@@ -177,12 +246,12 @@ const Navbar = () => {
                 url,
                 null,
                 abortControllerForSubmit,
-                token
+                token,
             );
 
             if (response && response.success) {
                 dispatch(
-                    display({ type: "success", message: response.msg.text })
+                    display({ type: "success", message: response.msg.text }),
                 );
                 localStorage.removeItem("token");
                 dispatch(userTokenRemove());
@@ -190,7 +259,7 @@ const Navbar = () => {
                 router.push("/users/public/login");
             } else if (response) {
                 dispatch(
-                    display({ type: "error", message: response.msg.text })
+                    display({ type: "error", message: response.msg.text }),
                 );
             }
         };
@@ -236,7 +305,7 @@ const Navbar = () => {
                 { defaultLang: lang },
                 abortControllerForLang,
                 token,
-                router
+                router,
             );
 
             if (response && response.success) {
@@ -245,7 +314,7 @@ const Navbar = () => {
                 router.refresh();
             } else if (response) {
                 dispatch(
-                    display({ type: "error", message: response.msg.text })
+                    display({ type: "error", message: response.msg.text }),
                 );
             }
         };
@@ -283,7 +352,7 @@ const Navbar = () => {
                                                         openDropdown ===
                                                             navbarLink.name
                                                             ? null
-                                                            : navbarLink.name
+                                                            : navbarLink.name,
                                                     )
                                                 }
                                             >
@@ -306,10 +375,10 @@ const Navbar = () => {
                                                                 className="block px-4 py-2 text-gray-700 hover:bg-gray-100 transition-colors text-sm"
                                                             >
                                                                 {t(
-                                                                    subItem.name
+                                                                    subItem.name,
                                                                 )}
                                                             </a>
-                                                        )
+                                                        ),
                                                     )}
                                                 </div>
                                             </div>
@@ -375,7 +444,7 @@ const Navbar = () => {
                                             {notificationCount > 0 && (
                                                 <button
                                                     onClick={markAllAsRead}
-                                                    className="text-sm text-blue-600 hover:text-blue-800"
+                                                    className="text-sm text-blue-600 hover:text-blue-800 cursor-pointer"
                                                 >
                                                     Mark all as read
                                                 </button>
@@ -391,7 +460,9 @@ const Navbar = () => {
                                             notifications.map(
                                                 (notification) => (
                                                     <div
-                                                        key={notification.id}
+                                                        key={
+                                                            notification.notification_id
+                                                        }
                                                         className={`p-4 border-b cursor-pointer border-gray-100 hover:bg-gray-200 `}
                                                     >
                                                         <div className="flex items-start justify-between">
@@ -399,7 +470,7 @@ const Navbar = () => {
                                                                 <div className="flex items-center space-x-2">
                                                                     <span className="text-lg">
                                                                         {getNotificationIcon(
-                                                                            notification.type
+                                                                            notification.type,
                                                                         )}
                                                                     </span>
                                                                     <h4 className="font-medium text-gray-800">
@@ -427,30 +498,19 @@ const Navbar = () => {
                                                                     <button
                                                                         onClick={() =>
                                                                             markAsRead(
-                                                                                notification.id
+                                                                                notification.notification_id,
                                                                             )
                                                                         }
-                                                                        className="text-green-600 hover:text-green-800 p-1"
+                                                                        className="text-green-600 hover:text-green-800 p-1 cursor-pointer"
                                                                         title="Mark as read"
                                                                     >
-                                                                        <Check className="w-3 h-3" />
+                                                                        <Check className="w-5 h-5" />
                                                                     </button>
                                                                 )}
-                                                                <button
-                                                                    onClick={() =>
-                                                                        deleteNotification(
-                                                                            notification.id
-                                                                        )
-                                                                    }
-                                                                    className="text-red-600 hover:text-red-800 p-1"
-                                                                    title="Delete"
-                                                                >
-                                                                    <X className="w-3 h-3" />
-                                                                </button>
                                                             </div>
                                                         </div>
                                                     </div>
-                                                )
+                                                ),
                                             )
                                         )}
                                     </div>
@@ -581,7 +641,7 @@ const Navbar = () => {
                                                     openDropdown ===
                                                         navbarLink.name
                                                         ? null
-                                                        : navbarLink.name
+                                                        : navbarLink.name,
                                                 )
                                             }
                                             className="text-gray-300 hover:text-white w-full text-left px-3 py-2 text-base font-medium transition-colors flex items-center justify-between"
@@ -607,7 +667,7 @@ const Navbar = () => {
                                                         >
                                                             {t(subItem.name)}
                                                         </a>
-                                                    )
+                                                    ),
                                                 )}
                                             </div>
                                         )}
