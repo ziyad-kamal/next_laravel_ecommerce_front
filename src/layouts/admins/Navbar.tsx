@@ -14,13 +14,14 @@ import {
     ChevronDown,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import { userTokenRemove, userTokenSet } from "@/redux/SetToken";
 import { useTranslations } from "next-intl";
 import { setLocale } from "@/redux/setLocale";
 import LocaleState from "@/interfaces/states/LocaleState";
 import { navbarLinks, languages } from "@/constants";
 import { getEcho } from "@/lib/echo";
+import NotificationState from "@/interfaces/states/NotificationState";
 
 const Navbar = () => {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -30,6 +31,11 @@ const Navbar = () => {
     const [showUserLang, setShowUserLang] = useState(false);
     const [openDropdown, setOpenDropdown] = useState<string | null>(null);
 
+    // Infinite scroll states
+    const [currentPage, setCurrentPage] = useState(1);
+    const [hasMoreNotifications, setHasMoreNotifications] = useState(true);
+    const [isLoadingNotifications, setIsLoadingNotifications] = useState(false);
+
     const router = useRouter();
     const dispatch = useAppDispatch();
     const localeState = useAppSelector(
@@ -38,17 +44,10 @@ const Navbar = () => {
 
     // Notifications state
     const [notifications, setNotifications] = useState<
-        Array<{
-            id: number;
-            title: string;
-            notification_id: number;
-            message: string;
-            created_at: string;
-            is_read: boolean;
-            type: string;
-        }>
+        Array<NotificationState>
     >([]);
 
+    const notificationScrollRef = useRef<HTMLDivElement>(null);
     const notificationRef = useRef<HTMLDivElement>(null);
     const userMenuRef = useRef<HTMLDivElement>(null);
     const userLangRef = useRef<HTMLDivElement>(null);
@@ -57,6 +56,59 @@ const Navbar = () => {
 
     // Calculate counts
     const notificationCount = notifications.filter((n) => !n.is_read).length;
+
+    // Fetch notifications function
+    const fetchNotifications = useCallback(
+        async (
+            page: number,
+            append = false,
+            abortController: AbortController,
+        ) => {
+            const storedToken = localStorage.getItem("adminToken");
+            const url = `/admin-panel/notifications/index?page=${page}`;
+
+            setIsLoadingNotifications(true);
+
+            try {
+                const response = await sendRequest(
+                    "get",
+                    url,
+                    null,
+                    abortController,
+                    storedToken,
+                    router,
+                );
+
+                if (response && response.success) {
+                    const newNotifications = response.data.data;
+
+                    if (append) {
+                        setNotifications((prev) => [
+                            ...prev,
+                            ...newNotifications,
+                        ]);
+                    } else {
+                        setNotifications(newNotifications);
+                    }
+
+                    // Check if there are more pages
+                    setHasMoreNotifications(
+                        response.data.meta.current_page <
+                            response.data.meta.last_page,
+                    );
+                } else if (response) {
+                    dispatch(
+                        display({ type: "error", message: response.msg.text }),
+                    );
+                }
+            } catch (error) {
+                console.error("Error fetching notifications:", error);
+            } finally {
+                setIsLoadingNotifications(false);
+            }
+        },
+        [dispatch, router],
+    );
 
     // Close dropdowns when clicking outside
     useEffect(() => {
@@ -109,52 +161,66 @@ const Navbar = () => {
         const channel = echo.private(`App.Models.Admin.${1}`);
         channel.notification((notification: unknown) => {
             setNotifications((prevNotification) => [
+                notification as NotificationState,
                 ...prevNotification,
-                notification as {
-                    id: number;
-                    notification_id: number;
-                    title: string;
-                    message: string;
-                    created_at: string;
-                    is_read: boolean;
-                    type: string;
-                },
             ]);
         });
 
-        const url = `/admin-panel/notifications/index`;
         const abortController = new AbortController();
 
-        const fetchData = async () => {
-            const response = await sendRequest(
-                "get",
-                url,
-                null,
-                abortController,
-                storedToken,
-                router,
-            );
-
-            if (response && response.success) {
-                setNotifications(response.data.data);
-            } else if (response) {
-                dispatch(
-                    display({ type: "error", message: response.msg.text }),
-                );
-            }
-        };
-
-        fetchData();
+        // Fetch initial notifications
+        fetchNotifications(1, false, abortController);
 
         return () => {
-            channel.stopListening(".notification");
+            echo.leave(`App.Models.Admin.${1}`);
             abortController.abort();
         };
-    }, [dispatch, router]);
+    }, [dispatch, router, fetchNotifications]);
 
     const toggleMenu = () => {
         setIsMenuOpen(!isMenuOpen);
     };
+
+    useEffect(() => {
+        const handleScroll = () => {
+            if (!showNotifications) return; // ← important
+            if (
+                !notificationScrollRef.current ||
+                !hasMoreNotifications ||
+                isLoadingNotifications
+            ) {
+                return;
+            }
+
+            const { scrollTop, scrollHeight, clientHeight } =
+                notificationScrollRef.current;
+            if (isLoadingNotifications) return; // ← very important
+
+            // Load more when scrolled to bottom (with 50px threshold)
+            if (scrollTop + clientHeight >= scrollHeight) {
+                const abortController = new AbortController();
+
+                const nextPage = currentPage + 1;
+                setCurrentPage(nextPage);
+                fetchNotifications(nextPage, true, abortController);
+            }
+        };
+
+        const scrollElement = notificationScrollRef.current;
+        // Optional: trigger check once on open (sometimes needed)
+        handleScroll();
+        if (scrollElement) {
+            scrollElement.addEventListener("scroll", handleScroll);
+            return () =>
+                scrollElement.removeEventListener("scroll", handleScroll);
+        }
+    }, [
+        currentPage,
+        hasMoreNotifications,
+        isLoadingNotifications,
+        fetchNotifications,
+        showNotifications,
+    ]);
 
     // const handleSearch = () => {
     //     console.log("Searching for:", searchQuery);
@@ -451,8 +517,12 @@ const Navbar = () => {
                                             )}
                                         </div>
                                     </div>
-                                    <div className="max-h-96 overflow-y-auto">
-                                        {notifications.length === 0 ? (
+                                    <div
+                                        ref={notificationScrollRef}
+                                        className="max-h-96 overflow-y-auto"
+                                    >
+                                        {notifications.length === 0 &&
+                                        !isLoadingNotifications ? (
                                             <div className="p-4 text-gray-500 text-center">
                                                 No notifications
                                             </div>
@@ -514,6 +584,20 @@ const Navbar = () => {
                                             )
                                         )}
                                     </div>
+                                    {isLoadingNotifications && (
+                                        <div className="p-4 text-gray-500 text-center">
+                                            <div className="flex items-center justify-center space-x-2">
+                                                <div className="w-4 h-4 border-2 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+                                                <span>Loading...</span>
+                                            </div>
+                                        </div>
+                                    )}
+                                    {!hasMoreNotifications &&
+                                        notifications.length > 0 && (
+                                            <div className="p-4 text-gray-400 text-center text-sm">
+                                                No more notifications
+                                            </div>
+                                        )}
                                 </div>
                             )}
                         </div>
