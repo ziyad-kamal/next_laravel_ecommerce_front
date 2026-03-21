@@ -32,7 +32,7 @@ const DeleteConfirmationModal = memo(
         >
             <p>{t("confirmDeleteOrder")}</p>
         </Modal>
-    )
+    ),
 );
 DeleteConfirmationModal.displayName = "DeleteConfirmationModal";
 
@@ -43,7 +43,7 @@ const GetOrders = () => {
     const tModal = useTranslations("modal");
     const tButton = useTranslations("buttons");
     const { locale } = useAppSelector(
-        (state: { setLocale: LocaleState }) => state.setLocale
+        (state: { setLocale: LocaleState }) => state.setLocale,
     );
     const tTable = useTranslations("table");
     const tD = useTranslations("dashboard");
@@ -118,7 +118,7 @@ const GetOrders = () => {
     //MARK:handleFilterChange
     const handleFilterChange = (
         e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
-        name: string
+        name: string,
     ) => {
         const value = e.target.value;
 
@@ -161,7 +161,7 @@ const GetOrders = () => {
                 filters,
                 abortController,
                 token,
-                router
+                router,
             );
 
             if (response && response.success) {
@@ -172,7 +172,7 @@ const GetOrders = () => {
                 });
             } else if (response) {
                 dispatch(
-                    display({ type: "error", message: response.msg.text })
+                    display({ type: "error", message: response.msg.text }),
                 );
             }
         };
@@ -216,7 +216,7 @@ const GetOrders = () => {
                 null,
                 abortControllerForDelete.current,
                 token,
-                router
+                router,
             );
             if (response && response.success) {
                 const newOrders = orders.filter((order) => {
@@ -225,12 +225,12 @@ const GetOrders = () => {
 
                 setOrders(newOrders);
                 dispatch(
-                    display({ type: "success", message: response.msg.text })
+                    display({ type: "success", message: response.msg.text }),
                 );
                 dispatch(displayModal({ disable: false }));
             } else if (response) {
                 dispatch(
-                    display({ type: "error", message: response.msg.text })
+                    display({ type: "error", message: response.msg.text }),
                 );
                 dispatch(displayModal({ disable: false }));
             }
@@ -257,14 +257,14 @@ const GetOrders = () => {
                 filters,
                 abortController.current,
                 token,
-                router
+                router,
             );
             if (response && response.success) {
                 setOrders(response.data.data);
                 setMetaData({ ...metaData, currentPage: page });
             } else if (response) {
                 dispatch(
-                    display({ type: "error", message: response.msg.text })
+                    display({ type: "error", message: response.msg.text }),
                 );
             }
         };
@@ -385,12 +385,15 @@ const GetOrders = () => {
                 title={t("title")}
                 classes={"bg-white"}
                 tableHeaders={[
-                    tTable("totalAmount"),
-                    tTable("state"),
-                    tTable("name"),
-                    tTable("dateOfDelivery"),
-                    tTable("createdAt"),
-                    tTable("action"),
+                    { fieldName: "total_amount", label: tTable("totalAmount") },
+                    { fieldName: "state", label: tTable("state") },
+                    { fieldName: "user_name", label: tTable("name") },
+                    {
+                        fieldName: "date_of_delivery",
+                        label: tTable("dateOfDelivery"),
+                    },
+                    { fieldName: "created_at", label: tTable("createdAt") },
+                    { fieldName: "action", label: tTable("action") },
                 ]}
                 handleBtnClick={() => handleAdd()}
                 sortConfig={sortConfig}

@@ -30,7 +30,7 @@ const DeleteConfirmationModal = memo(
         >
             <p>{t("confirmDeleteItem")}</p>
         </Modal>
-    )
+    ),
 );
 DeleteConfirmationModal.displayName = "DeleteConfirmationModal";
 
@@ -40,13 +40,13 @@ const GetItems = () => {
     const t = useTranslations("items");
     const tModal = useTranslations("modal");
     const { locale } = useAppSelector(
-        (state: { setLocale: LocaleState }) => state.setLocale
+        (state: { setLocale: LocaleState }) => state.setLocale,
     );
     const tTable = useTranslations("table");
     const tButtons = useTranslations("buttons");
     const id = useRef<number>(0);
     const localeState = useAppSelector(
-        (state: { setLocale: LocaleState }) => state.setLocale
+        (state: { setLocale: LocaleState }) => state.setLocale,
     );
     const abortController = useRef<AbortController | null>(null);
     const abortControllerForDelete = useRef<AbortController | null>(null);
@@ -64,7 +64,7 @@ const GetItems = () => {
     ]);
 
     const [sortConfig, setSortConfig] = useState<{
-        keyToSort: string; // 'name', 'email', or 'created_at'
+        keyToSort: string;
         direction: string;
     }>({ keyToSort: "approval", direction: "asc" });
 
@@ -99,7 +99,7 @@ const GetItems = () => {
                 null,
                 abortController,
                 token,
-                router
+                router,
             );
 
             if (response && response.success) {
@@ -110,7 +110,7 @@ const GetItems = () => {
                 });
             } else if (response) {
                 dispatch(
-                    display({ type: "error", message: response.msg.text })
+                    display({ type: "error", message: response.msg.text }),
                 );
             }
         };
@@ -154,7 +154,7 @@ const GetItems = () => {
                 null,
                 abortController.current,
                 token,
-                router
+                router,
             );
             if (response && response.success) {
                 const newItems = items.filter((item) => {
@@ -163,12 +163,12 @@ const GetItems = () => {
 
                 setItems(newItems);
                 dispatch(
-                    display({ type: "success", message: response.msg.text })
+                    display({ type: "success", message: response.msg.text }),
                 );
                 dispatch(displayModal({ disable: false }));
             } else if (response) {
                 dispatch(
-                    display({ type: "error", message: response.msg.text })
+                    display({ type: "error", message: response.msg.text }),
                 );
                 dispatch(displayModal({ disable: false }));
             }
@@ -195,14 +195,14 @@ const GetItems = () => {
                 null,
                 abortController.current,
                 token,
-                router
+                router,
             );
             if (response && response.success) {
                 setItems(response.data.data);
                 setMetaData({ ...metaData, currentPage: page });
             } else if (response) {
                 dispatch(
-                    display({ type: "error", message: response.msg.text })
+                    display({ type: "error", message: response.msg.text }),
                 );
             }
         };
@@ -258,13 +258,13 @@ const GetItems = () => {
                 title={t("title")}
                 classes={"bg-white"}
                 tableHeaders={[
-                    tTable("name"),
-                    tTable("language"),
-                    tTable("condition"),
-                    tTable("approval"),
-                    tTable("price"),
-                    tTable("createdAt"),
-                    tTable("action"),
+                    { fieldName: "name", label: tTable("name") },
+                    { fieldName: "trans_lang", label: tTable("language") },
+                    { fieldName: "condition", label: tTable("condition") },
+                    { fieldName: "approval", label: tTable("approval") },
+                    { fieldName: "price", label: tTable("price") },
+                    { fieldName: "created_at", label: tTable("createdAt") },
+                    { fieldName: "action", label: tTable("action") },
                 ]}
                 handleBtnClick={() => handleAdd()}
                 sortConfig={sortConfig}

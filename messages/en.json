@@ -132,7 +132,7 @@
         "condition": "Condition",
         "approval": "Approval",
         "price": "Price",
-        "createdAt": "Created At",
+        "createdAt": "Created at",
         "totalAmount": "Total Amount",
         "state": "State",
         "dateOfDelivery": "Date of Delivery",

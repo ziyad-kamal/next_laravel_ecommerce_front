@@ -28,7 +28,7 @@ const DeleteConfirmationModal = memo(
         >
             <p>{t("confirmDeleteUser")}</p>
         </Modal>
-    )
+    ),
 );
 DeleteConfirmationModal.displayName = "DeleteConfirmationModal";
 
@@ -89,7 +89,7 @@ const GetUsers = () => {
                 null,
                 abortController,
                 token,
-                router
+                router,
             );
 
             if (response && response.success) {
@@ -100,7 +100,7 @@ const GetUsers = () => {
                 });
             } else if (response) {
                 dispatch(
-                    display({ type: "error", message: response.msg.text })
+                    display({ type: "error", message: response.msg.text }),
                 );
             }
         };
@@ -144,20 +144,20 @@ const GetUsers = () => {
                 null,
                 abortControllerForDelete.current,
                 token,
-                router
+                router,
             );
             if (response && response.success) {
                 setUsers((prevUsers) =>
-                    prevUsers.filter((user) => user.id !== id.current)
+                    prevUsers.filter((user) => user.id !== id.current),
                 );
 
                 dispatch(
-                    display({ type: "success", message: response.msg.text })
+                    display({ type: "success", message: response.msg.text }),
                 );
                 dispatch(displayModal({ disable: false }));
             } else if (response) {
                 dispatch(
-                    display({ type: "error", message: response.msg.text })
+                    display({ type: "error", message: response.msg.text }),
                 );
                 dispatch(displayModal({ disable: false }));
             }
@@ -184,14 +184,14 @@ const GetUsers = () => {
                 null,
                 abortController.current,
                 token,
-                router
+                router,
             );
             if (response && response.success) {
                 setUsers(response.data.data);
                 setMetaData({ ...metaData, currentPage: page });
             } else if (response) {
                 dispatch(
-                    display({ type: "error", message: response.msg.text })
+                    display({ type: "error", message: response.msg.text }),
                 );
             }
         };
@@ -241,10 +241,10 @@ const GetUsers = () => {
                 title={t("title")}
                 classes={"bg-white"}
                 tableHeaders={[
-                    tTable("name"),
-                    tTable("email"),
-                    tTable("createdAt"),
-                    tTable("action"),
+                    { fieldName: "name", label: tTable("name") },
+                    { fieldName: "email", label: tTable("email") },
+                    { fieldName: "created_at", label: tTable("createdAt") },
+                    { fieldName: "action", label: tTable("action") },
                 ]}
                 handleBtnClick={() => handleAdd()}
                 sortConfig={sortConfig}

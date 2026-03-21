@@ -29,7 +29,7 @@ const DeleteConfirmationModal = memo(
         >
             <p>{t("confirmDeleteBrand")}</p>
         </Modal>
-    )
+    ),
 );
 DeleteConfirmationModal.displayName = "DeleteConfirmationModal";
 
@@ -43,7 +43,7 @@ const GetBrands = () => {
     const tButtons = useTranslations("buttons");
     const id = useRef<number>(0);
     const localeState = useAppSelector(
-        (state: { setLocale: LocaleState }) => state.setLocale
+        (state: { setLocale: LocaleState }) => state.setLocale,
     );
     const abortController = useRef<AbortController | null>(null);
     const abortControllerForDelete = useRef<AbortController | null>(null);
@@ -58,7 +58,7 @@ const GetBrands = () => {
     ]);
 
     const [sortConfig, setSortConfig] = useState<{
-        keyToSort: string; // 'name', 'email', or 'created_at'
+        keyToSort: string;
         direction: string;
     }>({ keyToSort: "name", direction: "asc" });
 
@@ -93,7 +93,7 @@ const GetBrands = () => {
                 null,
                 abortController,
                 token,
-                router
+                router,
             );
 
             if (response && response.success) {
@@ -104,7 +104,7 @@ const GetBrands = () => {
                 });
             } else if (response) {
                 dispatch(
-                    display({ type: "error", message: response.msg.text })
+                    display({ type: "error", message: response.msg.text }),
                 );
             }
         };
@@ -148,7 +148,7 @@ const GetBrands = () => {
                 null,
                 abortController.current,
                 token,
-                router
+                router,
             );
             if (response && response.success) {
                 const newBrands = brands.filter((brand) => {
@@ -157,12 +157,12 @@ const GetBrands = () => {
 
                 setBrands(newBrands);
                 dispatch(
-                    display({ type: "success", message: response.msg.text })
+                    display({ type: "success", message: response.msg.text }),
                 );
                 dispatch(displayModal({ disable: false }));
             } else if (response) {
                 dispatch(
-                    display({ type: "error", message: response.msg.text })
+                    display({ type: "error", message: response.msg.text }),
                 );
                 dispatch(displayModal({ disable: false }));
             }
@@ -189,14 +189,14 @@ const GetBrands = () => {
                 null,
                 abortController.current,
                 token,
-                router
+                router,
             );
             if (response && response.success) {
                 setBrands(response.data.data);
                 setMetaData({ ...metaData, currentPage: page });
             } else if (response) {
                 dispatch(
-                    display({ type: "error", message: response.msg.text })
+                    display({ type: "error", message: response.msg.text }),
                 );
             }
         };
@@ -246,10 +246,10 @@ const GetBrands = () => {
                 title={t("title")}
                 classes={"bg-white"}
                 tableHeaders={[
-                    tTable("name"),
-                    tTable("language"),
-                    tTable("createdAt"),
-                    tTable("action"),
+                    { fieldName: "name", label: tTable("name") },
+                    { fieldName: "trans_lang", label: tTable("language") },
+                    { fieldName: "created_at", label: tTable("createdAt") },
+                    { fieldName: "action", label: tTable("action") },
                 ]}
                 handleBtnClick={() => handleAdd()}
                 sortConfig={sortConfig}

@@ -3,7 +3,7 @@ import { MouseEvent } from "react";
 interface TableProps {
     title: string;
     classes?: string;
-    tableHeaders?: string[];
+    tableHeaders?: { fieldName: string; label: string }[];
     children: React.ReactNode;
     handleBtnClick?: (event: MouseEvent<HTMLButtonElement>) => void;
     sortConfig: { keyToSort: string; direction: string };

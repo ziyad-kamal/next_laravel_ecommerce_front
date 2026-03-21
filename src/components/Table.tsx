@@ -15,16 +15,17 @@ export default function Table({
     const tButton = useTranslations("buttons");
 
     const headersList = tableHeaders.map((header, i) => {
+        const { label, fieldName } = header;
+
         return (
             <th
                 key={i}
                 className="text-start cursor-pointer py-3 px-3 text-sm font-medium text-gray-900"
-                onClick={() => handleHeaderClick(header)}
+                onClick={() => handleHeaderClick(fieldName)}
             >
-                {header}
+                {label}
 
-                {sortConfig.keyToSort === header &&
-                sortConfig.keyToSort !== "action" ? (
+                {sortConfig.keyToSort === fieldName && sortConfig.keyToSort !== "action" ? (
                     sortConfig.direction === "asc" ? (
                         <ArrowUp className="mx-1 inline w-4 h-4" />
                     ) : (
@@ -43,9 +44,7 @@ export default function Table({
             >
                 <div className="flex justify-between items-start mb-6">
                     <div>
-                        <h1 className="text-xl font-semibold text-gray-900 mb-2">
-                            {title}
-                        </h1>
+                        <h1 className="text-xl font-semibold text-gray-900 mb-2">{title}</h1>
                     </div>
 
                     <Button
@@ -59,13 +58,9 @@ export default function Table({
                 <div className="overflow-x-auto">
                     <table className="min-w-full">
                         <thead>
-                            <tr className="border-b border-gray-200">
-                                {headersList}
-                            </tr>
+                            <tr className="border-b border-gray-200">{headersList}</tr>
                         </thead>
-                        <tbody className="divide-y divide-gray-100">
-                            {children}
-                        </tbody>
+                        <tbody className="divide-y divide-gray-100">{children}</tbody>
                     </table>
                 </div>
             </div>

@@ -30,7 +30,7 @@ const DeleteConfirmationModal = memo(
         >
             <p>{t("confirmDeleteCategory")}</p>
         </Modal>
-    )
+    ),
 );
 DeleteConfirmationModal.displayName = "DeleteConfirmationModal";
 
@@ -44,7 +44,7 @@ const GetCategories = () => {
     const tButtons = useTranslations("buttons");
     const id = useRef<number>(0);
     const localeState = useAppSelector(
-        (state: { setLocale: LocaleState }) => state.setLocale
+        (state: { setLocale: LocaleState }) => state.setLocale,
     );
     const abortController = useRef<AbortController | null>(null);
     const abortControllerForDelete = useRef<AbortController | null>(null);
@@ -95,7 +95,7 @@ const GetCategories = () => {
                 null,
                 abortController,
                 token,
-                router
+                router,
             );
 
             if (response && response.success) {
@@ -106,7 +106,7 @@ const GetCategories = () => {
                 });
             } else if (response) {
                 dispatch(
-                    display({ type: "error", message: response.msg.text })
+                    display({ type: "error", message: response.msg.text }),
                 );
             }
         };
@@ -150,7 +150,7 @@ const GetCategories = () => {
                 null,
                 abortController.current,
                 token,
-                router
+                router,
             );
             if (response && response.success) {
                 const newCategories = categories.filter((category) => {
@@ -159,12 +159,12 @@ const GetCategories = () => {
 
                 setCategories(newCategories);
                 dispatch(
-                    display({ type: "success", message: response.msg.text })
+                    display({ type: "success", message: response.msg.text }),
                 );
                 dispatch(displayModal({ disable: false }));
             } else if (response) {
                 dispatch(
-                    display({ type: "error", message: response.msg.text })
+                    display({ type: "error", message: response.msg.text }),
                 );
                 dispatch(displayModal({ disable: false }));
             }
@@ -191,14 +191,14 @@ const GetCategories = () => {
                 null,
                 abortController.current,
                 token,
-                router
+                router,
             );
             if (response && response.success) {
                 setCategories(response.data.data);
                 setMetaData({ ...metaData, currentPage: page });
             } else if (response) {
                 dispatch(
-                    display({ type: "error", message: response.msg.text })
+                    display({ type: "error", message: response.msg.text }),
                 );
             }
         };
@@ -261,11 +261,11 @@ const GetCategories = () => {
                 title={t("title")}
                 classes={"bg-white"}
                 tableHeaders={[
-                    tTable("name"),
-                    tTable("language"),
-                    tTable("image"),
-                    tTable("createdAt"),
-                    tTable("action"),
+                    { fieldName: "name", label: tTable("name") },
+                    { fieldName: "trans_lang", label: tTable("language") },
+                    { fieldName: "image", label: tTable("image") },
+                    { fieldName: "created_at", label: tTable("createdAt") },
+                    { fieldName: "action", label: tTable("action") },
                 ]}
                 handleBtnClick={() => handleAdd()}
                 sortConfig={sortConfig}

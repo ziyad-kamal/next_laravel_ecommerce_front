@@ -28,7 +28,7 @@ const DeleteConfirmationModal = memo(
         >
             <p>{t("confirmDeleteAdmin")}</p>
         </Modal>
-    )
+    ),
 );
 DeleteConfirmationModal.displayName = "DeleteConfirmationModal";
 
@@ -98,7 +98,7 @@ const GetAdmins = () => {
                 null,
                 abortController,
                 token,
-                router
+                router,
             );
 
             if (response && response.success) {
@@ -109,7 +109,7 @@ const GetAdmins = () => {
                 });
             } else if (response) {
                 dispatch(
-                    display({ type: "error", message: response.msg.text })
+                    display({ type: "error", message: response.msg.text }),
                 );
             }
         };
@@ -153,7 +153,7 @@ const GetAdmins = () => {
                 null,
                 abortControllerForDelete.current,
                 token,
-                router
+                router,
             );
             if (response && response.success) {
                 const newAdmins = admins.filter((admin) => {
@@ -162,12 +162,12 @@ const GetAdmins = () => {
 
                 setAdmins(newAdmins);
                 dispatch(
-                    display({ type: "success", message: response.msg.text })
+                    display({ type: "success", message: response.msg.text }),
                 );
                 dispatch(displayModal({ disable: false }));
             } else if (response) {
                 dispatch(
-                    display({ type: "error", message: response.msg.text })
+                    display({ type: "error", message: response.msg.text }),
                 );
                 dispatch(displayModal({ disable: false }));
             }
@@ -194,14 +194,14 @@ const GetAdmins = () => {
                 null,
                 abortController.current,
                 token,
-                router
+                router,
             );
             if (response && response.success) {
                 setAdmins(response.data.data);
                 setMetaData({ ...metaData, currentPage: page });
             } else if (response) {
                 dispatch(
-                    display({ type: "error", message: response.msg.text })
+                    display({ type: "error", message: response.msg.text }),
                 );
             }
         };
@@ -251,10 +251,10 @@ const GetAdmins = () => {
                 title={t("title")}
                 classes={"bg-white"}
                 tableHeaders={[
-                    tTable("name"),
-                    tTable("email"),
-                    tTable("createdAt"),
-                    tTable("action"),
+                    { fieldName: "name", label: tTable("name") },
+                    { fieldName: "email", label: tTable("email") },
+                    { fieldName: "created_at", label: tTable("createdAt") },
+                    { fieldName: "action", label: tTable("action") },
                 ]}
                 handleBtnClick={() => handleAdd()}
                 sortConfig={sortConfig}
