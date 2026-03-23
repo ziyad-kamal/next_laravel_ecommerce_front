@@ -285,5 +285,19 @@
         "arabic": "العربية",
         "english": "الانجليزية",
         "french": "الفرنسية"
+    },
+    "adminProfile": {
+        "title": "ملف المسؤول الشخصي",
+        "editProfile": "تحرير الملف الشخصي",
+        "save": "حفظ",
+        "cancel": "إلغاء",
+        "administrator": "مسؤول",
+        "contactInformation": "معلومات الاتصال",
+        "additionalDetails": "تفاصيل إضافية",
+        "memberSince": "عضو منذ",
+        "accessLevel": "مستوى الوصول",
+        "tasksCompleted": "المهام المكتملة",
+        "activeProjects": "المشاريع النشطة",
+        "uptime": "وقت التشغيل"
     }
 }

@@ -302,5 +302,19 @@
         "arabic": "arabic",
         "english": "english",
         "french": "french"
+    },
+    "adminProfile": {
+        "title": "Admin Profile",
+        "editProfile": "Edit Profile",
+        "save": "Save",
+        "cancel": "Cancel",
+        "administrator": "Administrator",
+        "contactInformation": "Contact Information",
+        "additionalDetails": "Additional Details",
+        "memberSince": "Member Since",
+        "accessLevel": "Access Level",
+        "tasksCompleted": "Tasks Completed",
+        "activeProjects": "Active Projects",
+        "uptime": "Uptime"
     }
 }

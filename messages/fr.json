@@ -285,5 +285,19 @@
         "arabic": "arabic",
         "english": "english",
         "french": "french"
+    },
+    "adminProfile": {
+        "title": "Profil Administrateur",
+        "editProfile": "Modifier le profil",
+        "save": "Enregistrer",
+        "cancel": "Annuler",
+        "administrator": "Administrateur",
+        "contactInformation": "Informations de contact",
+        "additionalDetails": "Détails supplémentaires",
+        "memberSince": "Membre depuis",
+        "accessLevel": "Niveau d'accès",
+        "tasksCompleted": "Tâches complétées",
+        "activeProjects": "Projets actifs",
+        "uptime": "Disponibilité"
     }
 }

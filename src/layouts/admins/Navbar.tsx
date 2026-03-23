@@ -1,27 +1,17 @@
-import sendRequest from "@/functions/sendRequest";
-import { useAppDispatch, useAppSelector } from "@/lib/hooks";
+import { languages, navbarLinks } from "@/constants";
 import { getCookie, setCookie } from "@/functions/cookies";
-import { display } from "@/redux/DisplayToast";
-import {
-    Menu,
-    Bell,
-    Search,
-    User,
-    X,
-    Check,
-    Settings,
-    LogOut,
-    ChevronDown,
-} from "lucide-react";
-import { useRouter } from "next/navigation";
-import React, { useState, useEffect, useRef, useCallback } from "react";
-import { userTokenRemove, userTokenSet } from "@/redux/SetToken";
-import { useTranslations } from "next-intl";
-import { setLocale } from "@/redux/setLocale";
+import sendRequest from "@/functions/sendRequest";
 import LocaleState from "@/interfaces/states/LocaleState";
-import { navbarLinks, languages } from "@/constants";
-import { getEcho } from "@/lib/echo";
 import NotificationState from "@/interfaces/states/NotificationState";
+import { getEcho } from "@/lib/echo";
+import { useAppDispatch, useAppSelector } from "@/lib/hooks";
+import { display } from "@/redux/DisplayToast";
+import { setLocale } from "@/redux/setLocale";
+import { userTokenRemove, userTokenSet } from "@/redux/SetToken";
+import { Bell, Check, ChevronDown, LogOut, Menu, Search, Settings, User, X } from "lucide-react";
+import { useTranslations } from "next-intl";
+import { useRouter } from "next/navigation";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 const Navbar = () => {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -38,14 +28,10 @@ const Navbar = () => {
 
     const router = useRouter();
     const dispatch = useAppDispatch();
-    const localeState = useAppSelector(
-        (state: { setLocale: LocaleState }) => state.setLocale,
-    );
+    const localeState = useAppSelector((state: { setLocale: LocaleState }) => state.setLocale);
 
     // Notifications state
-    const [notifications, setNotifications] = useState<
-        Array<NotificationState>
-    >([]);
+    const [notifications, setNotifications] = useState<Array<NotificationState>>([]);
 
     const notificationScrollRef = useRef<HTMLDivElement>(null);
     const notificationRef = useRef<HTMLDivElement>(null);
@@ -59,47 +45,28 @@ const Navbar = () => {
 
     // Fetch notifications function
     const fetchNotifications = useCallback(
-        async (
-            page: number,
-            append = false,
-            abortController: AbortController,
-        ) => {
+        async (page: number, append = false, abortController: AbortController) => {
             const storedToken = localStorage.getItem("adminToken");
             const url = `/admin-panel/notifications/index?page=${page}`;
 
             setIsLoadingNotifications(true);
 
             try {
-                const response = await sendRequest(
-                    "get",
-                    url,
-                    null,
-                    abortController,
-                    storedToken,
-                    router,
-                );
+                const response = await sendRequest("get", url, null, abortController, storedToken, router);
 
                 if (response && response.success) {
                     const newNotifications = response.data.data;
 
                     if (append) {
-                        setNotifications((prev) => [
-                            ...prev,
-                            ...newNotifications,
-                        ]);
+                        setNotifications((prev) => [...prev, ...newNotifications]);
                     } else {
                         setNotifications(newNotifications);
                     }
 
                     // Check if there are more pages
-                    setHasMoreNotifications(
-                        response.data.meta.current_page <
-                            response.data.meta.last_page,
-                    );
+                    setHasMoreNotifications(response.data.meta.current_page < response.data.meta.last_page);
                 } else if (response) {
-                    dispatch(
-                        display({ type: "error", message: response.msg.text }),
-                    );
+                    dispatch(display({ type: "error", message: response.msg.text }));
                 }
             } catch (error) {
                 console.error("Error fetching notifications:", error);
@@ -113,23 +80,14 @@ const Navbar = () => {
     // Close dropdowns when clicking outside
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
-            if (
-                notificationRef.current &&
-                !notificationRef.current.contains(event.target as Node)
-            ) {
+            if (notificationRef.current && !notificationRef.current.contains(event.target as Node)) {
                 setShowNotifications(false);
             }
-            if (
-                userMenuRef.current &&
-                !userMenuRef.current.contains(event.target as Node)
-            ) {
+            if (userMenuRef.current && !userMenuRef.current.contains(event.target as Node)) {
                 setShowUserMenu(false);
             }
 
-            if (
-                userLangRef.current &&
-                !userLangRef.current.contains(event.target as Node)
-            ) {
+            if (userLangRef.current && !userLangRef.current.contains(event.target as Node)) {
                 setShowUserLang(false);
             }
         };
@@ -151,8 +109,7 @@ const Navbar = () => {
         }
 
         document.addEventListener("mousedown", handleClickOutside);
-        return () =>
-            document.removeEventListener("mousedown", handleClickOutside);
+        return () => document.removeEventListener("mousedown", handleClickOutside);
     }, [dispatch, router]);
 
     useEffect(() => {
@@ -160,10 +117,7 @@ const Navbar = () => {
         const echo = getEcho(storedToken);
         const channel = echo.private(`App.Models.Admin.${1}`);
         channel.notification((notification: unknown) => {
-            setNotifications((prevNotification) => [
-                notification as NotificationState,
-                ...prevNotification,
-            ]);
+            setNotifications((prevNotification) => [notification as NotificationState, ...prevNotification]);
         });
 
         const abortController = new AbortController();
@@ -184,16 +138,11 @@ const Navbar = () => {
     useEffect(() => {
         const handleScroll = () => {
             if (!showNotifications) return; // ← important
-            if (
-                !notificationScrollRef.current ||
-                !hasMoreNotifications ||
-                isLoadingNotifications
-            ) {
+            if (!notificationScrollRef.current || !hasMoreNotifications || isLoadingNotifications) {
                 return;
             }
 
-            const { scrollTop, scrollHeight, clientHeight } =
-                notificationScrollRef.current;
+            const { scrollTop, scrollHeight, clientHeight } = notificationScrollRef.current;
             if (isLoadingNotifications) return; // ← very important
 
             // Load more when scrolled to bottom (with 50px threshold)
@@ -211,20 +160,13 @@ const Navbar = () => {
         handleScroll();
         if (scrollElement) {
             scrollElement.addEventListener("scroll", handleScroll);
-            return () =>
-                scrollElement.removeEventListener("scroll", handleScroll);
+            return () => scrollElement.removeEventListener("scroll", handleScroll);
         }
-    }, [
-        currentPage,
-        hasMoreNotifications,
-        isLoadingNotifications,
-        fetchNotifications,
-        showNotifications,
-    ]);
+    }, [currentPage, hasMoreNotifications, isLoadingNotifications, fetchNotifications, showNotifications]);
 
     // const handleSearch = () => {
     //     console.log("Searching for:", searchQuery);
-    //     // Add your search logic here
+    // Add your search logic here
     // };
 
     // Notification functions
@@ -234,27 +176,16 @@ const Navbar = () => {
         const abortController = new AbortController();
 
         const updateData = async () => {
-            const response = await sendRequest(
-                "post",
-                url,
-                { notif_id: id },
-                abortController,
-                storedToken,
-                router,
-            );
+            const response = await sendRequest("post", url, { notif_id: id }, abortController, storedToken, router);
 
             if (response && response.success) {
                 setNotifications((prev) =>
                     prev.map((notification) =>
-                        notification.notification_id === id
-                            ? { ...notification, is_read: true }
-                            : notification,
+                        notification.notification_id === id ? { ...notification, is_read: true } : notification,
                     ),
                 );
             } else if (response) {
-                dispatch(
-                    display({ type: "error", message: response.msg.text }),
-                );
+                dispatch(display({ type: "error", message: response.msg.text }));
             }
         };
 
@@ -267,14 +198,7 @@ const Navbar = () => {
         const abortController = new AbortController();
 
         const updateData = async () => {
-            const response = await sendRequest(
-                "post",
-                url,
-                null,
-                abortController,
-                storedToken,
-                router,
-            );
+            const response = await sendRequest("post", url, null, abortController, storedToken, router);
 
             if (response && response.success) {
                 setNotifications((prev) =>
@@ -284,9 +208,7 @@ const Navbar = () => {
                     })),
                 );
             } else if (response) {
-                dispatch(
-                    display({ type: "error", message: response.msg.text }),
-                );
+                dispatch(display({ type: "error", message: response.msg.text }));
             }
         };
 
@@ -307,26 +229,16 @@ const Navbar = () => {
         const token = localStorage.getItem("adminToken");
 
         const logout = async () => {
-            const response = await sendRequest(
-                "post",
-                url,
-                null,
-                abortControllerForSubmit,
-                token,
-            );
+            const response = await sendRequest("post", url, null, abortControllerForSubmit, token);
 
             if (response && response.success) {
-                dispatch(
-                    display({ type: "success", message: response.msg.text }),
-                );
+                dispatch(display({ type: "success", message: response.msg.text }));
                 localStorage.removeItem("token");
                 dispatch(userTokenRemove());
 
                 router.push("/users/public/login");
             } else if (response) {
-                dispatch(
-                    display({ type: "error", message: response.msg.text }),
-                );
+                dispatch(display({ type: "error", message: response.msg.text }));
             }
         };
 
@@ -379,9 +291,7 @@ const Navbar = () => {
                 setCookie("defaultLang", lang);
                 router.refresh();
             } else if (response) {
-                dispatch(
-                    display({ type: "error", message: response.msg.text }),
-                );
+                dispatch(display({ type: "error", message: response.msg.text }));
             }
         };
 
@@ -405,47 +315,33 @@ const Navbar = () => {
                     <div className="hidden clg:block">
                         <div className="ml-5 flex items-baseline space-x-8">
                             {navbarLinks().map((navbarLink, i) => (
-                                <div
-                                    key={i}
-                                    className="relative group"
-                                >
+                                <div key={i} className="relative group">
                                     {navbarLink.submenu ? (
                                         <>
                                             <button
                                                 className="text-gray-300 hover:text-white px-3 py-2 text-sm font-bold transition-colors flex items-center space-x-1"
                                                 onClick={() =>
                                                     setOpenDropdown(
-                                                        openDropdown ===
-                                                            navbarLink.name
-                                                            ? null
-                                                            : navbarLink.name,
+                                                        openDropdown === navbarLink.name ? null : navbarLink.name,
                                                     )
                                                 }
                                             >
-                                                <span>
-                                                    {t(navbarLink.name)}
-                                                </span>
+                                                <span>{t(navbarLink.name)}</span>
                                                 <ChevronDown className="w-4 h-4 transform group-hover:rotate-180 transition-transform" />
                                             </button>
 
                                             {/* Dropdown Menu */}
                                             <div className="absolute left-0 mt-0 w-48 bg-white rounded-lg shadow-lg border border-gray-200 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
                                                 <div className="py-2">
-                                                    {navbarLink.submenu.map(
-                                                        (subItem, j) => (
-                                                            <a
-                                                                key={j}
-                                                                href={
-                                                                    subItem.href
-                                                                }
-                                                                className="block px-4 py-2 text-gray-700 hover:bg-gray-100 transition-colors text-sm"
-                                                            >
-                                                                {t(
-                                                                    subItem.name,
-                                                                )}
-                                                            </a>
-                                                        ),
-                                                    )}
+                                                    {navbarLink.submenu.map((subItem, j) => (
+                                                        <a
+                                                            key={j}
+                                                            href={subItem.href}
+                                                            className="block px-4 py-2 text-gray-700 hover:bg-gray-100 transition-colors text-sm"
+                                                        >
+                                                            {t(subItem.name)}
+                                                        </a>
+                                                    ))}
                                                 </div>
                                             </div>
                                         </>
@@ -469,9 +365,7 @@ const Navbar = () => {
                                 <input
                                     type="text"
                                     value={searchQuery}
-                                    onChange={(e) =>
-                                        setSearchQuery(e.target.value)
-                                    }
+                                    onChange={(e) => setSearchQuery(e.target.value)}
                                     placeholder={t("search")}
                                     className="w-full bg-gray-700 text-white placeholder-gray-400 pl-10 pr-4 py-2 rounded-lg border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                                 />
@@ -481,14 +375,9 @@ const Navbar = () => {
                     {/* Right side icons */}
                     <div className="hidden clg:flex items-center space-x-4">
                         {/* Notifications */}
-                        <div
-                            className="relative"
-                            ref={notificationRef}
-                        >
+                        <div className="relative" ref={notificationRef}>
                             <button
-                                onClick={() =>
-                                    setShowNotifications(!showNotifications)
-                                }
+                                onClick={() => setShowNotifications(!showNotifications)}
                                 className="relative p-2 text-gray-300 hover:text-white transition-colors"
                             >
                                 <Bell className="w-5 h-5" />
@@ -517,71 +406,51 @@ const Navbar = () => {
                                             )}
                                         </div>
                                     </div>
-                                    <div
-                                        ref={notificationScrollRef}
-                                        className="max-h-96 overflow-y-auto"
-                                    >
-                                        {notifications.length === 0 &&
-                                        !isLoadingNotifications ? (
-                                            <div className="p-4 text-gray-500 text-center">
-                                                No notifications
-                                            </div>
+                                    <div ref={notificationScrollRef} className="max-h-96 overflow-y-auto">
+                                        {notifications.length === 0 && !isLoadingNotifications ? (
+                                            <div className="p-4 text-gray-500 text-center">No notifications</div>
                                         ) : (
-                                            notifications.map(
-                                                (notification) => (
-                                                    <div
-                                                        key={
-                                                            notification.notification_id
-                                                        }
-                                                        className={`p-4 border-b cursor-pointer border-gray-100 hover:bg-gray-200 `}
-                                                    >
-                                                        <div className="flex items-start justify-between">
-                                                            <div className="flex-1">
-                                                                <div className="flex items-center space-x-2">
-                                                                    <span className="text-lg">
-                                                                        {getNotificationIcon(
-                                                                            notification.type,
-                                                                        )}
-                                                                    </span>
-                                                                    <h4 className="font-medium text-gray-800">
-                                                                        {
-                                                                            notification.title
-                                                                        }
-                                                                    </h4>
-                                                                    {!notification.is_read && (
-                                                                        <span className="w-2 h-2 bg-blue-500 rounded-full"></span>
-                                                                    )}
-                                                                </div>
-                                                                <p className="text-sm text-gray-600 mt-1">
-                                                                    {
-                                                                        notification.message
-                                                                    }
-                                                                </p>
-                                                                <p className="text-xs text-gray-400 mt-1">
-                                                                    {
-                                                                        notification.created_at
-                                                                    }
-                                                                </p>
-                                                            </div>
-                                                            <div className="flex items-center space-x-1 ml-2">
+                                            notifications.map((notification) => (
+                                                <div
+                                                    key={notification.notification_id}
+                                                    className={`p-4 border-b cursor-pointer border-gray-100 hover:bg-gray-200 `}
+                                                >
+                                                    <div className="flex items-start justify-between">
+                                                        <div className="flex-1">
+                                                            <div className="flex items-center space-x-2">
+                                                                <span className="text-lg">
+                                                                    {getNotificationIcon(notification.type)}
+                                                                </span>
+                                                                <h4 className="font-medium text-gray-800">
+                                                                    {notification.title}
+                                                                </h4>
                                                                 {!notification.is_read && (
-                                                                    <button
-                                                                        onClick={() =>
-                                                                            markAsRead(
-                                                                                notification.notification_id,
-                                                                            )
-                                                                        }
-                                                                        className="text-green-600 hover:text-green-800 p-1 cursor-pointer"
-                                                                        title="Mark as read"
-                                                                    >
-                                                                        <Check className="w-5 h-5" />
-                                                                    </button>
+                                                                    <span className="w-2 h-2 bg-blue-500 rounded-full"></span>
                                                                 )}
                                                             </div>
+                                                            <p className="text-sm text-gray-600 mt-1">
+                                                                {notification.message}
+                                                            </p>
+                                                            <p className="text-xs text-gray-400 mt-1">
+                                                                {notification.created_at}
+                                                            </p>
+                                                        </div>
+                                                        <div className="flex items-center space-x-1 ml-2">
+                                                            {!notification.is_read && (
+                                                                <button
+                                                                    onClick={() =>
+                                                                        markAsRead(notification.notification_id)
+                                                                    }
+                                                                    className="text-green-600 hover:text-green-800 p-1 cursor-pointer"
+                                                                    title="Mark as read"
+                                                                >
+                                                                    <Check className="w-5 h-5" />
+                                                                </button>
+                                                            )}
                                                         </div>
                                                     </div>
-                                                ),
-                                            )
+                                                </div>
+                                            ))
                                         )}
                                     </div>
                                     {isLoadingNotifications && (
@@ -592,21 +461,17 @@ const Navbar = () => {
                                             </div>
                                         </div>
                                     )}
-                                    {!hasMoreNotifications &&
-                                        notifications.length > 0 && (
-                                            <div className="p-4 text-gray-400 text-center text-sm">
-                                                No more notifications
-                                            </div>
-                                        )}
+                                    {!hasMoreNotifications && notifications.length > 0 && (
+                                        <div className="p-4 text-gray-400 text-center text-sm">
+                                            No more notifications
+                                        </div>
+                                    )}
                                 </div>
                             )}
                         </div>
 
                         {/* User Account */}
-                        <div
-                            className="relative"
-                            ref={userMenuRef}
-                        >
+                        <div className="relative" ref={userMenuRef}>
                             <button
                                 onClick={() => setShowUserMenu(!showUserMenu)}
                                 className="flex items-center space-x-1 p-2 text-gray-300 hover:text-white transition-colors"
@@ -640,10 +505,7 @@ const Navbar = () => {
                         </div>
 
                         {/* User lang */}
-                        <div
-                            className="relative"
-                            ref={userLangRef}
-                        >
+                        <div className="relative" ref={userLangRef}>
                             <button
                                 onClick={() => setShowUserLang(!showUserLang)}
                                 className="flex items-center space-x-1 p-2 text-gray-300 hover:text-white transition-colors"
@@ -654,19 +516,18 @@ const Navbar = () => {
 
                             {/* User Menu Dropdown */}
                             {showUserLang && (
-                                <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 z-50">
+                                <div
+                                    className={
+                                        "absolute  ltr:right-0 rtl:left-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 z-50"
+                                    }
+                                >
                                     <div className="py-2">
                                         {languages().map((lang, i) => (
                                             <button
                                                 key={i}
-                                                onClick={() =>
-                                                    handleLang(lang.abbre)
-                                                }
-                                                className={`w-full text-left px-4 py-2 text-gray-700 ${
-                                                    localeState.locale ==
-                                                    lang.abbre
-                                                        ? "bg-gray-200"
-                                                        : ""
+                                                onClick={() => handleLang(lang.abbre)}
+                                                className={`w-full text-start px-4 py-2 text-gray-700 ${
+                                                    localeState.locale == lang.abbre ? "bg-gray-200" : ""
                                                 } hover:bg-gray-200 flex items-center space-x-3 transition-colors `}
                                             >
                                                 {tLanguage(lang.name)}
@@ -680,15 +541,8 @@ const Navbar = () => {
 
                     {/* Mobile menu button */}
                     <div className="clg:hidden">
-                        <button
-                            onClick={toggleMenu}
-                            className="text-gray-300 hover:text-white p-2 transition-colors"
-                        >
-                            {isMenuOpen ? (
-                                <X className="w-6 h-6" />
-                            ) : (
-                                <Menu className="w-6 h-6" />
-                            )}
+                        <button onClick={toggleMenu} className="text-gray-300 hover:text-white p-2 transition-colors">
+                            {isMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
                         </button>
                     </div>
                 </div>
@@ -705,9 +559,7 @@ const Navbar = () => {
                                 <input
                                     type="text"
                                     value={searchQuery}
-                                    onChange={(e) =>
-                                        setSearchQuery(e.target.value)
-                                    }
+                                    onChange={(e) => setSearchQuery(e.target.value)}
                                     placeholder="Search products..."
                                     className="w-full bg-gray-800 text-white placeholder-gray-400 pl-10 pr-4 py-2 rounded-lg border border-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                                 />
@@ -722,10 +574,7 @@ const Navbar = () => {
                                         <button
                                             onClick={() =>
                                                 setOpenDropdown(
-                                                    openDropdown ===
-                                                        navbarLink.name
-                                                        ? null
-                                                        : navbarLink.name,
+                                                    openDropdown === navbarLink.name ? null : navbarLink.name,
                                                 )
                                             }
                                             className="text-gray-300 hover:text-white w-full text-left px-3 py-2 text-base font-medium transition-colors flex items-center justify-between"
@@ -733,26 +582,21 @@ const Navbar = () => {
                                             <span>{t(navbarLink.name)}</span>
                                             <ChevronDown
                                                 className={`w-4 h-4 transform transition-transform ${
-                                                    openDropdown ===
-                                                    navbarLink.name
-                                                        ? "rotate-180"
-                                                        : ""
+                                                    openDropdown === navbarLink.name ? "rotate-180" : ""
                                                 }`}
                                             />
                                         </button>
                                         {openDropdown === navbarLink.name && (
                                             <div className="pl-4 bg-gray-800">
-                                                {navbarLink.submenu.map(
-                                                    (subItem, j) => (
-                                                        <a
-                                                            key={j}
-                                                            href={subItem.href}
-                                                            className="text-gray-400 hover:text-white block px-3 py-2 text-sm font-medium transition-colors"
-                                                        >
-                                                            {t(subItem.name)}
-                                                        </a>
-                                                    ),
-                                                )}
+                                                {navbarLink.submenu.map((subItem, j) => (
+                                                    <a
+                                                        key={j}
+                                                        href={subItem.href}
+                                                        className="text-gray-400 hover:text-white block px-3 py-2 text-sm font-medium transition-colors"
+                                                    >
+                                                        {t(subItem.name)}
+                                                    </a>
+                                                ))}
                                             </div>
                                         )}
                                     </>
