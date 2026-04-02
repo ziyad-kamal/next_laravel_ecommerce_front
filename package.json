@@ -24,18 +24,18 @@
         "react-redux": "^9.2.0",
         "recharts": "^3.5.1",
         "laravel-echo": "^2.3.0",
-        "pusher-js": "^8.4.0"
+        "pusher-js": "^8.4.0",
+        "@tailwindcss/postcss": "^4",
+        "tailwindcss": "^4"
     },
     "devDependencies": {
         "@eslint/eslintrc": "^3",
-        "@tailwindcss/postcss": "^4",
         "@types/estree": "^1.0.8",
         "@types/node": "^20",
         "@types/react": "^19",
         "@types/react-dom": "^19",
         "eslint": "^9",
         "eslint-config-next": "15.3.4",
-        "tailwindcss": "^4",
         "typescript": "^5"
     }
 }
