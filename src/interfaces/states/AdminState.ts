@@ -1,4 +1,5 @@
 interface AdminState {
+    id: number;
     name: string;
     email: string;
     bio: string;

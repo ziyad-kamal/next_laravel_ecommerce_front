@@ -18,6 +18,7 @@ export default function AdminProfile() {
     const router = useRouter();
     const [isEditing, setIsEditing] = useState(false);
     const [profileData, setProfileData] = useState<AdminState>({
+        id: 0,
         name: "",
         role: "",
         email: "",
