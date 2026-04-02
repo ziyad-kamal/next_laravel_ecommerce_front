@@ -1,21 +1,20 @@
 "use client";
 
-import { ChangeEvent, FormEvent, useState } from "react";
-import { ArrowRight, Mail, Eye, EyeOff, Lock } from "lucide-react";
 import { Button, Card, Input } from "@/components";
 import sendRequest from "@/functions/sendRequest";
 import { useAppDispatch } from "@/lib/hooks";
 import { display } from "@/redux/DisplayToast";
-import { useRouter } from "next/navigation";
 import { userTokenSet } from "@/redux/SetToken";
+import { Eye, EyeOff, Lock, Mail } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { useRouter } from "next/navigation";
+import { ChangeEvent, FormEvent, useState } from "react";
 
-const initialInputs: { email: string; password: string; rememberMe: boolean } =
-    {
-        email: "",
-        password: "",
-        rememberMe: false,
-    };
+const initialInputs: { email: string; password: string; rememberMe: boolean } = {
+    email: "",
+    password: "",
+    rememberMe: false,
+};
 
 const LoginPage = () => {
     const [showPassword, setShowPassword] = useState<boolean>(false);
@@ -25,10 +24,7 @@ const LoginPage = () => {
     const dispatch = useAppDispatch();
     const t = useTranslations("login");
 
-    const handleInputChange = (
-        e: ChangeEvent<HTMLInputElement>,
-        name: string
-    ) => {
+    const handleInputChange = (e: ChangeEvent<HTMLInputElement>, name: string) => {
         const { value, type, checked } = e.target;
         setFormData((prev) => ({
             ...prev,
@@ -49,26 +45,17 @@ const LoginPage = () => {
         abortControllerForSubmit = new AbortController();
 
         const submitData = async () => {
-            const response = await sendRequest(
-                "post",
-                url,
-                formData,
-                abortControllerForSubmit
-            );
+            const response = await sendRequest("post", url, formData, abortControllerForSubmit, "");
 
             if (response && response.success) {
-                dispatch(
-                    display({ type: "success", message: response.msg.text })
-                );
+                dispatch(display({ type: "success", message: response.msg.text }));
                 localStorage.setItem("token", response.data.data.token);
                 dispatch(userTokenSet());
 
                 setIsLoading(false);
                 router.push("/users/protected/home");
             } else if (response) {
-                dispatch(
-                    display({ type: "error", message: response.msg.text })
-                );
+                dispatch(display({ type: "error", message: response.msg.text }));
                 setIsLoading(false);
             }
         };
@@ -85,19 +72,14 @@ const LoginPage = () => {
                         <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-2xl mb-4 shadow-lg">
                             <Lock className="w-8 h-8 text-white" />
                         </div>
-                        <h1 className="text-3xl font-bold text-gray-900 mb-2">
-                            {t("title")}
-                        </h1>
+                        <h1 className="text-3xl font-bold text-gray-900 mb-2">{t("title")}</h1>
                         <p className="text-gray-600">{t("subtitle")}</p>
                     </div>
 
                     {/* Social login buttons */}
                     <div className="my-6 flex justify-center gap-3">
-                        <Button classes="bg-white hover:bg-gray-200 text-gray-500 border border-gray-300">
-                            <svg
-                                className="h-5 w-5 "
-                                viewBox="0 0 24 24"
-                            >
+                        <Button text="" classes="bg-white hover:bg-gray-200 text-gray-500 border border-gray-300">
+                            <svg className="h-5 w-5 " viewBox="0 0 24 24">
                                 <path
                                     fill="currentColor"
                                     d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
@@ -122,12 +104,8 @@ const LoginPage = () => {
                             <span className="mx-2 text-lg">Google</span>
                         </Button>
 
-                        <Button classes="bg-white hover:bg-gray-200 text-gray-500 border border-gray-300">
-                            <svg
-                                className="h-5 w-5 text-blue-400"
-                                fill="currentColor"
-                                viewBox="0 0 24 24"
-                            >
+                        <Button text="" classes="bg-white hover:bg-gray-200 text-gray-500 border border-gray-300">
+                            <svg className="h-5 w-5 text-blue-400" fill="currentColor" viewBox="0 0 24 24">
                                 <path d="M24 4.557c-.883.392-1.832.656-2.828.775 1.017-.609 1.798-1.574 2.165-2.724-.951.564-2.005.974-3.127 1.195-.897-.957-2.178-1.555-3.594-1.555-3.179 0-5.515 2.966-4.797 6.045-4.091-.205-7.719-2.165-10.148-5.144-1.29 2.213-.669 5.108 1.523 6.574-.806-.026-1.566-.247-2.229-.616-.054 2.281 1.581 4.415 3.949 4.89-.693.188-1.452.232-2.224.084.626 1.956 2.444 3.379 4.6 3.419-2.07 1.623-4.678 2.348-7.29 2.04 2.179 1.397 4.768 2.212 7.548 2.212 9.142 0 14.307-7.721 13.995-14.646.962-.695 1.797-1.562 2.457-2.549z" />
                             </svg>
                             <span className="mx-2 text-lg">Twitter</span>
@@ -135,16 +113,10 @@ const LoginPage = () => {
                     </div>
 
                     {/* Login form */}
-                    <form
-                        onSubmit={handleSubmit}
-                        className="space-y-6"
-                    >
+                    <form onSubmit={handleSubmit} className="space-y-6">
                         {/* Email field */}
                         <div className="space-y-2">
-                            <label
-                                htmlFor="email"
-                                className="block text-sm font-medium text-gray-700"
-                            >
+                            <label htmlFor="email" className="block text-sm font-medium text-gray-700">
                                 {t("email")}
                             </label>
                             <div className="relative">
@@ -165,10 +137,7 @@ const LoginPage = () => {
 
                         {/* Password field */}
                         <div className="space-y-2">
-                            <label
-                                htmlFor="password"
-                                className="block text-sm font-medium text-gray-700"
-                            >
+                            <label htmlFor="password" className="block text-sm font-medium text-gray-700">
                                 {t("password")}
                             </label>
                             <div className="relative">
@@ -186,9 +155,7 @@ const LoginPage = () => {
                                 />
                                 <button
                                     type="button"
-                                    onClick={() =>
-                                        setShowPassword(!showPassword)
-                                    }
+                                    onClick={() => setShowPassword(!showPassword)}
                                     className="absolute inset-y-0 right-0 pr-3 flex items-center"
                                 >
                                     {showPassword ? (
@@ -208,14 +175,9 @@ const LoginPage = () => {
                                     name="rememberMe"
                                     type="checkbox"
                                     checked={formData.rememberMe}
-                                    onChange={(e) =>
-                                        handleInputChange(e, "rememberMe")
-                                    }
+                                    onChange={(e) => handleInputChange(e, "rememberMe")}
                                 />
-                                <label
-                                    htmlFor="rememberMe"
-                                    className="ml-2 block text-sm text-gray-700"
-                                >
+                                <label htmlFor="rememberMe" className="ml-2 block text-sm text-gray-700">
                                     {t("rememberMe")}
                                 </label>
                             </div>
@@ -229,30 +191,16 @@ const LoginPage = () => {
 
                         {/* Submit button */}
                         <Button
-                            disable={isLoading}
+                            text="signup"
+                            isLoading={isLoading}
                             classes="bg-indigo-700 hover:bg-indigo-800 w-full flex justify-center"
-                        >
-                            {isLoading ? (
-                                <div className="flex items-center">
-                                    <div className="animate-spin text-white  rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                                    {t("signingIn")}
-                                </div>
-                            ) : (
-                                <div className="flex text-white items-center">
-                                    {t("signIn")}
-                                    <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
-                                </div>
-                            )}
-                        </Button>
+                        ></Button>
                     </form>
 
                     {/* Sign up link */}
                     <p className="mt-8 text-center text-sm text-gray-600">
                         {t("noAccount")}{" "}
-                        <a
-                            href="#"
-                            className="font-medium text-indigo-600 hover:text-indigo-500 transition-colors"
-                        >
+                        <a href="#" className="font-medium text-indigo-600 hover:text-indigo-500 transition-colors">
                             {t("signUpFree")}
                         </a>
                     </p>
@@ -262,17 +210,11 @@ const LoginPage = () => {
                 <div className="mt-8 text-center">
                     <p className="text-xs text-gray-500">
                         {t("bySigningIn")}{" "}
-                        <a
-                            href="#"
-                            className="text-indigo-600 hover:text-indigo-500"
-                        >
+                        <a href="#" className="text-indigo-600 hover:text-indigo-500">
                             {t("termsOfService")}
                         </a>{" "}
                         {t("and")}{" "}
-                        <a
-                            href="#"
-                            className="text-indigo-600 hover:text-indigo-500"
-                        >
+                        <a href="#" className="text-indigo-600 hover:text-indigo-500">
                             {t("privacyPolicy")}
                         </a>
                     </p>
