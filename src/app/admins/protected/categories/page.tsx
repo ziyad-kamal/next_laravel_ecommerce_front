@@ -1,33 +1,23 @@
 "use client";
 
-import { memo, useCallback, useEffect, useRef, useState } from "react";
-import { Edit, Trash2 } from "lucide-react";
-import { useRouter } from "next/navigation";
-import { useTranslations } from "next-intl";
-import sendRequest from "@/functions/sendRequest";
-import { useAppDispatch, useAppSelector } from "@/lib/hooks";
-import { display } from "@/redux/DisplayToast";
 import { Button } from "@/components";
-import Table from "@/components/Table";
-import ReactPaginate from "react-paginate";
 import Modal from "@/components/Modal";
-import { displayModal } from "@/redux/DisplayModal";
-import LocaleState from "@/interfaces/states/LocaleState";
+import Table from "@/components/Table";
+import sendRequest from "@/functions/sendRequest";
 import CategoryState from "@/interfaces/states/CategoryState";
-import Image from "next/image";
+import LocaleState from "@/interfaces/states/LocaleState";
+import { useAppDispatch, useAppSelector } from "@/lib/hooks";
+import { displayModal } from "@/redux/DisplayModal";
+import { display } from "@/redux/DisplayToast";
+import { Edit, Trash2 } from "lucide-react";
+import { useTranslations } from "next-intl";
+import { useRouter } from "next/navigation";
+import { memo, useCallback, useEffect, useRef, useState } from "react";
+import ReactPaginate from "react-paginate";
 
 const DeleteConfirmationModal = memo(
-    ({
-        onConfirm,
-        t,
-    }: {
-        onConfirm: () => void;
-        t: ReturnType<typeof useTranslations>;
-    }) => (
-        <Modal
-            title={t("deleteCategory")}
-            handleClick={onConfirm}
-        >
+    ({ onConfirm, t }: { onConfirm: () => void; t: ReturnType<typeof useTranslations> }) => (
+        <Modal title={t("deleteCategory")} handleClick={onConfirm}>
             <p>{t("confirmDeleteCategory")}</p>
         </Modal>
     ),
@@ -43,9 +33,7 @@ const GetCategories = () => {
 
     const tButtons = useTranslations("buttons");
     const id = useRef<number>(0);
-    const localeState = useAppSelector(
-        (state: { setLocale: LocaleState }) => state.setLocale,
-    );
+    const localeState = useAppSelector((state: { setLocale: LocaleState }) => state.setLocale);
     const abortController = useRef<AbortController | null>(null);
     const abortControllerForDelete = useRef<AbortController | null>(null);
 
@@ -69,10 +57,7 @@ const GetCategories = () => {
         if (header !== "action") {
             setSortConfig((prev) => ({
                 keyToSort: header,
-                direction:
-                    prev.keyToSort === header && prev.direction === "asc"
-                        ? "desc"
-                        : "asc",
+                direction: prev.keyToSort === header && prev.direction === "asc" ? "desc" : "asc",
             }));
         }
     };
@@ -89,14 +74,7 @@ const GetCategories = () => {
         const token = localStorage.getItem("adminToken");
 
         const fetchData = async () => {
-            const response = await sendRequest(
-                "get",
-                url,
-                null,
-                abortController,
-                token,
-                router,
-            );
+            const response = await sendRequest("get", url, null, abortController, token, router);
 
             if (response && response.success) {
                 setCategories(response.data.data);
@@ -105,9 +83,7 @@ const GetCategories = () => {
                     totalPages: response.data.meta.total,
                 });
             } else if (response) {
-                dispatch(
-                    display({ type: "error", message: response.msg.text }),
-                );
+                dispatch(display({ type: "error", message: response.msg.text }));
             }
         };
 
@@ -144,28 +120,17 @@ const GetCategories = () => {
         const deleteData = async () => {
             dispatch(displayModal({ disable: true }));
 
-            const response = await sendRequest(
-                "delete",
-                url,
-                null,
-                abortController.current,
-                token,
-                router,
-            );
+            const response = await sendRequest("delete", url, null, abortController.current, token, router);
             if (response && response.success) {
                 const newCategories = categories.filter((category) => {
                     return category.id !== id.current;
                 });
 
                 setCategories(newCategories);
-                dispatch(
-                    display({ type: "success", message: response.msg.text }),
-                );
+                dispatch(display({ type: "success", message: response.msg.text }));
                 dispatch(displayModal({ disable: false }));
             } else if (response) {
-                dispatch(
-                    display({ type: "error", message: response.msg.text }),
-                );
+                dispatch(display({ type: "error", message: response.msg.text }));
                 dispatch(displayModal({ disable: false }));
             }
         };
@@ -185,21 +150,12 @@ const GetCategories = () => {
         abortController.current = new AbortController();
 
         const fetchData = async () => {
-            const response = await sendRequest(
-                "get",
-                url,
-                null,
-                abortController.current,
-                token,
-                router,
-            );
+            const response = await sendRequest("get", url, null, abortController.current, token, router);
             if (response && response.success) {
                 setCategories(response.data.data);
                 setMetaData({ ...metaData, currentPage: page });
             } else if (response) {
-                dispatch(
-                    display({ type: "error", message: response.msg.text }),
-                );
+                dispatch(display({ type: "error", message: response.msg.text }));
             }
         };
 
@@ -209,10 +165,7 @@ const GetCategories = () => {
     //MARK:categoriesRow
     const categoriesRow = categories.map((category) => {
         return (
-            <tr
-                key={category.id}
-                className="hover:bg-gray-200"
-            >
+            <tr key={category.id} className="hover:bg-gray-200">
                 <td className="row_table">{category.name}</td>
 
                 <td className="row_table">{category.trans_lang}</td>
@@ -252,10 +205,7 @@ const GetCategories = () => {
 
     return (
         <>
-            <DeleteConfirmationModal
-                onConfirm={handleConfirm}
-                t={tModal}
-            />
+            <DeleteConfirmationModal onConfirm={handleConfirm} t={tModal} />
 
             <Table
                 title={t("title")}
