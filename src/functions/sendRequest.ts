@@ -7,11 +7,11 @@ export default function sendRequest(
     inputs: object | null,
     abortController: AbortController | null,
     token: string | null,
-    router?: AppRouterInstance
+    router?: AppRouterInstance,
 ) {
     const send = async () => {
         axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
-        axios.defaults.baseURL = "http://127.0.0.1:8000/api/";
+        axios.defaults.baseURL = "https://127.0.0.1:8000/api/";
         // axios.defaults.headers.post["Content-Type"] = "application/json";
 
         try {
