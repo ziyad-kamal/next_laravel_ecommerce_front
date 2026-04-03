@@ -1,31 +1,22 @@
 "use client";
 
-import { memo, useCallback, useEffect, useRef, useState } from "react";
-import { Edit, Trash2 } from "lucide-react";
-import { useRouter } from "next/navigation";
-import { useTranslations } from "next-intl";
-import sendRequest from "@/functions/sendRequest";
-import { useAppDispatch } from "@/lib/hooks";
-import { display } from "@/redux/DisplayToast";
-import AdminState from "@/interfaces/states/AdminState";
 import { Button } from "@/components";
-import Table from "@/components/Table";
-import ReactPaginate from "react-paginate";
 import Modal from "@/components/Modal";
+import Table from "@/components/Table";
+import sendRequest from "@/functions/sendRequest";
+import AdminState from "@/interfaces/states/AdminState";
+import { useAppDispatch } from "@/lib/hooks";
 import { displayModal } from "@/redux/DisplayModal";
+import { display } from "@/redux/DisplayToast";
+import { Edit, Trash2 } from "lucide-react";
+import { useTranslations } from "next-intl";
+import { useRouter } from "next/navigation";
+import { memo, useCallback, useEffect, useRef, useState } from "react";
+import ReactPaginate from "react-paginate";
 
 const DeleteConfirmationModal = memo(
-    ({
-        onConfirm,
-        t,
-    }: {
-        onConfirm: () => void;
-        t: ReturnType<typeof useTranslations>;
-    }) => (
-        <Modal
-            title={t("deleteUser")}
-            handleClick={onConfirm}
-        >
+    ({ onConfirm, t }: { onConfirm: () => void; t: ReturnType<typeof useTranslations> }) => (
+        <Modal title={t("deleteUser")} handleClick={onConfirm}>
             <p>{t("confirmDeleteUser")}</p>
         </Modal>
     ),
@@ -49,6 +40,14 @@ const GetUsers = () => {
             id: 0,
             name: "",
             email: "",
+            address: "",
+
+            bio: "",
+
+            phone: "",
+            role: "",
+            permissions: "",
+
             created_at: "",
         },
     ]);
@@ -63,10 +62,7 @@ const GetUsers = () => {
         if (header !== "action") {
             setSortConfig((prev) => ({
                 keyToSort: header,
-                direction:
-                    prev.keyToSort === header && prev.direction === "asc"
-                        ? "desc"
-                        : "asc",
+                direction: prev.keyToSort === header && prev.direction === "asc" ? "desc" : "asc",
             }));
         }
     };
@@ -83,14 +79,7 @@ const GetUsers = () => {
         const token = localStorage.getItem("adminToken");
 
         const fetchData = async () => {
-            const response = await sendRequest(
-                "get",
-                url,
-                null,
-                abortController,
-                token,
-                router,
-            );
+            const response = await sendRequest("get", url, null, abortController, token, router);
 
             if (response && response.success) {
                 setUsers(response.data.data);
@@ -99,9 +88,7 @@ const GetUsers = () => {
                     totalPages: response.data.meta.total,
                 });
             } else if (response) {
-                dispatch(
-                    display({ type: "error", message: response.msg.text }),
-                );
+                dispatch(display({ type: "error", message: response.msg.text }));
             }
         };
 
@@ -138,27 +125,14 @@ const GetUsers = () => {
         const deleteData = async () => {
             dispatch(displayModal({ disable: true }));
 
-            const response = await sendRequest(
-                "delete",
-                url,
-                null,
-                abortControllerForDelete.current,
-                token,
-                router,
-            );
+            const response = await sendRequest("delete", url, null, abortControllerForDelete.current, token, router);
             if (response && response.success) {
-                setUsers((prevUsers) =>
-                    prevUsers.filter((user) => user.id !== id.current),
-                );
+                setUsers((prevUsers) => prevUsers.filter((user) => user.id !== id.current));
 
-                dispatch(
-                    display({ type: "success", message: response.msg.text }),
-                );
+                dispatch(display({ type: "success", message: response.msg.text }));
                 dispatch(displayModal({ disable: false }));
             } else if (response) {
-                dispatch(
-                    display({ type: "error", message: response.msg.text }),
-                );
+                dispatch(display({ type: "error", message: response.msg.text }));
                 dispatch(displayModal({ disable: false }));
             }
         };
@@ -178,21 +152,12 @@ const GetUsers = () => {
         abortController.current = new AbortController();
 
         const fetchData = async () => {
-            const response = await sendRequest(
-                "get",
-                url,
-                null,
-                abortController.current,
-                token,
-                router,
-            );
+            const response = await sendRequest("get", url, null, abortController.current, token, router);
             if (response && response.success) {
                 setUsers(response.data.data);
                 setMetaData({ ...metaData, currentPage: page });
             } else if (response) {
-                dispatch(
-                    display({ type: "error", message: response.msg.text }),
-                );
+                dispatch(display({ type: "error", message: response.msg.text }));
             }
         };
 
@@ -202,10 +167,7 @@ const GetUsers = () => {
     //MARK:usersRow
     const usersRow = users.map((user) => {
         return (
-            <tr
-                key={user.id}
-                className="hover:bg-gray-200"
-            >
+            <tr key={user.id} className="hover:bg-gray-200">
                 <td className="row_table">{user.name}</td>
 
                 <td className="row_table">{user.email}</td>
@@ -232,10 +194,7 @@ const GetUsers = () => {
 
     return (
         <>
-            <DeleteConfirmationModal
-                onConfirm={handleConfirm}
-                t={tModal}
-            />
+            <DeleteConfirmationModal onConfirm={handleConfirm} t={tModal} />
 
             <Table
                 title={t("title")}
