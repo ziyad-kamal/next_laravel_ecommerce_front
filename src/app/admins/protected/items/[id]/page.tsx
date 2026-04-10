@@ -1,32 +1,17 @@
 "use client";
 
-import React, {
-    ChangeEvent,
-    FormEvent,
-    useRef,
-    useState,
-    useEffect,
-    useCallback,
-} from "react";
-import { useDebounce } from "@/hooks/useDebounce";
-import { useAppDispatch } from "@/lib/hooks";
-import { useRouter } from "next/navigation";
-import sendRequest from "@/functions/sendRequest";
-import { display } from "@/redux/DisplayToast";
-import {
-    Button,
-    Card,
-    Dropdown,
-    Dropzone,
-    Input,
-    SelectInput,
-    Textarea,
-} from "@/components";
+import { Button, Card, Dropdown, Dropzone, Input, SelectInput, Textarea } from "@/components";
 import { languages } from "@/constants";
-import InitialErrors from "@/interfaces/states/InitialErrors";
-import type { SuggestionItem } from "@/interfaces/states/SuggestionItem";
+import sendRequest from "@/functions/sendRequest";
+import { useDebounce } from "@/hooks/useDebounce";
 import Option from "@/interfaces/props/Option";
+import InitialErrors from "@/interfaces/states/InitialErrors";
 import ItemDataState from "@/interfaces/states/ItemDataState";
+import type { SuggestionItem } from "@/interfaces/states/SuggestionItem";
+import { useAppDispatch } from "@/lib/hooks";
+import { display } from "@/redux/DisplayToast";
+import { useRouter } from "next/navigation";
+import React, { ChangeEvent, FormEvent, useCallback, useEffect, useRef, useState } from "react";
 
 const initialErrors: InitialErrors = {};
 
@@ -52,10 +37,10 @@ const UpdateItem = ({ params }: { params: Promise<{ id: number }> }) => {
                 price: null,
                 description: "",
                 category_id: null,
-                category_name: "",
+                category: "",
                 brand_id: null,
-                brand_name: "",
-            })
+                brand: "",
+            }),
         ),
         images: [{ originalName: "", path: "", preview: "" }],
     });
@@ -67,18 +52,14 @@ const UpdateItem = ({ params }: { params: Promise<{ id: number }> }) => {
     const [showBrandDropdown, setShowBrandDropdown] = useState<{
         [key: number]: boolean;
     }>({});
-    const [filteredCategories, setFilteredCategories] = useState<
-        SuggestionItem[]
-    >([]);
+    const [filteredCategories, setFilteredCategories] = useState<SuggestionItem[]>([]);
     const [filteredBrands, setFilteredBrands] = useState<SuggestionItem[]>([]);
 
     // Refs for click outside detection
     const categoryDropdownRefs = useRef<{
         [key: number]: HTMLDivElement | null;
     }>({});
-    const brandDropdownRefs = useRef<{ [key: number]: HTMLDivElement | null }>(
-        {}
-    );
+    const brandDropdownRefs = useRef<{ [key: number]: HTMLDivElement | null }>({});
 
     useEffect(() => {
         setInputs((prevInputs) => ({
@@ -91,21 +72,13 @@ const UpdateItem = ({ params }: { params: Promise<{ id: number }> }) => {
         const token = localStorage.getItem("adminToken");
 
         const fetchData = async () => {
-            const response = await sendRequest(
-                "get",
-                url,
-                null,
-                abortController,
-                token,
-                router
-            );
+            const response = await sendRequest("get", url, null, abortController, token, router);
 
             if (response && response.success) {
                 if (response && response.success) {
                     const itemsByLanguage = languages().map((lang) => {
                         const itemForLang = response.data.data.find(
-                            (item: { trans_lang: string }) =>
-                                item.trans_lang === lang.abbre
+                            (item: { trans_lang: string }) => item.trans_lang === lang.abbre,
                         );
 
                         return {
@@ -115,16 +88,15 @@ const UpdateItem = ({ params }: { params: Promise<{ id: number }> }) => {
                             price: itemForLang.price,
                             condition: itemForLang.condition == "used" ? 2 : 1,
                             description: itemForLang.description,
-                            category_name: itemForLang.category_name,
+                            category: itemForLang.category_name,
                             category_id: itemForLang.category_id,
-                            brand_name: itemForLang.brand_name,
+                            brand: itemForLang.brand_name,
                             brand_id: itemForLang.brand_id,
                         };
                     });
 
                     const allImages = response.data.data.flatMap(
-                        (item: { images: { path: string }[] }) =>
-                            item.images?.map((img) => img.path) || []
+                        (item: { images: { path: string }[] }) => item.images?.map((img) => img.path) || [],
                     );
                     setUploadedFiles(allImages);
 
@@ -137,9 +109,9 @@ const UpdateItem = ({ params }: { params: Promise<{ id: number }> }) => {
                                 condition,
                                 price,
                                 description,
-                                category_name,
+                                category,
                                 category_id,
-                                brand_name,
+                                brand,
                                 brand_id,
                             }) => ({
                                 name,
@@ -148,19 +120,17 @@ const UpdateItem = ({ params }: { params: Promise<{ id: number }> }) => {
                                 condition,
                                 price,
                                 description,
-                                category_name,
+                                category,
                                 category_id,
-                                brand_name,
+                                brand,
                                 brand_id,
-                            })
+                            }),
                         ),
                         images: [],
                     }));
                 }
             } else if (response) {
-                dispatch(
-                    display({ type: "error", message: response.msg.text })
-                );
+                dispatch(display({ type: "error", message: response.msg.text }));
             }
         };
 
@@ -177,34 +147,21 @@ const UpdateItem = ({ params }: { params: Promise<{ id: number }> }) => {
             }`;
             const token = localStorage.getItem("adminToken");
 
-            const response = await sendRequest(
-                "get",
-                url,
-                null,
-                abortController,
-                token,
-                router
-            );
+            const response = await sendRequest("get", url, null, abortController, token, router);
 
             if (response && response.success) {
                 setFilteredCategories(response.data.data);
             } else if (response) {
-                dispatch(
-                    display({ type: "error", message: response.msg.text })
-                );
+                dispatch(display({ type: "error", message: response.msg.text }));
             }
         },
-        [dispatch, router]
+        [dispatch, router],
     );
 
     // Use debounced search functions
     const handleCategorySearch = useCallback(
         async (...args: unknown[]) => {
-            const [searchTerm, langIndex, abortController] = args as [
-                string,
-                number,
-                AbortController | null
-            ];
+            const [searchTerm, langIndex, abortController] = args as [string, number, AbortController | null];
             if (searchTerm.trim()) {
                 await fetchCategories(searchTerm, abortController);
             } else {
@@ -215,44 +172,29 @@ const UpdateItem = ({ params }: { params: Promise<{ id: number }> }) => {
                 }));
             }
         },
-        [fetchCategories, setFilteredCategories]
+        [fetchCategories, setFilteredCategories],
     );
 
     // Function to fetch brands with search term
     const fetchBrands = useCallback(
         async (searchTerm: string, abortController: AbortController | null) => {
-            const url = `/admin-panel/search/brands${
-                searchTerm ? `?search=${encodeURIComponent(searchTerm)}` : ""
-            }`;
+            const url = `/admin-panel/search/brands${searchTerm ? `?search=${encodeURIComponent(searchTerm)}` : ""}`;
             const token = localStorage.getItem("adminToken");
 
-            const response = await sendRequest(
-                "get",
-                url,
-                null,
-                abortController,
-                token,
-                router
-            );
+            const response = await sendRequest("get", url, null, abortController, token, router);
 
             if (response && response.success) {
                 setFilteredBrands(response.data.data);
             } else if (response) {
-                dispatch(
-                    display({ type: "error", message: response.msg.text })
-                );
+                dispatch(display({ type: "error", message: response.msg.text }));
             }
         },
-        [dispatch, router]
+        [dispatch, router],
     );
 
     const handleBrandSearch = useCallback(
         async (...args: unknown[]) => {
-            const [searchTerm, langIndex, abortController] = args as [
-                string,
-                number,
-                AbortController | null
-            ];
+            const [searchTerm, langIndex, abortController] = args as [string, number, AbortController | null];
             if (searchTerm.trim()) {
                 await fetchBrands(searchTerm, abortController);
             } else {
@@ -263,13 +205,11 @@ const UpdateItem = ({ params }: { params: Promise<{ id: number }> }) => {
                 }));
             }
         },
-        [fetchBrands, setFilteredBrands]
+        [fetchBrands, setFilteredBrands],
     );
 
-    const { debouncedFn: debouncedCategorySearch } =
-        useDebounce(handleCategorySearch);
-    const { debouncedFn: debouncedBrandSearch } =
-        useDebounce(handleBrandSearch);
+    const { debouncedFn: debouncedCategorySearch } = useDebounce(handleCategorySearch);
+    const { debouncedFn: debouncedBrandSearch } = useDebounce(handleBrandSearch);
 
     // Click outside effect
     useEffect(() => {
@@ -314,10 +254,8 @@ const UpdateItem = ({ params }: { params: Promise<{ id: number }> }) => {
 
     // MARK: handleChange
     const handleInputChange = (
-        e: ChangeEvent<
-            HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
-        >,
-        langIndex: number
+        e: ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>,
+        langIndex: number,
     ) => {
         const value = e.target.value;
         const name = e.target.name;
@@ -325,9 +263,7 @@ const UpdateItem = ({ params }: { params: Promise<{ id: number }> }) => {
         // Update the input value
         setInputs((prevInputs) => ({
             ...prevInputs,
-            items: prevInputs.items.map((item, index) =>
-                index === langIndex ? { ...item, [name]: value } : item
-            ),
+            items: prevInputs.items.map((item, index) => (index === langIndex ? { ...item, [name]: value } : item)),
         }));
 
         if (name === "category") {
@@ -348,10 +284,7 @@ const UpdateItem = ({ params }: { params: Promise<{ id: number }> }) => {
     };
 
     // Handle selection from dropdown
-    const handleCategorySelect = (
-        category: SuggestionItem,
-        langIndex: number
-    ) => {
+    const handleCategorySelect = (category: SuggestionItem, langIndex: number) => {
         setInputs((prevInputs) => ({
             ...prevInputs,
             items: prevInputs.items.map((item, index) =>
@@ -361,7 +294,7 @@ const UpdateItem = ({ params }: { params: Promise<{ id: number }> }) => {
                           category_id: category.id || null,
                           category_name: category.name || "",
                       }
-                    : item
+                    : item,
             ),
         }));
         setShowCategoryDropdown((prev) => ({ ...prev, [langIndex]: false }));
@@ -377,7 +310,7 @@ const UpdateItem = ({ params }: { params: Promise<{ id: number }> }) => {
                           brand_id: brand.id || null,
                           brand_name: brand.name || "",
                       }
-                    : item
+                    : item,
             ),
         }));
         setShowBrandDropdown((prev) => ({ ...prev, [langIndex]: false }));
@@ -398,26 +331,15 @@ const UpdateItem = ({ params }: { params: Promise<{ id: number }> }) => {
         abortController.current = new AbortController();
 
         const submitData = async () => {
-            const response = await sendRequest(
-                "post",
-                url,
-                inputs,
-                abortController.current,
-                token,
-                router
-            );
+            const response = await sendRequest("post", url, inputs, abortController.current, token, router);
             setErrors(initialErrors);
 
             if (response && response.success) {
-                dispatch(
-                    display({ type: "success", message: response.msg.text })
-                );
+                dispatch(display({ type: "success", message: response.msg.text }));
 
                 setIsLoading(false);
             } else if (response) {
-                dispatch(
-                    display({ type: "error", message: response.msg.text })
-                );
+                dispatch(display({ type: "error", message: response.msg.text }));
                 setIsLoading(false);
 
                 if (response.errors) {
@@ -438,16 +360,11 @@ const UpdateItem = ({ params }: { params: Promise<{ id: number }> }) => {
                 className="p-16 mt-5 border border-neutral-200 rounded-2xl bg-gray-200"
             />
             <div className="flex flex-col justify-center items-center h-100 mt-250">
-                <form
-                    onSubmit={handleSubmit}
-                    encType="multipart/form-data"
-                >
+                <form onSubmit={handleSubmit} encType="multipart/form-data">
                     {languages().map((lang, i) => (
                         <Card key={i}>
                             <div className="text-center mb-8">
-                                <h1 className="text-3xl font-bold text-gray-900 mb-2">
-                                    Add Category
-                                </h1>
+                                <h1 className="text-3xl font-bold text-gray-900 mb-2">Add Category</h1>
                                 <span>{`(in ${lang.name})`}</span>
                             </div>
 
@@ -456,18 +373,12 @@ const UpdateItem = ({ params }: { params: Promise<{ id: number }> }) => {
                                     label={`name`}
                                     name={`name`}
                                     type="text"
-                                    handleChange={(e) =>
-                                        handleInputChange(e, i)
-                                    }
+                                    handleChange={(e) => handleInputChange(e, i)}
                                     classes="text-black 
                                             border-gray-300 
                                             focus:ring-indigo-500 
                                             bg-white/50"
-                                    error={
-                                        errors[`items.${i}.name`]
-                                            ? errors[`items.${i}.name`][0]
-                                            : ""
-                                    }
+                                    error={errors[`items.${i}.name`] ? errors[`items.${i}.name`][0] : ""}
                                     value={inputs.items[i]?.name || ""}
                                     isRequired={false}
                                 />
@@ -478,30 +389,18 @@ const UpdateItem = ({ params }: { params: Promise<{ id: number }> }) => {
                                         label={`Category`}
                                         name={`category`}
                                         type="text"
-                                        handleChange={(e) =>
-                                            handleInputChange(e, i)
-                                        }
+                                        handleChange={(e) => handleInputChange(e, i)}
                                         classes="text-black 
                                                 border-gray-300 
                                                 focus:ring-indigo-500 
                                                 bg-white/50"
-                                        error={
-                                            errors[`items.${i}.category`]
-                                                ? errors[
-                                                      `items.${i}.category`
-                                                  ][0]
-                                                : ""
-                                        }
-                                        value={
-                                            inputs.items[i]?.category_name || ""
-                                        }
+                                        error={errors[`items.${i}.category`] ? errors[`items.${i}.category`][0] : ""}
+                                        value={inputs.items[i]?.category || ""}
                                         isRequired={false}
                                     />
                                     <Dropdown
                                         items={filteredCategories}
-                                        onSelect={(category: SuggestionItem) =>
-                                            handleCategorySelect(category, i)
-                                        }
+                                        onSelect={(category: SuggestionItem) => handleCategorySelect(category, i)}
                                         show={showCategoryDropdown[i] || false}
                                         langIndex={i}
                                         type="category"
@@ -515,28 +414,18 @@ const UpdateItem = ({ params }: { params: Promise<{ id: number }> }) => {
                                         label={`brand`}
                                         name={`brand`}
                                         type="text"
-                                        handleChange={(e) =>
-                                            handleInputChange(e, i)
-                                        }
+                                        handleChange={(e) => handleInputChange(e, i)}
                                         classes="text-black 
                                                 border-gray-300 
                                                 focus:ring-indigo-500 
                                                 bg-white/50"
-                                        error={
-                                            errors[`items.${i}.brand`]
-                                                ? errors[`items.${i}.brand`][0]
-                                                : ""
-                                        }
-                                        value={
-                                            inputs.items[i]?.brand_name || ""
-                                        }
+                                        error={errors[`items.${i}.brand`] ? errors[`items.${i}.brand`][0] : ""}
+                                        value={inputs.items[i]?.brand || ""}
                                         isRequired={false}
                                     />
                                     <Dropdown
                                         items={filteredBrands}
-                                        onSelect={(brand) =>
-                                            handleBrandSelect(brand, i)
-                                        }
+                                        onSelect={(brand) => handleBrandSelect(brand, i)}
                                         show={showBrandDropdown[i] || false}
                                         langIndex={i}
                                         type="brand"
@@ -548,18 +437,12 @@ const UpdateItem = ({ params }: { params: Promise<{ id: number }> }) => {
                                     label={`price`}
                                     name={`price`}
                                     type="number"
-                                    handleChange={(e) =>
-                                        handleInputChange(e, i)
-                                    }
+                                    handleChange={(e) => handleInputChange(e, i)}
                                     classes="text-black 
                                             border-gray-300 
                                             focus:ring-indigo-500 
                                             bg-white/50"
-                                    error={
-                                        errors[`items.${i}.price`]
-                                            ? errors[`items.${i}.price`][0]
-                                            : ""
-                                    }
+                                    error={errors[`items.${i}.price`] ? errors[`items.${i}.price`][0] : ""}
                                     value={inputs.items[i]?.price || ""}
                                     isRequired={false}
                                 />
@@ -569,14 +452,8 @@ const UpdateItem = ({ params }: { params: Promise<{ id: number }> }) => {
                                     options={conditionOptions}
                                     placeholder="Pick a condition"
                                     value={inputs.items[i]?.condition}
-                                    handleChange={(e) =>
-                                        handleInputChange(e, i)
-                                    }
-                                    error={
-                                        errors[`items.${i}.condition`]
-                                            ? errors[`items.${i}.condition`][0]
-                                            : ""
-                                    }
+                                    handleChange={(e) => handleInputChange(e, i)}
+                                    error={errors[`items.${i}.condition`] ? errors[`items.${i}.condition`][0] : ""}
                                     name="condition"
                                 />
 
@@ -584,20 +461,12 @@ const UpdateItem = ({ params }: { params: Promise<{ id: number }> }) => {
                                     label={`description`}
                                     name={`description`}
                                     type="text"
-                                    handleChange={(e) =>
-                                        handleInputChange(e, i)
-                                    }
+                                    handleChange={(e) => handleInputChange(e, i)}
                                     classes="text-black 
                                             border-gray-300 
                                             focus:ring-indigo-500 
                                             bg-white/50"
-                                    error={
-                                        errors[`items.${i}.description`]
-                                            ? errors[
-                                                  `items.${i}.description`
-                                              ][0]
-                                            : ""
-                                    }
+                                    error={errors[`items.${i}.description`] ? errors[`items.${i}.description`][0] : ""}
                                     value={inputs.items[i]?.description || ""}
                                     isRequired={false}
                                 />
