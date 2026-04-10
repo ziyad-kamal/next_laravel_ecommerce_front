@@ -35,9 +35,9 @@ const StoreItem = () => {
                 price: null,
                 description: "",
                 category_id: 0,
-                category_name: "",
+                category: "",
                 brand_id: null,
-                brand_name: "",
+                brand: "",
             }),
         ),
         images: [{ originalName: "", path: "", preview: "" }],
@@ -217,7 +217,7 @@ const StoreItem = () => {
                     ? {
                           ...item,
                           category_id: category.id || null,
-                          category_name: category.name || "",
+                          category: category.name || "",
                       }
                     : item,
             ),
@@ -233,7 +233,7 @@ const StoreItem = () => {
                     ? {
                           ...item,
                           brand_id: brand.id || null,
-                          brand_name: brand.name || "",
+                          brand: brand.name || "",
                       }
                     : item,
             ),
@@ -271,9 +271,9 @@ const StoreItem = () => {
                         price: null,
                         description: "",
                         category_id: null,
-                        category_name: "",
+                        category: "",
                         brand_id: null,
-                        brand_name: "",
+                        brand: "",
                     })),
                     images: [],
                 });
@@ -333,8 +333,9 @@ const StoreItem = () => {
                                                 focus:ring-indigo-500 
                                                 bg-white/50"
                                         error={errors[`items.${i}.category`] ? errors[`items.${i}.category`][0] : ""}
-                                        value={inputs.items[i]?.category_name || ""}
+                                        value={inputs.items[i]?.category || ""}
                                         isRequired={false}
+                                        autoComplete="off"
                                     />
                                     <Dropdown
                                         items={filteredCategories}
@@ -358,8 +359,9 @@ const StoreItem = () => {
                                                 focus:ring-indigo-500 
                                                 bg-white/50"
                                         error={errors[`items.${i}.brand`] ? errors[`items.${i}.brand`][0] : ""}
-                                        value={inputs.items[i]?.brand_name || ""}
+                                        value={inputs.items[i]?.brand || ""}
                                         isRequired={false}
+                                        autoComplete="off"
                                     />
                                     <Dropdown
                                         items={filteredBrands}

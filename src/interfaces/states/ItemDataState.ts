@@ -5,9 +5,9 @@ interface ItemDataState {
     price: number | null;
     description: string;
     category_id: number | null;
-    category_name: string;
+    category: string;
     brand_id: number | null;
-    brand_name: string;
+    brand: string;
 }
 
 export default ItemDataState;

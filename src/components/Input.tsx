@@ -11,14 +11,12 @@ const Input = ({
     value,
     inputRef,
     error = "",
+    autoComplete = "on",
 }: InputProps) => {
     return (
         <>
             {label ? (
-                <label
-                    htmlFor={name}
-                    className="block text-lg leading-none mb-2 mt-4"
-                >
+                <label htmlFor={name} className="block text-lg leading-none mb-2 mt-4">
                     {label}
                 </label>
             ) : null}
@@ -34,14 +32,12 @@ const Input = ({
                 placeholder={placeholder ?? `enter your ${name}`}
                 required={isRequired}
                 id={name}
-                autoComplete="true"
+                autoComplete={autoComplete}
                 ref={inputRef}
                 onChange={(e) => handleChange?.(e, name)}
                 value={value}
             />
-            {error ? (
-                <p className="text-red-500 font-bold mb-1">{error}</p>
-            ) : null}
+            {error ? <p className="text-red-500 font-bold mb-1">{error}</p> : null}
         </>
     );
 };

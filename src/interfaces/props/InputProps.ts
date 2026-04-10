@@ -12,6 +12,7 @@ interface InputProps {
     value?: string | number;
     error?: string;
     accept?: string;
+    autoComplete?: string;
 }
 
 export default InputProps;

@@ -3,7 +3,6 @@ import { getCookie, setCookie } from "@/functions/cookies";
 import sendRequest from "@/functions/sendRequest";
 import LocaleState from "@/interfaces/states/LocaleState";
 import NotificationState from "@/interfaces/states/NotificationState";
-import { getEcho } from "@/lib/echo";
 import { useAppDispatch, useAppSelector } from "@/lib/hooks";
 import { display } from "@/redux/DisplayToast";
 import { setLocale } from "@/redux/setLocale";
@@ -113,12 +112,12 @@ const Navbar = () => {
     }, [dispatch, router]);
 
     useEffect(() => {
-        const storedToken = localStorage.getItem("adminToken");
-        const echo = getEcho(storedToken);
-        const channel = echo.private(`App.Models.Admin.${1}`);
-        channel.notification((notification: unknown) => {
-            setNotifications((prevNotification) => [notification as NotificationState, ...prevNotification]);
-        });
+        // const storedToken = localStorage.getItem("adminToken");
+        // const echo = getEcho(storedToken);
+        // const channel = echo.private(`App.Models.Admin.${1}`);
+        // channel.notification((notification: unknown) => {
+        //     setNotifications((prevNotification) => [notification as NotificationState, ...prevNotification]);
+        // });
 
         const abortController = new AbortController();
 
@@ -126,7 +125,7 @@ const Navbar = () => {
         fetchNotifications(1, false, abortController);
 
         return () => {
-            echo.leave(`App.Models.Admin.${1}`);
+            // echo.leave(`App.Models.Admin.${1}`);
             abortController.abort();
         };
     }, [dispatch, router, fetchNotifications]);
