@@ -232,7 +232,7 @@ const Navbar = () => {
 
             if (response && response.success) {
                 dispatch(display({ type: "success", message: response.msg.text }));
-                localStorage.removeItem("token");
+                localStorage.removeItem("adminToken");
                 dispatch(userTokenRemove());
 
                 router.push("/users/public/login");
