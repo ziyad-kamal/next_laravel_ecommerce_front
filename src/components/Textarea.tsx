@@ -12,14 +12,12 @@ const Textarea = ({
     error = "",
     cols,
     rows,
+    dir,
 }: TextareaProps) => {
     return (
         <>
             {label ? (
-                <label
-                    htmlFor={name}
-                    className="block text-lg leading-none mb-2 mt-4"
-                >
+                <label htmlFor={name} className="block text-lg leading-none mb-2 mt-4">
                     {label}
                 </label>
             ) : null}
@@ -40,10 +38,9 @@ const Textarea = ({
                 ref={inputRef}
                 onChange={(e) => handleChange(e, name)}
                 value={value}
+                dir={dir}
             />
-            {error ? (
-                <p className="text-red-500 font-bold mb-1">{error}</p>
-            ) : null}
+            {error ? <p className="text-red-500 font-bold mb-1">{error}</p> : null}
         </>
     );
 };

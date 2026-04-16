@@ -409,6 +409,8 @@ const StoreItem = () => {
                                     error={errors[`items.${i}.description`] ? errors[`items.${i}.description`][0] : ""}
                                     value={inputs.items[i]?.description || ""}
                                     isRequired={false}
+                                    dir={lang.abbre === "ar" ? "rtl" : "ltr"}
+                                    placeholder=""
                                 />
                             </div>
                         </Card>

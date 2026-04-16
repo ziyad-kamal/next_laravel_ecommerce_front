@@ -14,6 +14,7 @@ interface TextareaProps {
     accept?: string;
     cols?: number;
     rows?: number;
+    dir: string;
 }
 
 export default TextareaProps;
