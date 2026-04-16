@@ -11,8 +11,10 @@ export default function sendRequest(
 ) {
     const send = async () => {
         axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
-        axios.defaults.baseURL = "https://api.ecocity.info/api/";
-        // axios.defaults.headers.post["Content-Type"] = "application/json";
+        axios.defaults.baseURL =
+            process.env.NEXT_PUBLIC_ENV === "production"
+                ? process.env.NEXT_PUBLIC_API_URL
+                : "http://127.0.0.1:8000/api";
 
         try {
             let response;

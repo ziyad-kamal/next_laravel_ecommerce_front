@@ -34,7 +34,7 @@ const StoreItem = () => {
                 condition: 0,
                 price: null,
                 description: "",
-                category_id: 0,
+                category_id: null,
                 category: "",
                 brand_id: null,
                 brand: "",
