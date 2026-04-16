@@ -208,6 +208,7 @@ export default function AdminProfile() {
                                     rows={3}
                                     classes="w-full text-slate-700 border-2 border-blue-500 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
                                     error={errors.bio ? errors.bio[0] : ""}
+                                    dir={localeState.locale === "ar" ? "rtl" : "ltr"}
                                 />
                             ) : (
                                 <p className="text-slate-700">{profileData.bio}</p>
