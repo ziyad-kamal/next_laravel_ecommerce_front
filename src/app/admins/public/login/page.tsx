@@ -1,21 +1,20 @@
 "use client";
 
-import { ChangeEvent, FormEvent, useState } from "react";
-import { Mail, Eye, EyeOff, Lock } from "lucide-react";
 import { Button, Card, Input } from "@/components";
 import sendRequest from "@/functions/sendRequest";
 import { useAppDispatch } from "@/lib/hooks";
 import { display } from "@/redux/DisplayToast";
-import { useRouter } from "next/navigation";
 import { adminTokenSet } from "@/redux/SetToken";
+import { Eye, EyeOff, Lock, Mail } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { useRouter } from "next/navigation";
+import { ChangeEvent, FormEvent, useState } from "react";
 
-const initialInputs: { email: string; password: string; rememberMe: boolean } =
-    {
-        email: "",
-        password: "",
-        rememberMe: false,
-    };
+const initialInputs: { email: string; password: string; rememberMe: boolean } = {
+    email: "ziyad1995@gmail.com",
+    password: "13131313",
+    rememberMe: false,
+};
 
 const LoginPage = () => {
     const [showPassword, setShowPassword] = useState<boolean>(false);
@@ -25,10 +24,7 @@ const LoginPage = () => {
     const dispatch = useAppDispatch();
     const t = useTranslations("login");
 
-    const handleInputChange = (
-        e: ChangeEvent<HTMLInputElement>,
-        name: string
-    ) => {
+    const handleInputChange = (e: ChangeEvent<HTMLInputElement>, name: string) => {
         const { value, type, checked } = e.target;
         setFormData((prev) => ({
             ...prev,
@@ -51,27 +47,17 @@ const LoginPage = () => {
         abortControllerForSubmit = new AbortController();
 
         const submitData = async () => {
-            const response = await sendRequest(
-                "post",
-                url,
-                formData,
-                abortControllerForSubmit,
-                token
-            );
+            const response = await sendRequest("post", url, formData, abortControllerForSubmit, token);
 
             if (response && response.success) {
-                dispatch(
-                    display({ type: "success", message: response.msg.text })
-                );
+                dispatch(display({ type: "success", message: response.msg.text }));
                 localStorage.setItem("adminToken", response.data.data.token);
                 dispatch(adminTokenSet());
 
                 setIsLoading(false);
                 router.push("/admins/protected/dashboard");
             } else if (response) {
-                dispatch(
-                    display({ type: "error", message: response.msg.text })
-                );
+                dispatch(display({ type: "error", message: response.msg.text }));
                 setIsLoading(false);
             }
         };
@@ -88,23 +74,15 @@ const LoginPage = () => {
                         <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-2xl mb-4 shadow-lg">
                             <Lock className="w-8 h-8 text-white" />
                         </div>
-                        <h1 className="text-3xl font-bold text-gray-900 mb-2">
-                            {t("title")}
-                        </h1>
+                        <h1 className="text-3xl font-bold text-gray-900 mb-2">{t("title")}</h1>
                         <p className="text-gray-600">{t("subtitle")}</p>
                     </div>
 
                     {/* Login form */}
-                    <form
-                        onSubmit={handleSubmit}
-                        className="space-y-6"
-                    >
+                    <form onSubmit={handleSubmit} className="space-y-6">
                         {/* Email field */}
                         <div className="space-y-2">
-                            <label
-                                htmlFor="email"
-                                className="block text-sm font-medium text-gray-700"
-                            >
+                            <label htmlFor="email" className="block text-sm font-medium text-gray-700">
                                 {t("email")}
                             </label>
                             <div className="relative">
@@ -119,16 +97,14 @@ const LoginPage = () => {
                                         border-gray-300 
                                         focus:ring-indigo-500 
                                         bg-white/50 "
+                                    value={initialInputs.email}
                                 />
                             </div>
                         </div>
 
                         {/* Password field */}
                         <div className="space-y-2">
-                            <label
-                                htmlFor="password"
-                                className="block text-sm font-medium text-gray-700"
-                            >
+                            <label htmlFor="password" className="block text-sm font-medium text-gray-700">
                                 {t("password")}
                             </label>
                             <div className="relative">
@@ -143,12 +119,11 @@ const LoginPage = () => {
                                         border-gray-300 
                                         focus:ring-indigo-500 
                                         bg-white/50 "
+                                    value={initialInputs.password}
                                 />
                                 <button
                                     type="button"
-                                    onClick={() =>
-                                        setShowPassword(!showPassword)
-                                    }
+                                    onClick={() => setShowPassword(!showPassword)}
                                     className="absolute inset-y-0 right-0 pr-3 flex items-center"
                                 >
                                     {showPassword ? (
